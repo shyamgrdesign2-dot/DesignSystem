@@ -2,21 +2,21 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import {
-  SearchNormal1,
-  Add,
-  More2,
+  Search,
+  Plus,
+  MoreHorizontal,
   Command,
   User,
-  DocumentText,
-  Calendar1,
-  ArrowRight2,
-  Edit2,
+  FileText,
+  Calendar,
+  ChevronRight,
+  Pencil,
   Copy,
-  Trash,
-  Setting2,
+  Trash2,
+  Settings,
   Keyboard,
   Clock,
-} from "iconsax-react"
+} from "lucide-react"
 import { Command as CommandPrimitive } from "cmdk"
 import {
   ContextMenu,
@@ -80,7 +80,7 @@ function SaasSearchBar() {
           boxShadow: open ? "0 0 0 3px rgba(75,74,213,0.10)" : "0 1px 3px rgba(23,23,37,0.06)",
         }}
       >
-        <SearchNormal1 size={18} variant="Linear" className="text-tp-slate-400 shrink-0" />
+        <Search size={18} className="text-tp-slate-400 shrink-0" />
         <input
           type="text"
           placeholder={`Search patients, appointments... (${CMD}K)`}
@@ -94,7 +94,7 @@ function SaasSearchBar() {
             type="button"
             className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-tp-blue-500 hover:bg-tp-blue-50 transition-colors"
           >
-            <Add size={14} variant="Linear" />
+            <Plus size={14} />
             Quick Add
           </button>
           <button
@@ -111,7 +111,7 @@ function SaasSearchBar() {
                 className="rounded-lg p-1.5 text-tp-slate-500 hover:bg-tp-slate-100 hover:text-tp-slate-700 transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                <More2 size={18} variant="Linear" />
+                <MoreHorizontal size={18} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -121,17 +121,17 @@ function SaasSearchBar() {
               style={{ boxShadow: "0 12px 24px -4px rgba(23,23,37,0.12)" }}
             >
               <DropdownMenuItem>
-                <Setting2 size={14} variant="Linear" />
+                <Settings size={14} />
                 Search settings
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Keyboard size={14} variant="Linear" />
+                <Keyboard size={14} />
                 Keyboard shortcuts
                 <DropdownMenuShortcut>{CMD}K</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Clock size={14} variant="Linear" />
+                <Clock size={14} />
                 View recent searches
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -157,7 +157,7 @@ function SaasSearchBar() {
               className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-tp-slate-50 transition-colors group"
             >
               <span className="w-8 h-8 rounded-full bg-tp-slate-200 flex items-center justify-center shrink-0">
-                <User size={14} variant="Linear" className="text-tp-slate-500" />
+                <User size={14} className="text-tp-slate-500" />
               </span>
               <div className="flex-1 min-w-0">
                 <span className="block text-sm font-medium text-tp-slate-800">{item.label}</span>
@@ -171,7 +171,7 @@ function SaasSearchBar() {
                 onClick={(e) => e.stopPropagation()}
                 className="rounded p-1 text-tp-slate-400 hover:bg-tp-slate-200 hover:text-tp-slate-600 opacity-0 group-hover:opacity-100"
               >
-                <More2 size={14} variant="Linear" />
+                <MoreHorizontal size={14} />
               </button>
             </button>
           ))}
@@ -188,7 +188,7 @@ function SaasSearchBar() {
               type="button"
               className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-tp-slate-50 transition-colors"
             >
-              <DocumentText size={16} variant="Linear" className="text-tp-slate-500 shrink-0" />
+              <FileText size={16} className="text-tp-slate-500 shrink-0" />
               <span className="flex-1 text-sm font-medium text-tp-slate-800">{item.label}</span>
               <span className="text-[10px] font-mono text-tp-slate-400">{item.shortcut}</span>
             </button>
@@ -227,7 +227,7 @@ function CommandPaletteDemo() {
         className="flex items-center gap-3 rounded-xl border border-tp-slate-200 bg-white px-4 py-3 text-left hover:border-tp-blue-200 hover:bg-tp-blue-50/50 transition-colors w-full max-w-md"
       >
         <span className="w-10 h-10 rounded-lg flex items-center justify-center bg-tp-slate-100">
-          <Command size={20} variant="Linear" className="text-tp-slate-600" />
+          <Command size={20} className="text-tp-slate-600" />
         </span>
         <div>
           <p className="text-sm font-semibold text-tp-slate-800">Command Palette</p>
@@ -244,7 +244,7 @@ function CommandPaletteDemo() {
             className="flex flex-col overflow-hidden"
           >
             <div className="flex items-center gap-2 border-b border-tp-slate-200 px-3" style={{ height: "48px" }}>
-              <SearchNormal1 size={18} variant="Linear" className="text-tp-slate-400 shrink-0" />
+              <Search size={18} className="text-tp-slate-400 shrink-0" />
               <CommandPrimitive.Input
                 placeholder="Type a command or search..."
                 className="flex-1 h-10 bg-transparent text-sm outline-none placeholder:text-tp-slate-400"
@@ -262,7 +262,7 @@ function CommandPaletteDemo() {
                   value="jane foster"
                   className="flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[selected=true]:bg-tp-blue-50 outline-none rounded-none"
                 >
-                  <User size={16} variant="Linear" className="text-tp-slate-500 shrink-0" />
+                  <User size={16} className="text-tp-slate-500 shrink-0" />
                   <span className="flex-1 text-sm font-medium">Jane Foster</span>
                   <span className="text-[10px] font-mono text-tp-slate-400">{CMD}1</span>
                 </CommandPrimitive.Item>
@@ -270,7 +270,7 @@ function CommandPaletteDemo() {
                   value="tony stark"
                   className="flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[selected=true]:bg-tp-blue-50 outline-none rounded-none"
                 >
-                  <User size={16} variant="Linear" className="text-tp-slate-500 shrink-0" />
+                  <User size={16} className="text-tp-slate-500 shrink-0" />
                   <span className="flex-1 text-sm font-medium">Tony Stark</span>
                   <span className="text-[10px] font-mono text-tp-slate-400">{CMD}2</span>
                 </CommandPrimitive.Item>
@@ -284,7 +284,7 @@ function CommandPaletteDemo() {
                   value="new patient"
                   className="flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[selected=true]:bg-tp-blue-50 outline-none rounded-none"
                 >
-                  <Add size={16} variant="Linear" className="text-tp-slate-500 shrink-0" />
+                  <Plus size={16} className="text-tp-slate-500 shrink-0" />
                   <span className="flex-1 text-sm font-medium">New Patient</span>
                   <span className="text-[10px] font-mono text-tp-slate-400">{CMD}N</span>
                 </CommandPrimitive.Item>
@@ -292,7 +292,7 @@ function CommandPaletteDemo() {
                   value="new prescription"
                   className="flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[selected=true]:bg-tp-blue-50 outline-none rounded-none"
                 >
-                  <DocumentText size={16} variant="Linear" className="text-tp-slate-500 shrink-0" />
+                  <FileText size={16} className="text-tp-slate-500 shrink-0" />
                   <span className="flex-1 text-sm font-medium">New Prescription</span>
                   <span className="text-[10px] font-mono text-tp-slate-400">{CMD}P</span>
                 </CommandPrimitive.Item>
@@ -300,7 +300,7 @@ function CommandPaletteDemo() {
                   value="schedule appointment"
                   className="flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[selected=true]:bg-tp-blue-50 outline-none rounded-none"
                 >
-                  <Calendar1 size={16} variant="Linear" className="text-tp-slate-500 shrink-0" />
+                  <Calendar size={16} className="text-tp-slate-500 shrink-0" />
                   <span className="flex-1 text-sm font-medium">Schedule Appointment</span>
                   <span className="text-[10px] font-mono text-tp-slate-400">{CMD}S</span>
                 </CommandPrimitive.Item>
@@ -315,14 +315,14 @@ function CommandPaletteDemo() {
                   className="flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[selected=true]:bg-tp-blue-50 outline-none rounded-none"
                 >
                   <span className="flex-1 text-sm font-medium">Go to Dashboard</span>
-                  <ArrowRight2 size={14} variant="Linear" className="text-tp-slate-400" />
+                  <ChevronRight size={14} className="text-tp-slate-400" />
                 </CommandPrimitive.Item>
                 <CommandPrimitive.Item
                   value="patients"
                   className="flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[selected=true]:bg-tp-blue-50 outline-none rounded-none"
                 >
                   <span className="flex-1 text-sm font-medium">Go to Patients</span>
-                  <ArrowRight2 size={14} variant="Linear" className="text-tp-slate-400" />
+                  <ChevronRight size={14} className="text-tp-slate-400" />
                 </CommandPrimitive.Item>
               </CommandPrimitive.Group>
               <CommandPrimitive.Empty className="py-8 text-center text-sm text-tp-slate-500">
@@ -358,7 +358,7 @@ function ContextMenuDemo() {
         style={{ boxShadow: "0 12px 24px -4px rgba(23,23,37,0.12)" }}
       >
         <ContextMenuItem>
-          <Edit2 size={14} variant="Linear" />
+          <Pencil size={14} />
           Rename
           <ContextMenuShortcut>{CMD}R</ContextMenuShortcut>
         </ContextMenuItem>
@@ -371,7 +371,7 @@ function ContextMenuDemo() {
         <ContextMenuSub>
           <ContextMenuSubTrigger>
             Share
-            <ArrowRight2 size={14} variant="Linear" />
+            <ChevronRight size={14} />
           </ContextMenuSubTrigger>
           <ContextMenuSubContent
             className="rounded-xl border-tp-slate-200"
@@ -384,7 +384,7 @@ function ContextMenuDemo() {
         </ContextMenuSub>
         <ContextMenuSeparator />
         <ContextMenuItem className="text-tp-error-600 focus:text-tp-error-600 focus:bg-tp-error-50">
-          <Trash size={14} variant="Linear" />
+          <Trash2 size={14} />
           Delete
           <ContextMenuShortcut>{CMD}⌫</ContextMenuShortcut>
         </ContextMenuItem>
@@ -419,7 +419,7 @@ function SearchResultRow({
       }`}
     >
       <span className="w-8 h-8 rounded-full bg-tp-slate-200 flex items-center justify-center shrink-0">
-        <User size={14} variant="Linear" className="text-tp-slate-500" />
+        <User size={14} className="text-tp-slate-500" />
       </span>
       <div className="flex-1 min-w-0">
         <span className="block text-sm font-medium text-tp-slate-800">{primary}</span>
@@ -435,7 +435,7 @@ function SearchResultRow({
         onClick={(e) => { e.stopPropagation(); onMenu?.(e) }}
         className="rounded p-1 text-tp-slate-400 hover:bg-tp-slate-200 hover:text-tp-slate-600 opacity-0 group-hover:opacity-100"
       >
-        <More2 size={14} variant="Linear" />
+        <MoreHorizontal size={14} />
       </button>
     </div>
   )
@@ -465,7 +465,7 @@ function CompactSearchWithCta() {
         }}
         onClick={() => setOpen(true)}
       >
-        <SearchNormal1 size={18} variant="Linear" className="text-tp-slate-400 shrink-0" />
+        <Search size={18} className="text-tp-slate-400 shrink-0" />
         <span className="flex-1 text-sm text-tp-slate-500">Search...</span>
         <kbd className="text-[10px] font-mono text-tp-slate-400">{CMD}K</kbd>
       </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Mulish, Inter, JetBrains_Mono } from 'next/font/google'
+import { Mulish, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { TPThemeProvider } from '@/components/tp-theme-provider'
 import './globals.css'
@@ -15,11 +15,6 @@ const inter = Inter({
   variable: '--font-sans',
 })
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  weight: ['400', '500'],
-})
 
 export const metadata: Metadata = {
   title: 'TatvaPractice Design System',
@@ -50,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${mulish.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body className={`${mulish.variable} ${inter.variable} font-sans antialiased`}>
         <TPThemeProvider>
           {children}
           <Analytics />

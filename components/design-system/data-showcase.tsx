@@ -2,22 +2,22 @@
 
 import { useState } from "react"
 import {
-  ArrowLeft2,
-  ArrowRight2,
-  ArrowLeft3,
-  ArrowRight3,
-  ArrowDown2,
-  Edit2,
-  Trash,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronDown,
+  Pencil,
+  Trash2,
   Eye,
-  ArrowSwapVertical,
-  ArrowUp2,
+  ArrowUpDown,
+  ChevronUp,
   User,
-  CloseCircle,
-  Danger,
-  TickCircle,
-  Information,
-} from "iconsax-react"
+  XCircle,
+  AlertCircle,
+  CheckCircle2,
+  Info,
+} from "lucide-react"
 
 // ─── DATA TABLE ───
 
@@ -166,7 +166,7 @@ export function DataTableShowcase() {
                           className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: "#EEEEFF" }}
                         >
-                          <span className="inline-flex flex-shrink-0"><User size={16} variant="Linear" className="text-tp-blue-500" /></span>
+                          <span className="inline-flex flex-shrink-0"><User size={16} className="text-tp-blue-500" /></span>
                         </span>
                         <div>
                           <span className="font-medium text-tp-slate-900 block leading-tight">{row.name}</span>
@@ -211,7 +211,7 @@ export function DataTableShowcase() {
                           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#E2E2EA" }}
                           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#F1F1F5" }}
                         >
-                          <span className="inline-flex flex-shrink-0"><Eye size={16} variant="Linear" /></span>
+                          <span className="inline-flex flex-shrink-0"><Eye size={16} /></span>
                         </button>
                         <button
                           className="w-8 h-8 flex items-center justify-center transition-colors"
@@ -223,7 +223,7 @@ export function DataTableShowcase() {
                           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#E2E2EA" }}
                           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#F1F1F5" }}
                         >
-                          <span className="inline-flex flex-shrink-0"><Edit2 size={16} variant="Linear" /></span>
+                          <span className="inline-flex flex-shrink-0"><Pencil size={16} /></span>
                         </button>
                         <button
                           className="w-8 h-8 flex items-center justify-center transition-colors"
@@ -235,7 +235,7 @@ export function DataTableShowcase() {
                           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFE4E6"; e.currentTarget.style.color = "#E11D48" }}
                           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#F1F1F5"; e.currentTarget.style.color = "#545460" }}
                         >
-                          <span className="inline-flex flex-shrink-0"><Trash size={16} variant="Linear" /></span>
+                          <span className="inline-flex flex-shrink-0"><Trash2 size={16} /></span>
                         </button>
                       </div>
                     </td>
@@ -269,10 +269,10 @@ export function PaginationShowcase() {
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">Numbered Pagination</span>
           <div className="flex items-center gap-1">
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
-              <ArrowLeft3 size={16} variant="Linear" />
+              <ChevronsLeft size={16} />
             </button>
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
-              <ArrowLeft2 size={16} variant="Linear" />
+              <ChevronLeft size={16} />
             </button>
             {[1, 2, 3, "...", 10].map((p, i) => (
               <button
@@ -289,10 +289,10 @@ export function PaginationShowcase() {
               </button>
             ))}
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
-              <ArrowRight2 size={16} variant="Linear" />
+              <ChevronRight size={16} />
             </button>
             <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
-              <ArrowRight3 size={16} variant="Linear" />
+              <ChevronsRight size={16} />
             </button>
           </div>
         </div>
@@ -302,7 +302,7 @@ export function PaginationShowcase() {
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">Prev / Next with text</span>
           <div className="flex items-center gap-2">
             <button className="px-3 py-1.5 text-sm font-medium text-tp-slate-500 hover:bg-tp-slate-100 rounded-lg transition-colors flex items-center gap-1">
-              <ArrowLeft2 size={14} variant="Linear" />
+              <ChevronLeft size={14} />
               Previous
             </button>
             {[1, 2, 3, "...", 10].map((p, i) => (
@@ -320,7 +320,7 @@ export function PaginationShowcase() {
             ))}
             <button className="px-3 py-1.5 text-sm font-medium text-tp-slate-500 hover:bg-tp-slate-100 rounded-lg transition-colors flex items-center gap-1">
               Next
-              <ArrowRight2 size={14} variant="Linear" />
+              <ChevronRight size={14} />
             </button>
           </div>
         </div>
@@ -344,7 +344,7 @@ export function PaginationShowcase() {
                     <option key={n} value={n}>{n}</option>
                   ))}
                 </select>
-                <ArrowDown2 size={14} variant="Linear" className="absolute right-2 text-tp-slate-400 pointer-events-none" />
+                <ChevronDown size={14} className="absolute right-2 text-tp-slate-400 pointer-events-none" />
               </div>
               <span className="text-sm text-tp-slate-600">per page</span>
             </div>
@@ -357,7 +357,7 @@ export function PaginationShowcase() {
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">Compact</span>
           <div className="flex items-center gap-3">
             <button className="w-8 h-8 rounded-lg flex items-center justify-center border border-tp-slate-200 text-tp-slate-400 hover:bg-tp-slate-50 transition-colors">
-              <ArrowLeft2 size={16} variant="Linear" />
+              <ChevronLeft size={16} />
             </button>
             <span className="text-sm text-tp-slate-600">Page</span>
             <div
@@ -367,7 +367,7 @@ export function PaginationShowcase() {
             </div>
             <span className="text-sm text-tp-slate-600">of 10</span>
             <button className="w-8 h-8 rounded-lg flex items-center justify-center border border-tp-slate-200 text-tp-slate-400 hover:bg-tp-slate-50 transition-colors">
-              <ArrowRight2 size={16} variant="Linear" />
+              <ChevronRight size={16} />
             </button>
           </div>
         </div>
@@ -413,7 +413,7 @@ function Tooltip({ text, header, dark, closable, size = "md" }: {
           </div>
           {closable && (
             <button className="flex-shrink-0 mt-0.5 hover:opacity-70 transition-opacity inline-flex items-center justify-center" style={{ color: closeColor }}>
-              <span className="inline-flex flex-shrink-0"><CloseCircle size={14} variant="Linear" /></span>
+              <span className="inline-flex flex-shrink-0"><XCircle size={14} /></span>
             </button>
           )}
         </div>
@@ -532,14 +532,14 @@ export function ModalShowcase() {
                 className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: "#FFF1F2" }}
               >
-                <span className="inline-flex flex-shrink-0"><Danger size={20} variant="Linear" className="text-tp-error-500" /></span>
+                <span className="inline-flex flex-shrink-0"><AlertCircle size={20} className="text-tp-error-500" /></span>
               </div>
               <div className="flex-1">
                 <h4 className="text-base font-bold text-tp-slate-900 font-heading">Delete Patient Record</h4>
                 <p className="text-sm text-tp-slate-500 mt-1 leading-relaxed">This action cannot be undone. Are you sure you want to permanently delete this record?</p>
               </div>
               <button className="text-tp-slate-400 hover:text-tp-slate-700 transition-colors flex-shrink-0 inline-flex items-center justify-center">
-                <span className="inline-flex flex-shrink-0"><CloseCircle size={20} variant="Linear" /></span>
+                <span className="inline-flex flex-shrink-0"><XCircle size={20} /></span>
               </button>
             </div>
           </div>
@@ -575,14 +575,14 @@ export function ModalShowcase() {
                 className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: "#ECFDF5" }}
               >
-                <span className="inline-flex flex-shrink-0"><TickCircle size={20} variant="Bulk" className="text-tp-success-500" /></span>
+                <span className="inline-flex flex-shrink-0"><CheckCircle2 size={20} className="text-tp-success-500" /></span>
               </div>
               <div className="flex-1">
                 <h4 className="text-base font-bold text-tp-slate-900 font-heading">Rx Saved Successfully</h4>
                 <p className="text-sm text-tp-slate-500 mt-1 leading-relaxed">Prescription for Amoxicillin 500mg has been saved and sent to the pharmacy.</p>
               </div>
               <button className="text-tp-slate-400 hover:text-tp-slate-700 transition-colors flex-shrink-0 inline-flex items-center justify-center">
-                <span className="inline-flex flex-shrink-0"><CloseCircle size={20} variant="Linear" /></span>
+                <span className="inline-flex flex-shrink-0"><XCircle size={20} /></span>
               </button>
             </div>
           </div>
@@ -612,14 +612,14 @@ export function ModalShowcase() {
                 className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ backgroundColor: "#F0F9FF" }}
               >
-                <span className="inline-flex flex-shrink-0"><Information size={20} variant="Linear" className="text-tp-blue-500" /></span>
+                <span className="inline-flex flex-shrink-0"><Info size={20} className="text-tp-blue-500" /></span>
               </div>
               <div className="flex-1">
                 <h4 className="text-base font-bold text-tp-slate-900 font-heading">System Maintenance</h4>
                 <p className="text-sm text-tp-slate-500 mt-1 leading-relaxed">Scheduled maintenance on Feb 20, 2026 from 2:00 AM to 4:00 AM. Service may be briefly unavailable.</p>
               </div>
               <button className="text-tp-slate-400 hover:text-tp-slate-700 transition-colors flex-shrink-0 inline-flex items-center justify-center">
-                <span className="inline-flex flex-shrink-0"><CloseCircle size={20} variant="Linear" /></span>
+                <span className="inline-flex flex-shrink-0"><XCircle size={20} /></span>
               </button>
             </div>
           </div>

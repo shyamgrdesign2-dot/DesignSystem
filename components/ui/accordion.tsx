@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import { ArrowDown2 } from 'iconsax-react'
+import { ChevronDown } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -41,7 +41,7 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <ArrowDown2 size={16} variant="Linear" className="text-muted-foreground pointer-events-none shrink-0 translate-y-0.5 transition-transform duration-200" />
+        <ChevronDown size={16} className="text-muted-foreground pointer-events-none shrink-0 translate-y-0.5 transition-transform duration-200" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )

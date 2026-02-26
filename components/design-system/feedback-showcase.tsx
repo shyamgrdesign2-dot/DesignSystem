@@ -1,12 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-  CloseCircle,
-  InfoCircle,
-  ArrowLeft2,
-  ArrowRight2,
-} from "iconsax-react"
+import { XCircle, Info, ChevronLeft, ChevronRight } from "lucide-react"
 
 // ─── TOAST / SNACKBAR ───
 
@@ -57,14 +52,14 @@ function ToastBar({
         color: variant.text,
       }}
     >
-      <span className="inline-flex flex-shrink-0 items-center justify-center"><InfoCircle size={20} variant="Linear" style={{ color: variant.text, opacity: 0.8 }} /></span>
+      <span className="inline-flex flex-shrink-0 items-center justify-center"><Info size={20} style={{ color: variant.text, opacity: 0.8 }} /></span>
       <span className="flex-1 text-sm font-medium">Assist text for the user</span>
       {action === "close" ? (
         <button
           className="flex-shrink-0 hover:opacity-70 transition-opacity"
           style={{ color: variant.closeColor }}
         >
-          <span className="inline-flex flex-shrink-0"><CloseCircle size={20} variant="Linear" /></span>
+          <span className="inline-flex flex-shrink-0"><XCircle size={20} style={{ color: "inherit" }} /></span>
         </button>
       ) : (
         <button
@@ -353,13 +348,13 @@ export function DatePickerShowcase() {
                     onClick={goBack}
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors"
                   >
-                    <span className="inline-flex flex-shrink-0"><ArrowLeft2 size={16} variant="Linear" /></span>
+                    <span className="inline-flex flex-shrink-0"><ChevronLeft size={16} /></span>
                   </button>
                   <button
                     onClick={goForward}
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors"
                   >
-                    <span className="inline-flex flex-shrink-0"><ArrowRight2 size={16} variant="Linear" /></span>
+                    <span className="inline-flex flex-shrink-0"><ChevronRight size={16} /></span>
                   </button>
                 </div>
               </div>

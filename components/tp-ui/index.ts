@@ -1,10 +1,11 @@
 /**
- * TatvaPractice UI — MUI-wrapped components
+ * TatvaPractice UI — Component Library
  *
  * Import from @tatvapractice/ui or @/components/tp-ui
  * Never use @mui/material directly in product code.
  */
 
+// ─── MUI-wrapped Components ─────────────────────────────────
 export { TPButton } from "./tp-button"
 export { TPButton as TPButtonToken, TPIconButton, TPSplitButton } from "./button-system"
 export { TPTextField } from "./tp-textfield"
@@ -34,3 +35,51 @@ export { TPProgress } from "./tp-progress"
 export { TPSkeleton } from "./tp-skeleton"
 export { TPAccordion, TPAccordionSummary, TPAccordionDetails } from "./tp-accordion"
 export { TPSlider } from "./tp-slider"
+
+// ─── Radix / shadcn-based Components ────────────────────────
+export {
+  TPDrawer,
+  TPDrawerTrigger,
+  TPDrawerContent,
+  TPDrawerHeader,
+  TPDrawerTitle,
+  TPDrawerDescription,
+  TPDrawerClose,
+} from "./tp-drawer"
+export {
+  TPDropdownMenu,
+  TPDropdownMenuTrigger,
+  TPDropdownMenuContent,
+  TPDropdownMenuItem,
+  TPDropdownMenuLabel,
+  TPDropdownMenuSeparator,
+} from "./tp-dropdown-menu"
+export { TPPopover, TPPopoverTrigger, TPPopoverContent } from "./tp-popover"
+export {
+  TPCommand,
+  TPCommandInput,
+  TPCommandList,
+  TPCommandEmpty,
+  TPCommandGroup,
+  TPCommandItem,
+} from "./tp-command"
+export { TPOTPInput, TPOTPGroup, TPOTPSlot } from "./tp-otp-input"
+
+// ─── Standalone Components ──────────────────────────────────
+export { TPSpinner } from "./tp-spinner"
+export { TPEmptyState } from "./tp-empty-state"
+export { TPSegmentedControl } from "./tp-segmented-control"
+export { TPTag } from "./tp-tag"
+export { TPBanner } from "./tp-banner"
+export { TPDatePicker } from "./tp-date-picker"
+export { TPTimePicker } from "./tp-time-picker"
+export { TPNumberInput } from "./tp-number-input"
+export { TPFileUpload } from "./tp-file-upload"
+export { TPStepper } from "./tp-stepper"
+export { TPRating } from "./tp-rating"
+export { TPTimeline } from "./tp-timeline"
+export { TPTreeView } from "./tp-tree-view"
+export type { TPTreeNode } from "./tp-tree-view"
+export { TPColorPicker } from "./tp-color-picker"
+export { TPTransferList } from "./tp-transfer-list"
+export type { TPTransferItem } from "./tp-transfer-list"

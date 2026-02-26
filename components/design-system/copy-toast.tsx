@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { TickCircle } from "iconsax-react"
+import { CheckCircle2 } from "lucide-react"
 
 interface CopyToastProps {
   message: string
@@ -22,7 +22,7 @@ export function CopyToast({ message, show, onClose }: CopyToastProps) {
   return (
     <div className="fixed bottom-8 right-8 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="bg-tp-slate-900 text-primary-foreground px-4 py-3 rounded-lg shadow-lg flex items-center gap-2">
-        <span className="inline-flex flex-shrink-0 items-center justify-center"><TickCircle size={16} variant="Bulk" className="text-tp-blue-300" /></span>
+        <span className="inline-flex flex-shrink-0 items-center justify-center"><CheckCircle2 size={16} className="text-tp-blue-300" /></span>
         <span className="font-medium text-sm">{message}</span>
       </div>
     </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { ArrowDown2, ArrowLeft2, ArrowRight2 } from 'iconsax-react'
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker'
 
 import { cn } from '@/lib/utils'
@@ -134,15 +134,14 @@ function Calendar({
         Chevron: ({ className, orientation, ...props }) => {
           if (orientation === 'left') {
             return (
-              <ArrowLeft2 size={16} variant="Linear" className={cn('size-4', className)} {...props} />
+              <ChevronLeft size={16} className={cn('size-4', className)} {...props} />
             )
           }
 
           if (orientation === 'right') {
             return (
-              <ArrowRight2
+              <ChevronRight
                 size={16}
-                variant="Linear"
                 className={cn('size-4', className)}
                 {...props}
               />
@@ -150,7 +149,7 @@ function Calendar({
           }
 
           return (
-            <ArrowDown2 size={16} variant="Linear" className={cn('size-4', className)} {...props} />
+            <ChevronDown size={16} className={cn('size-4', className)} {...props} />
           )
         },
         DayButton: CalendarDayButton,

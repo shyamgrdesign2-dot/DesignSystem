@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import { TickCircle, ArrowRight2, RecordCircle } from 'iconsax-react'
+import { CheckCircle2, ChevronRight, Circle } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -100,7 +100,7 @@ function DropdownMenuCheckboxItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <TickCircle size={16} variant="Bulk" className="size-4" />
+          <CheckCircle2 size={16} className="size-4" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
@@ -135,7 +135,7 @@ function DropdownMenuRadioItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <RecordCircle size={8} variant="Bulk" className="fill-current" />
+          <Circle size={8} className="fill-current" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}
@@ -217,7 +217,7 @@ function DropdownMenuSubTrigger({
       {...props}
     >
       {children}
-      <ArrowRight2 size={16} variant="Linear" className="ml-auto size-4" />
+      <ChevronRight size={16} className="ml-auto size-4" />
     </DropdownMenuPrimitive.SubTrigger>
   )
 }

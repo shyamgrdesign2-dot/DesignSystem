@@ -2,34 +2,63 @@
 
 import { useMemo, useState } from "react"
 import {
+  Home,
+  LayoutGrid,
+  Bell,
+  Settings,
+  User,
+  HeartPulse,
   Calendar,
-  Category,
+  FileText,
+  Activity,
   Clipboard,
-  DocumentText,
-  Health,
-  House2,
-  MessageText,
-  Notification,
-  Profile2User,
-  Setting2,
-  type Icon as IconsaxIcon,
-} from "iconsax-react"
+  Plus,
+  Pencil,
+  Trash2,
+  Upload,
+  Download,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  Info,
+  Shield,
+  Search,
+  Copy,
+  Star,
+  BarChart2,
+  Clock,
+  type LucideIcon,
+} from "lucide-react"
 
 type IconTone = "neutral" | "brand" | "inverse"
 type IconState = "default" | "hover" | "active"
-type IconsaxFamily = "Linear" | "Bulk" | "Bold"
 
-const iconSet: { name: string; icon: IconsaxIcon }[] = [
-  { name: "Home", icon: House2 },
-  { name: "Visits", icon: DocumentText },
-  { name: "Patients", icon: Profile2User },
-  { name: "Vitals", icon: Health },
-  { name: "Tasks", icon: Clipboard },
+const iconSet: { name: string; icon: LucideIcon }[] = [
+  { name: "Home", icon: Home },
+  { name: "Grid", icon: LayoutGrid },
+  { name: "Bell", icon: Bell },
+  { name: "Settings", icon: Settings },
+  { name: "User", icon: User },
+  { name: "Vitals", icon: HeartPulse },
   { name: "Calendar", icon: Calendar },
-  { name: "Messages", icon: MessageText },
-  { name: "Notifications", icon: Notification },
-  { name: "Categories", icon: Category },
-  { name: "Settings", icon: Setting2 },
+  { name: "File", icon: FileText },
+  { name: "Activity", icon: Activity },
+  { name: "Clipboard", icon: Clipboard },
+  { name: "Add", icon: Plus },
+  { name: "Edit", icon: Pencil },
+  { name: "Delete", icon: Trash2 },
+  { name: "Upload", icon: Upload },
+  { name: "Download", icon: Download },
+  { name: "Success", icon: CheckCircle2 },
+  { name: "Close", icon: XCircle },
+  { name: "Warning", icon: AlertTriangle },
+  { name: "Info", icon: Info },
+  { name: "Shield", icon: Shield },
+  { name: "Search", icon: Search },
+  { name: "Copy", icon: Copy },
+  { name: "Star", icon: Star },
+  { name: "Chart", icon: BarChart2 },
+  { name: "Clock", icon: Clock },
 ]
 
 const semanticContexts = [
@@ -86,19 +115,15 @@ function getToneColor(tone: IconTone) {
 function IconTile({
   icon: Icon,
   name,
-  family,
   state,
   tone,
 }: {
-  icon: IconsaxIcon
+  icon: LucideIcon
   name: string
-  family: IconsaxFamily
   state: IconState
   tone: IconTone
 }) {
   const color = getToneColor(tone)
-  const effectiveVariant: IconsaxFamily =
-    state === "default" ? "Linear" : family === "Linear" ? "Bulk" : family
   const bgClass =
     state === "active" ? "bg-tp-blue-50 border-tp-blue-100" : "bg-tp-slate-50 border-transparent"
 
@@ -107,12 +132,11 @@ function IconTile({
       <div className={`mb-2 flex h-12 w-12 items-center justify-center rounded-lg border ${bgClass}`}>
         <Icon
           size={20}
-          variant={effectiveVariant}
           color={color}
         />
       </div>
       <p className="truncate text-[11px] font-medium text-tp-slate-700">{name}</p>
-      <p className="mt-0.5 text-[10px] text-tp-slate-500">{effectiveVariant}</p>
+      <p className="mt-0.5 text-[10px] text-tp-slate-500">{state}</p>
     </div>
   )
 }
@@ -120,7 +144,6 @@ function IconTile({
 export function IconFamilyShowcase() {
   const [selectedState, setSelectedState] = useState<IconState>("default")
   const [surface, setSurface] = useState<"light" | "dark">("light")
-  const [family, setFamily] = useState<IconsaxFamily>("Linear")
 
   const surfaceTone = useMemo<IconTone>(() => {
     if (surface === "dark") return "inverse"
@@ -132,8 +155,8 @@ export function IconFamilyShowcase() {
       <div className="rounded-xl border border-tp-slate-200 bg-white p-4">
         <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500">Icon Family</h3>
         <p className="mt-1 text-xs text-tp-slate-600">
-          Iconsax reference stack used in product: <strong>Linear</strong> for default, <strong>Bulk</strong> for
-          hover/active, and <strong>Bold</strong> for strong emphasis only.
+          Lucide icon set used in product. Icons are stroked at <strong>default</strong> state and
+          filled / colored for <strong>active</strong> and <strong>hover</strong> states.
         </p>
 
         <div className="mt-3 flex flex-wrap gap-2">
@@ -154,15 +177,6 @@ export function IconFamilyShowcase() {
           >
             Surface: {surface}
           </button>
-          {(["Linear", "Bulk", "Bold"] as const).map((v) => (
-            <button
-              key={v}
-              onClick={() => setFamily(v)}
-              className={`rounded-md px-2.5 py-1 text-xs font-semibold ${family === v ? "bg-tp-blue-50 text-tp-blue-700" : "bg-tp-slate-100 text-tp-slate-600"}`}
-            >
-              {v}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -178,7 +192,6 @@ export function IconFamilyShowcase() {
                   key={`set1-${item.name}`}
                   icon={item.icon}
                   name={item.name}
-                  family={family}
                   state={selectedState}
                   tone={surfaceTone}
                 />
@@ -196,7 +209,6 @@ export function IconFamilyShowcase() {
                   key={`set2-${item.name}`}
                   icon={item.icon}
                   name={item.name}
-                  family={family}
                   state={selectedState}
                   tone={surfaceTone}
                 />
@@ -209,12 +221,11 @@ export function IconFamilyShowcase() {
               Utility Set
             </p>
             <div className="grid grid-cols-2 gap-2">
-              {iconSet.slice(6).map((item) => (
+              {iconSet.slice(8, 12).map((item) => (
                 <IconTile
                   key={`set3-${item.name}`}
                   icon={item.icon}
                   name={item.name}
-                  family={family}
                   state={selectedState}
                   tone={surfaceTone}
                 />
@@ -237,7 +248,7 @@ export function IconFamilyShowcase() {
                   className="flex h-11 w-11 items-center justify-center rounded-xl"
                   style={{ backgroundColor: ctx.bg }}
                 >
-                  <span className="inline-flex flex-shrink-0"><Calendar size={20} variant="Bulk" color={ctx.fg} /></span>
+                  <span className="inline-flex flex-shrink-0"><Calendar size={20} color={ctx.fg} /></span>
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-tp-slate-800">{ctx.title}</p>
@@ -253,8 +264,9 @@ export function IconFamilyShowcase() {
       <div className="rounded-xl border border-tp-slate-200 bg-tp-slate-50 p-4 text-xs text-tp-slate-600">
         <p className="font-semibold text-tp-slate-700">Constraints</p>
         <p className="mt-1">
-          Sizes: 16/20/24. For clickable nav patterns (sidebar, tabs, segmented): default uses Linear, hover and
-          selected use Bulk (dual-tone filled behavior), and Bold is used only for strong emphasis states.
+          Sizes: 16/20/24. For clickable nav patterns (sidebar, tabs, segmented): default uses stroke weight 1.5,
+          active and hover states use color fills via className or style props. Lucide icons do not have variant
+          props — use color and strokeWidth props instead.
         </p>
       </div>
     </div>

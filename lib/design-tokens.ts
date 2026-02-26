@@ -892,8 +892,8 @@ export const typographyScale: TypographyEntry[] = [
   { name: "Overline LG", element: "span", fontFamily: "Inter", size: "13px", weight: "700", lineHeight: "18px", letterSpacing: "0.06em", paragraphSpacing: "10px", textCase: "uppercase", textDecoration: "none", usage: "Prominent section labels" },
   { name: "Link Base", element: "a", fontFamily: "Inter", size: "14px", weight: "600", lineHeight: "20px", letterSpacing: "0", paragraphSpacing: "0", textCase: "none", textDecoration: "underline", usage: "Inline text links" },
   { name: "Link SM", element: "a", fontFamily: "Inter", size: "12px", weight: "600", lineHeight: "16px", letterSpacing: "0.01em", paragraphSpacing: "0", textCase: "none", textDecoration: "underline", usage: "Compact text links, breadcrumbs" },
-  { name: "Code", element: "code", fontFamily: "JetBrains Mono", size: "13px", weight: "500", lineHeight: "20px", letterSpacing: "0", paragraphSpacing: "0", textCase: "none", textDecoration: "none", usage: "Code snippets, token references" },
-  { name: "Code SM", element: "code", fontFamily: "JetBrains Mono", size: "12px", weight: "500", lineHeight: "16px", letterSpacing: "0", paragraphSpacing: "0", textCase: "none", textDecoration: "none", usage: "Compact code, inline references" },
+  { name: "Code", element: "code", fontFamily: "monospace (system)", size: "13px", weight: "500", lineHeight: "20px", letterSpacing: "0", paragraphSpacing: "0", textCase: "none", textDecoration: "none", usage: "Code snippets, token references" },
+  { name: "Code SM", element: "code", fontFamily: "monospace (system)", size: "12px", weight: "500", lineHeight: "16px", letterSpacing: "0", paragraphSpacing: "0", textCase: "none", textDecoration: "none", usage: "Compact code, inline references" },
   { name: "Strikethrough", element: "s", fontFamily: "Inter", size: "14px", weight: "400", lineHeight: "20px", letterSpacing: "0", paragraphSpacing: "0", textCase: "none", textDecoration: "line-through", usage: "Deprecated items, removed items" },
 ]
 
@@ -1200,7 +1200,7 @@ export const typographyFoundationSections = {
   fonts: [
     { family: "Mulish", role: "Display and heading hierarchy", weights: "600, 700" },
     { family: "Inter", role: "Body, forms, labels, microcopy", weights: "400, 500, 600" },
-    { family: "JetBrains Mono", role: "Code and token references", weights: "400, 500" },
+    { family: "System Monospace", role: "Code and token references", weights: "400, 500" },
   ],
   typeScale: [
     "Display -> H1 -> H2 -> H3 -> H4 -> H5 -> H6",

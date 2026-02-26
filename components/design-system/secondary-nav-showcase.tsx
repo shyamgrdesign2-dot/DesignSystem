@@ -3,17 +3,17 @@
 import { useState } from "react"
 import {
   Activity,
-  Book,
-  ChemicalGlass,
+  BookOpen,
+  FlaskConical,
   Eye,
   FolderOpen,
-  Health,
+  HeartPulse,
   Heart,
-  Profile2User,
-  ReceiptText,
+  Users,
+  Receipt,
   Ruler,
-  type Icon as IconsaxIcon,
-} from "iconsax-react"
+  type LucideIcon,
+} from "lucide-react"
 
 export interface NavBadge {
   text: string
@@ -23,7 +23,7 @@ export interface NavBadge {
 export interface NavItem {
   id: string
   label: string
-  icon: IconsaxIcon
+  icon: LucideIcon
   badge?: NavBadge
 }
 
@@ -53,7 +53,7 @@ const SECONDARY_NAV_TOKENS = {
 } as const
 
 const navItems: NavItem[] = [
-  { id: "past-visits", label: "Past Visits", icon: ReceiptText },
+  { id: "past-visits", label: "Past Visits", icon: Receipt },
   {
     id: "vitals",
     label: "Vitals",
@@ -66,7 +66,7 @@ const navItems: NavItem[] = [
   {
     id: "history",
     label: "History",
-    icon: Book,
+    icon: BookOpen,
     badge: {
       text: "Trial",
       gradient: "linear-gradient(257.32deg, rgb(241, 82, 35) 0%, rgb(255, 152, 122) 47.222%, rgb(241, 82, 35) 94.444%)",
@@ -74,11 +74,11 @@ const navItems: NavItem[] = [
   },
   { id: "ophthal", label: "Ophthal", icon: Eye },
   { id: "gynec", label: "Gynec", icon: Heart },
-  { id: "obstetric", label: "Obstetric", icon: Profile2User },
-  { id: "vaccine", label: "Vaccine", icon: Health },
+  { id: "obstetric", label: "Obstetric", icon: Users },
+  { id: "vaccine", label: "Vaccine", icon: HeartPulse },
   { id: "growth", label: "Growth", icon: Ruler },
   { id: "records", label: "Records", icon: FolderOpen },
-  { id: "lab-results", label: "Lab Results", icon: ChemicalGlass },
+  { id: "lab-results", label: "Lab Results", icon: FlaskConical },
 ]
 
 type SidebarVariant = "rx" | "primary"
@@ -173,7 +173,6 @@ export function SecondaryNavPanel({
                 )}
                 <Icon
                   size={SECONDARY_NAV_TOKENS.iconSize}
-                  variant={isActive ? "Bulk" : "Linear"}
                   color={isActive ? iconActiveColor : iconDefaultColor}
                 />
               </span>
@@ -289,7 +288,7 @@ export function SecondaryNavShowcase() {
         Secondary Nav Panel
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Primary (white) for homepage/top-level; Rx (dark blue) for in-Rx flows. Both 80px rail, Iconsax Linear/Bulk.
+        Primary (white) for homepage/top-level; Rx (dark blue) for in-Rx flows. Both 80px rail, Lucide icons.
         Primary: unselected <code className="text-tp-blue-500">TP.icon.clickable.light.bg</code> (10% blue) + blue 500 icon; selected blue 500 bg + white icon; no arrow.
         Rx: unselected <code className="text-tp-blue-500">TP.icon.clickable.dark.bg</code> (25% white) + white icon; selected white bg + blue 500 icon; 3px left bar + right arrow.
       </p>

@@ -2,27 +2,27 @@
 
 import { useState, useRef, useEffect } from "react"
 import {
-  TickCircle,
-  ArrowDown2,
+  CheckCircle2,
+  ChevronDown,
   User,
   Copy,
-  Setting2,
-  Paintbucket,
-  DocumentText,
-  Layer,
-  Trash,
+  Settings,
+  Paintbrush,
+  FileText,
+  Layers,
+  Trash2,
   Archive,
-  Edit2,
-  Export,
-  Element4,
-  House2,
-  Chart2,
-  Profile2User,
-  Calendar1,
-  Notification,
-  Chart,
-  Star1,
-} from "iconsax-react"
+  Pencil,
+  Upload,
+  LayoutGrid,
+  Home,
+  BarChart2,
+  Users,
+  Calendar,
+  Bell,
+  BarChart,
+  Star,
+} from "lucide-react"
 
 // ─── DROPDOWN MENU (with sections, keyboard shortcuts, dividers) ───
 
@@ -87,7 +87,7 @@ function DropdownMenu({
                 {item.shortcut}
               </span>
             )}
-            {item.checked && <span className="inline-flex flex-shrink-0"><TickCircle size={16} variant="Bulk" style={{ color: "#4B4AD5" }} /></span>}
+            {item.checked && <span className="inline-flex flex-shrink-0"><CheckCircle2 size={16} style={{ color: "#4B4AD5" }} /></span>}
           </button>
         ),
       )}
@@ -124,10 +124,10 @@ function SearchDropdown({ variant }: { variant: "avatar" | "dot" | "simple" }) {
           boxShadow: "0 0 0 3px rgba(75,74,213,0.10)",
         }}
       >
-        <span className="inline-flex flex-shrink-0"><User size={16} variant="Linear" className="text-tp-slate-400" /></span>
+        <span className="inline-flex flex-shrink-0"><User size={16} style={{ color: "#A2A2A8" }} /></span>
         <span className="text-sm text-tp-slate-900">Jane f</span>
         <span className="flex-1" />
-        <span className="inline-flex flex-shrink-0"><ArrowDown2 size={16} variant="Linear" className="text-tp-slate-400" /></span>
+        <span className="inline-flex flex-shrink-0"><ChevronDown size={16} style={{ color: "#A2A2A8" }} /></span>
       </div>
       <div
         className="border border-tp-slate-200 bg-card overflow-hidden"
@@ -145,7 +145,7 @@ function SearchDropdown({ variant }: { variant: "avatar" | "dot" | "simple" }) {
           >
             {variant === "avatar" && (
               <span className="w-7 h-7 rounded-full bg-tp-slate-200 flex items-center justify-center flex-shrink-0">
-                <span className="inline-flex flex-shrink-0"><User size={14} variant="Linear" className="text-tp-slate-500" /></span>
+                <span className="inline-flex flex-shrink-0"><User size={14} style={{ color: "#717179" }} /></span>
               </span>
             )}
             {variant === "dot" && (
@@ -155,7 +155,7 @@ function SearchDropdown({ variant }: { variant: "avatar" | "dot" | "simple" }) {
               <span className="font-medium text-tp-slate-800 block">{item.name}</span>
               <span className="text-xs text-tp-slate-400">{item.email}</span>
             </div>
-            {i === 4 && <span className="inline-flex flex-shrink-0"><TickCircle size={16} variant="Bulk" style={{ color: "#4B4AD5" }} /></span>}
+            {i === 4 && <span className="inline-flex flex-shrink-0"><CheckCircle2 size={16} style={{ color: "#4B4AD5" }} /></span>}
           </button>
         ))}
       </div>
@@ -166,18 +166,18 @@ function SearchDropdown({ variant }: { variant: "avatar" | "dot" | "simple" }) {
 // ─── SEGMENTED CONTROL (with sliding background + optional icons) ───
 
 const segIconMap: Record<string, React.ElementType> = {
-  "Own Letterhead": DocumentText,
-  "Upload Letterhead": Layer,
-  "Custom": Setting2,
-  "Daily": Calendar1,
-  "Weekly": Calendar1,
-  "Monthly": Calendar1,
-  "Light": Element4,
-  "System": Setting2,
-  "Dark": Element4,
-  "Grid": Layer,
-  "List": DocumentText,
-  "Board": Element4,
+  "Own Letterhead": FileText,
+  "Upload Letterhead": Layers,
+  "Custom": Settings,
+  "Daily": Calendar,
+  "Weekly": Calendar,
+  "Monthly": Calendar,
+  "Light": LayoutGrid,
+  "System": Settings,
+  "Dark": LayoutGrid,
+  "Grid": Layers,
+  "List": FileText,
+  "Board": LayoutGrid,
 }
 
 function SegmentedControl({
@@ -235,7 +235,7 @@ function SegmentedControl({
               color: active === i ? "#171725" : "#717179",
             }}
           >
-            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={16} variant="Linear" /></span>}
+            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} /></span>}
             {item}
           </button>
         )
@@ -247,19 +247,19 @@ function SegmentedControl({
 // ─── UNDERLINE TABS WITH ICONS (animated indicator) ───
 
 const tabIconMap: Record<string, React.ElementType> = {
-  Prescription: DocumentText,
-  "Header & Footer": Layer,
-  "Page Format": Chart,
-  "Menu one": House2,
-  "Menu two": Chart2,
-  "Menu three": Profile2User,
-  "Menu four": Calendar1,
-  Others: Star1,
-  Overview: House2,
-  Patients: Profile2User,
-  Appointments: Calendar1,
-  Notifications: Notification,
-  Reports: Chart,
+  Prescription: FileText,
+  "Header & Footer": Layers,
+  "Page Format": BarChart,
+  "Menu one": Home,
+  "Menu two": BarChart2,
+  "Menu three": Users,
+  "Menu four": Calendar,
+  Others: Star,
+  Overview: Home,
+  Patients: Users,
+  Appointments: Calendar,
+  Notifications: Bell,
+  Reports: BarChart,
 }
 
 function UnderlineTabs({
@@ -309,7 +309,7 @@ function UnderlineTabs({
               marginBottom: "-1px",
             }}
           >
-            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={16} variant={isActive ? "Bulk" : "Linear"} style={{ color: isActive ? "#4B4AD5" : "#717179" }} /></span>}
+            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} style={{ color: isActive ? "#4B4AD5" : "#717179" }} /></span>}
             {item.label}
             {item.badge !== undefined && (
               <span
@@ -356,7 +356,7 @@ function PillTabs({
               color: isActive ? "#4B4AD5" : "#717179",
             }}
           >
-            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={16} variant={isActive ? "Bulk" : "Linear"} style={{ color: isActive ? "#4B4AD5" : "#717179" }} /></span>}
+            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} style={{ color: isActive ? "#4B4AD5" : "#717179" }} /></span>}
             {item}
           </button>
         )
@@ -384,19 +384,19 @@ export function DropdownShowcase() {
             items={[
               {
                 label: "Dashboard",
-                icon: <Element4 size={14} variant="Linear" className="text-tp-slate-400" />,
+                icon: <LayoutGrid size={14} style={{ color: "#A2A2A8" }} />,
               },
               {
                 label: "Patients",
-                icon: <Element4 size={14} variant="Linear" className="text-tp-slate-400" />,
+                icon: <LayoutGrid size={14} style={{ color: "#A2A2A8" }} />,
               },
               {
                 label: "Appointments",
-                icon: <Element4 size={14} variant="Linear" className="text-tp-slate-400" />,
+                icon: <LayoutGrid size={14} style={{ color: "#A2A2A8" }} />,
               },
               {
                 label: "Reports",
-                icon: <Element4 size={14} variant="Linear" className="text-tp-slate-400" />,
+                icon: <LayoutGrid size={14} style={{ color: "#A2A2A8" }} />,
               },
             ]}
           />
@@ -409,40 +409,40 @@ export function DropdownShowcase() {
             items={[
               {
                 label: "Rename",
-                icon: <Edit2 size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Pencil size={14} style={{ color: "#717179" }} />,
                 shortcut: "\u2318 R",
               },
               {
                 label: "Copy Link",
-                icon: <Copy size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Copy size={14} style={{ color: "#717179" }} />,
                 shortcut: "\u2318 C",
               },
               {
                 label: "Color & icons",
-                icon: <Paintbucket size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Paintbrush size={14} style={{ color: "#717179" }} />,
               },
               {
                 label: "Space Settings",
-                icon: <Setting2 size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Settings size={14} style={{ color: "#717179" }} />,
               },
               {
                 label: "Templates",
-                icon: <DocumentText size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <FileText size={14} style={{ color: "#717179" }} />,
               },
               { separator: true, label: "" },
               {
                 label: "Duplicate",
-                icon: <Layer size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Layers size={14} style={{ color: "#717179" }} />,
               },
               {
                 label: "Archive",
-                icon: <Archive size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Archive size={14} style={{ color: "#717179" }} />,
                 shortcut: "\u2318 A",
               },
               { separator: true, label: "" },
               {
                 label: "Delete",
-                icon: <Trash size={14} variant="Linear" />,
+                icon: <Trash2 size={14} />,
                 danger: true,
                 shortcut: "\u2318 \u232B",
               },
@@ -460,22 +460,22 @@ export function DropdownShowcase() {
               { section: "Navigation", label: "" },
               {
                 label: "Overview",
-                icon: <Element4 size={14} variant="Linear" className="text-tp-slate-400" />,
+                icon: <LayoutGrid size={14} style={{ color: "#A2A2A8" }} />,
               },
               {
                 label: "Analytics",
-                icon: <Element4 size={14} variant="Linear" className="text-tp-slate-400" />,
+                icon: <LayoutGrid size={14} style={{ color: "#A2A2A8" }} />,
               },
               { separator: true, label: "" },
               { section: "Actions", label: "" },
               {
                 label: "Export as PDF",
-                icon: <Export size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Upload size={14} style={{ color: "#717179" }} />,
                 shortcut: "\u2318 E",
               },
               {
                 label: "Share Link",
-                icon: <Copy size={14} variant="Linear" className="text-tp-slate-500" />,
+                icon: <Copy size={14} style={{ color: "#717179" }} />,
                 shortcut: "\u2318 L",
               },
             ]}
