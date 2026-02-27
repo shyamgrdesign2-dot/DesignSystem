@@ -1,7 +1,7 @@
 "use client"
 
 import { forwardRef, useState, useRef, useEffect } from "react"
-import { ArrowDown2 } from "iconsax-react"
+import { ChevronDown } from "lucide-react"
 import {
   getButtonTokens,
   BUTTON_SIZE_TOKENS,
@@ -227,9 +227,8 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             }}
           >
             <TPButtonIcon size={dims.iconSize}>
-            <ArrowDown2
+            <ChevronDown
               size={dims.iconSize}
-              variant="Linear"
               className="transition-transform duration-200 ease-out"
               style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
             />

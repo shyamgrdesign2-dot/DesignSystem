@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import * as SelectPrimitive from '@radix-ui/react-select'
-import { TickCircle, ArrowDown2, ArrowUp2 } from 'iconsax-react'
+import { CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -44,7 +44,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ArrowDown2 size={16} variant="Linear" className="size-4 opacity-50" />
+        <ChevronDown size={16} className="size-4 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -114,7 +114,7 @@ function SelectItem({
     >
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <TickCircle size={16} variant="Bulk" className="size-4" />
+          <CheckCircle2 size={16} className="size-4" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -148,7 +148,7 @@ function SelectScrollUpButton({
       )}
       {...props}
     >
-      <ArrowUp2 size={16} variant="Linear" className="size-4" />
+      <ChevronUp size={16} className="size-4" />
     </SelectPrimitive.ScrollUpButton>
   )
 }
@@ -166,7 +166,7 @@ function SelectScrollDownButton({
       )}
       {...props}
     >
-      <ArrowDown2 size={16} variant="Linear" className="size-4" />
+      <ChevronDown size={16} className="size-4" />
     </SelectPrimitive.ScrollDownButton>
   )
 }

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { Command as CommandPrimitive } from 'cmdk'
-import { SearchNormal1 } from 'iconsax-react'
+import { Search } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import {
@@ -69,7 +69,7 @@ function CommandInput({
       data-slot="command-input-wrapper"
       className="flex h-9 items-center gap-2 border-b px-3"
     >
-      <SearchNormal1 size={16} variant="Linear" className="shrink-0 opacity-50" />
+      <Search size={16} className="shrink-0 opacity-50" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn(

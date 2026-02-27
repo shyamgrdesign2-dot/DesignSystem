@@ -3,7 +3,7 @@
 import * as React from 'react'
 import * as ToastPrimitives from '@radix-ui/react-toast'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { CloseCircle } from 'iconsax-react'
+import { XCircle } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -83,7 +83,7 @@ const ToastClose = React.forwardRef<
     toast-close=""
     {...props}
   >
-    <CloseCircle size={16} variant="Linear" className="h-4 w-4" />
+    <XCircle size={16} className="h-4 w-4" />
   </ToastPrimitives.Close>
 ))
 ToastClose.displayName = ToastPrimitives.Close.displayName

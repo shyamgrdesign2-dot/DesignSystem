@@ -3,24 +3,24 @@
 import { useState } from "react"
 import {
   User,
-  Notification,
-  Sms,
-  House2,
-  ArrowRight2,
-  TickCircle,
-  Star1,
-  ArrowDown2,
-  Add,
+  Bell,
+  Mail,
+  Home,
+  ChevronRight,
+  CheckCircle2,
+  Star,
+  ChevronDown,
+  Plus,
   Minus,
-  Setting2,
-  DocumentText,
-  Calendar1,
-  ShieldSecurity,
-  Profile2User,
-  Chart2,
-  Gallery,
+  Settings,
+  FileText,
+  Calendar,
+  Shield,
+  Users,
+  BarChart2,
+  Image,
   Music,
-} from "iconsax-react"
+} from "lucide-react"
 
 // ─── AVATAR ───
 
@@ -81,7 +81,7 @@ function Avatar({
             {initials}
           </span>
         ) : (
-          <span className="inline-flex flex-shrink-0"><User size={dims.icon} variant="Linear" style={{ color: "#4B4AD5" }} /></span>
+          <span className="inline-flex flex-shrink-0"><User size={dims.icon} style={{ color: "#4B4AD5" }} /></span>
         )}
       </div>
       {status && (
@@ -212,10 +212,10 @@ export function BadgeShowcase() {
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{ backgroundColor: "#F1F1F5" }}
                 >
-                  {i === 0 ? <span className="inline-flex flex-shrink-0"><Notification size={20} variant="Linear" className="text-tp-slate-600" /></span> :
-                   i === 1 ? <span className="inline-flex flex-shrink-0"><Sms size={20} variant="Linear" className="text-tp-slate-600" /></span> :
-                   i === 2 ? <span className="inline-flex flex-shrink-0"><Profile2User size={20} variant="Linear" className="text-tp-slate-600" /></span> :
-                   <span className="inline-flex flex-shrink-0"><Notification size={20} variant="Linear" className="text-tp-slate-600" /></span>}
+                  {i === 0 ? <span className="inline-flex flex-shrink-0"><Bell size={20} style={{ color: "#545460" }} /></span> :
+                   i === 1 ? <span className="inline-flex flex-shrink-0"><Mail size={20} style={{ color: "#545460" }} /></span> :
+                   i === 2 ? <span className="inline-flex flex-shrink-0"><Users size={20} style={{ color: "#545460" }} /></span> :
+                   <span className="inline-flex flex-shrink-0"><Bell size={20} style={{ color: "#545460" }} /></span>}
                 </div>
                 {b.count > 0 ? (
                   <span
@@ -486,9 +486,8 @@ export function RatingShowcase() {
                 onClick={() => setRating(i)}
                 className="transition-transform hover:scale-110"
               >
-                <Star1
+                <Star
                   size={28}
-                  variant={(hover || rating) >= i ? "Bulk" : "Linear"}
                   style={{ color: (hover || rating) >= i ? "#F59E0B" : "#D0D5DD" }}
                 />
               </button>
@@ -508,10 +507,9 @@ export function RatingShowcase() {
             ].map((s) => (
               <div key={s.label} className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Star1
+                  <Star
                     key={i}
                     size={s.size}
-                    variant={i <= 4 ? "Bulk" : "Linear"}
                     style={{ color: i <= 4 ? "#F59E0B" : "#D0D5DD" }}
                   />
                 ))}
@@ -528,10 +526,9 @@ export function RatingShowcase() {
             {[5, 4, 3, 2, 1].map((r) => (
               <div key={r} className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Star1
+                  <Star
                     key={i}
                     size={20}
-                    variant={i <= r ? "Bulk" : "Linear"}
                     style={{ color: i <= r ? "#F59E0B" : "#D0D5DD" }}
                   />
                 ))}
@@ -735,11 +732,11 @@ export function SkeletonShowcase() {
 
 export function ListShowcase() {
   const items = [
-    { icon: <House2 size={18} variant="Linear" />, primary: "Dashboard", secondary: "Overview and stats" },
-    { icon: <Calendar1 size={18} variant="Linear" />, primary: "Appointments", secondary: "View and schedule" },
-    { icon: <Profile2User size={18} variant="Linear" />, primary: "Patients", secondary: "Manage records" },
-    { icon: <Chart2 size={18} variant="Linear" />, primary: "Reports", secondary: "Analytics and data" },
-    { icon: <Setting2 size={18} variant="Linear" />, primary: "Settings", secondary: "Preferences" },
+    { icon: <Home size={18} />, primary: "Dashboard", secondary: "Overview and stats" },
+    { icon: <Calendar size={18} />, primary: "Appointments", secondary: "View and schedule" },
+    { icon: <Users size={18} />, primary: "Patients", secondary: "Manage records" },
+    { icon: <BarChart2 size={18} />, primary: "Reports", secondary: "Analytics and data" },
+    { icon: <Settings size={18} />, primary: "Settings", secondary: "Preferences" },
   ]
 
   return (
@@ -784,7 +781,7 @@ export function ListShowcase() {
                   </span>
                   <span className="text-xs text-tp-slate-400">{item.secondary}</span>
                 </div>
-                <span className="inline-flex flex-shrink-0"><ArrowRight2 size={16} variant="Linear" style={{ color: i === 0 ? "#4B4AD5" : "#D0D5DD" }} /></span>
+                <span className="inline-flex flex-shrink-0"><ChevronRight size={16} style={{ color: i === 0 ? "#4B4AD5" : "#D0D5DD" }} /></span>
               </button>
             ))}
           </div>
@@ -804,7 +801,7 @@ export function ListShowcase() {
                 style={{ borderBottom: i < 4 ? "1px solid #F1F1F5" : "none" }}
               >
                 <span className="text-sm font-medium text-tp-slate-700">{item}</span>
-                <span className="inline-flex flex-shrink-0"><ArrowRight2 size={16} variant="Linear" className="text-tp-slate-300" /></span>
+                <span className="inline-flex flex-shrink-0"><ChevronRight size={16} className="text-tp-slate-300" /></span>
               </button>
             ))}
           </div>
@@ -831,7 +828,7 @@ export function BreadcrumbsShowcase() {
           <nav className="flex items-center gap-1.5">
             {["Home", "Patients", "Andrew Chapman", "Prescriptions"].map((item, i, arr) => (
               <span key={i} className="inline-flex items-center gap-1.5">
-                {i > 0 && <span className="inline-flex flex-shrink-0"><ArrowRight2 size={14} variant="Linear" className="text-tp-slate-300" /></span>}
+                {i > 0 && <span className="inline-flex flex-shrink-0"><ChevronRight size={14} className="text-tp-slate-300" /></span>}
                 <span
                   className="text-sm font-medium transition-colors"
                   style={{
@@ -872,10 +869,10 @@ export function BreadcrumbsShowcase() {
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">With Home Icon</span>
           <nav className="flex items-center gap-1.5">
-            <span className="inline-flex flex-shrink-0"><House2 size={16} variant="Linear" className="text-tp-slate-400" /></span>
+            <span className="inline-flex flex-shrink-0"><Home size={16} style={{ color: "#A2A2A8" }} /></span>
             {["Settings", "Security", "Two-Factor"].map((item, i, arr) => (
               <span key={i} className="inline-flex items-center gap-1.5">
-                <span className="inline-flex flex-shrink-0"><ArrowRight2 size={14} variant="Linear" className="text-tp-slate-300" /></span>
+                <span className="inline-flex flex-shrink-0"><ChevronRight size={14} style={{ color: "#D1D1D6" }} /></span>
                 <span
                   className="text-sm font-medium"
                   style={{ color: i === arr.length - 1 ? "#171725" : "#717179" }}
@@ -940,7 +937,7 @@ export function StepperShowcase() {
                         color: sc.text,
                       }}
                     >
-                      {step.status === "complete" ? <TickCircle size={16} variant="Bulk" /> : i + 1}
+                      {step.status === "complete" ? <CheckCircle2 size={16} /> : i + 1}
                     </div>
                     <span
                       className="text-xs font-medium whitespace-nowrap"
@@ -983,7 +980,7 @@ export function StepperShowcase() {
                         color: sc.text,
                       }}
                     >
-                      {step.status === "complete" ? <TickCircle size={16} variant="Bulk" /> : i + 1}
+                      {step.status === "complete" ? <CheckCircle2 size={16} /> : i + 1}
                     </div>
                     {i < verticalSteps.length - 1 && (
                       <div
@@ -1053,9 +1050,8 @@ export function AccordionShowcase() {
                   onClick={() => toggleItem(i)}
                 >
                   <span className="text-sm font-semibold text-tp-slate-800">{item.title}</span>
-                  <span className="inline-flex flex-shrink-0"><ArrowDown2
+                  <span className="inline-flex flex-shrink-0"><ChevronDown
                     size={18}
-                    variant="Linear"
                     className="text-tp-slate-400 transition-transform duration-200"
                     style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0)" }}
                   /></span>
@@ -1104,7 +1100,7 @@ export function CardShowcase() {
             className="h-36 flex items-center justify-center"
             style={{ backgroundColor: "#F1F1F5" }}
           >
-            <span className="inline-flex flex-shrink-0"><Gallery size={32} variant="Linear" className="text-tp-slate-300" /></span>
+            <span className="inline-flex flex-shrink-0"><Image size={32} className="text-tp-slate-300" /></span>
           </div>
           <div className="p-4">
             <h4 className="text-sm font-bold text-tp-slate-900 mb-1">Card Title</h4>
@@ -1143,7 +1139,7 @@ export function CardShowcase() {
               className="w-8 h-8 rounded-lg flex items-center justify-center"
               style={{ backgroundColor: "#EEEEFF" }}
             >
-              <span className="inline-flex flex-shrink-0"><Chart2 size={16} variant="Linear" style={{ color: "#4B4AD5" }} /></span>
+              <span className="inline-flex flex-shrink-0"><BarChart2 size={16} style={{ color: "#4B4AD5" }} /></span>
             </div>
           </div>
           <div className="text-2xl font-bold text-tp-slate-900 mb-1 font-heading">$24,580</div>
@@ -1194,7 +1190,7 @@ export function CardShowcase() {
               className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{ backgroundColor: "#FFF1F2" }}
             >
-              <span className="inline-flex flex-shrink-0"><ShieldSecurity size={20} variant="Linear" style={{ color: "#E11D48" }} /></span>
+              <span className="inline-flex flex-shrink-0"><Shield size={20} style={{ color: "#E11D48" }} /></span>
             </div>
             <div>
               <h4 className="text-sm font-bold text-tp-slate-900">Security Alert</h4>

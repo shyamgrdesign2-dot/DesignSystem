@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Calendar1, Edit2, Clock, Keyboard } from "iconsax-react"
+import { Calendar, Pencil, Clock, Keyboard } from "lucide-react"
 import { ComponentBlock } from "@/components/design-system/design-system-section"
 
 // ─── Design Tokens (TatvaPractice) ───
@@ -164,7 +164,7 @@ export function DatePickerModal({
             className="rounded-lg p-2 text-tp-slate-500 hover:bg-tp-slate-100 hover:text-tp-slate-700"
             title={mode === "calendar" ? "Switch to text input" : "Switch to calendar"}
           >
-            {mode === "calendar" ? <Edit2 size={18} variant="Linear" /> : <Calendar1 size={18} variant="Linear" />}
+            {mode === "calendar" ? <Pencil size={18} /> : <Calendar size={18} />}
           </button>
         </div>
 
@@ -434,7 +434,7 @@ export function TimePickerModal({
             className="rounded-lg p-2 text-tp-slate-500 hover:bg-tp-slate-100 hover:text-tp-slate-700"
             title={mode === "clock" ? "Switch to keyboard input" : "Switch to clock"}
           >
-            {mode === "clock" ? <Keyboard size={18} variant="Linear" /> : <Clock size={18} variant="Linear" />}
+            {mode === "clock" ? <Keyboard size={18} /> : <Clock size={18} />}
           </button>
         </div>
 
@@ -661,7 +661,7 @@ export function DateInputWithPicker({
         tabIndex={disabled ? -1 : 0}
       >
         <span className="text-tp-slate-400">
-          <Calendar1 size={18} variant="Linear" />
+          <Calendar size={18} />
         </span>
         <input
           type="text"
@@ -724,7 +724,7 @@ export function DateRangeInputWithPicker({
         onClick={() => !disabled && setOpen(true)}
       >
         <span className="text-tp-slate-400">
-          <Calendar1 size={18} variant="Linear" />
+          <Calendar size={18} />
         </span>
         <span className="flex-1 text-sm text-tp-slate-900 placeholder:text-tp-slate-400" style={{ fontFamily: "var(--font-sans)" }}>
           {display || placeholder}
@@ -784,7 +784,7 @@ export function TimeInputWithPicker({
         onClick={() => !disabled && setOpen(true)}
       >
         <span className="text-tp-slate-400">
-          <Clock size={18} variant="Linear" />
+          <Clock size={18} />
         </span>
         <input
           type="text"

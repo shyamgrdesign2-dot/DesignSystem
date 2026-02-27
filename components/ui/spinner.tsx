@@ -1,12 +1,11 @@
-import { Refresh2 } from 'iconsax-react'
+import { RefreshCw } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
 function Spinner({ className, ...props }: React.ComponentProps<'svg'>) {
   return (
-    <Refresh2
+    <RefreshCw
       size={16}
-      variant="Linear"
       role="status"
       aria-label="Loading"
       className={cn('animate-spin', className)}

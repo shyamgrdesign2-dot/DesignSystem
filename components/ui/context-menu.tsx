@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import * as ContextMenuPrimitive from '@radix-ui/react-context-menu'
-import { TickCircle, ArrowRight2, RecordCircle } from 'iconsax-react'
+import { CheckCircle2, ChevronRight, Circle } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -72,7 +72,7 @@ function ContextMenuSubTrigger({
       {...props}
     >
       {children}
-      <ArrowRight2 size={16} variant="Linear" className="ml-auto" />
+      <ChevronRight size={16} className="ml-auto" />
     </ContextMenuPrimitive.SubTrigger>
   )
 }
@@ -152,7 +152,7 @@ function ContextMenuCheckboxItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <ContextMenuPrimitive.ItemIndicator>
-          <TickCircle size={16} variant="Bulk" className="size-4" />
+          <CheckCircle2 size={16} className="size-4" />
         </ContextMenuPrimitive.ItemIndicator>
       </span>
       {children}
@@ -176,7 +176,7 @@ function ContextMenuRadioItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <ContextMenuPrimitive.ItemIndicator>
-          <RecordCircle size={8} variant="Bulk" className="fill-current" />
+          <Circle size={8} className="fill-current" />
         </ContextMenuPrimitive.ItemIndicator>
       </span>
       {children}

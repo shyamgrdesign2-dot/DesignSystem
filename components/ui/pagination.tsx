@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { ArrowLeft2, ArrowRight2, More2 } from 'iconsax-react'
+import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -72,7 +72,7 @@ function PaginationPrevious({
       className={cn('gap-1 px-2.5 sm:pl-2.5', className)}
       {...props}
     >
-      <ArrowLeft2 size={16} variant="Linear" />
+      <ChevronLeft size={16} />
       <span className="hidden sm:block">Previous</span>
     </PaginationLink>
   )
@@ -90,7 +90,7 @@ function PaginationNext({
       {...props}
     >
       <span className="hidden sm:block">Next</span>
-      <ArrowRight2 size={16} variant="Linear" />
+      <ChevronRight size={16} />
     </PaginationLink>
   )
 }
@@ -106,7 +106,7 @@ function PaginationEllipsis({
       className={cn('flex size-9 items-center justify-center', className)}
       {...props}
     >
-      <More2 size={16} variant="Linear" className="size-4" />
+      <MoreHorizontal size={16} className="size-4" />
       <span className="sr-only">More pages</span>
     </span>
   )

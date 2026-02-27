@@ -1,12 +1,7 @@
 "use client"
 
 import { useState, useCallback, useRef, useEffect } from "react"
-import {
-  TickCircle,
-  ArrowDown2,
-  Copy,
-  Refresh2,
-} from "iconsax-react"
+import { CheckCircle2, ChevronDown, Copy, RefreshCw } from "lucide-react"
 
 // ─── I18N-READY LABELS (replace with t() in production) ───
 
@@ -50,7 +45,7 @@ const LABELS = {
 function IconWrap({ children, size }: { children: React.ReactNode; size?: number }) {
   return (
     <span
-      className="inline-flex flex-shrink-0 items-center justify-center [&_svg]:shrink-0 [&_svg]:stroke-current [&_svg]:fill-none"
+      className="inline-flex flex-shrink-0 items-center justify-center [&_svg]:shrink-0"
       style={{ ...(size ? { width: size, height: size } : {}), color: "inherit" }}
       aria-hidden
     >
@@ -385,7 +380,7 @@ function CtaButton({
         {state === "loading" ? (
           <>
             <IconWrap size={iconSize}>
-              <Refresh2 size={iconSize} variant="Linear" className="animate-spin" />
+              <RefreshCw size={iconSize} className="animate-spin" />
             </IconWrap>
             {!iconOnly && <span className="truncate">{label}</span>}
           </>
@@ -393,20 +388,20 @@ function CtaButton({
           <>
             {leftIcon && (
               <IconWrap size={iconSize}>
-                <TickCircle size={iconSize} variant="Bulk" />
+                <CheckCircle2 size={iconSize} />
               </IconWrap>
             )}
             {!iconOnly && <span className="truncate">{label}</span>}
             {iconOnly && (
               <IconWrap size={iconSize}>
-                <TickCircle size={iconSize} variant="Bulk" />
+                <CheckCircle2 size={iconSize} />
               </IconWrap>
             )}
           </>
         )}
         {rightIcon && !dropdown && state !== "loading" && (
           <IconWrap size={iconSize}>
-            <TickCircle size={iconSize} variant="Bulk" />
+            <CheckCircle2 size={iconSize} />
           </IconWrap>
         )}
         {dropdown && state !== "loading" && (
@@ -428,7 +423,7 @@ function CtaButton({
               aria-hidden
             />
             <IconWrap size={iconSize}>
-              <ArrowDown2 size={iconSize} variant="Linear" className={`transition-transform duration-150 ${dropdownOpen ? "rotate-180" : ""}`} />
+              <ChevronDown size={iconSize} className={`transition-transform duration-150 ${dropdownOpen ? "rotate-180" : ""}`} />
             </IconWrap>
           </>
         )}

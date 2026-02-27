@@ -1,6 +1,6 @@
 "use client"
 
-import { CloseCircle, ArrowRight2, User } from "iconsax-react"
+import { XCircle, ChevronRight, User } from "lucide-react"
 
 // ─── COLOR SCHEMES (7 brand colors: TP Blue, TP Violet, TP Amber, Success, Error, Warning, Neutral) ───
 
@@ -136,7 +136,6 @@ function Tag({
         >
           <User
             size={10}
-            variant="Linear"
             style={{
               color:
                 intensity === "dark" || intensity === "filled"
@@ -153,7 +152,7 @@ function Tag({
           className="flex items-center justify-center rounded-sm flex-shrink-0 hover:opacity-70 transition-opacity"
           style={{ color: text, marginLeft: "2px" }}
         >
-          <span className="inline-flex flex-shrink-0"><CloseCircle size={12} variant="Linear" /></span>
+          <span className="inline-flex flex-shrink-0"><XCircle size={12} /></span>
         </button>
       )}
     </span>
@@ -200,7 +199,7 @@ function Banner({
         {label}
       </span>
       <span>{message}</span>
-      <ArrowRight2 size={14} variant="Linear" style={{ opacity: 0.6 }} />
+      <ChevronRight size={14} style={{ opacity: 0.6 }} />
     </div>
   )
 }
