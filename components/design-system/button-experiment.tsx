@@ -2,81 +2,92 @@
 
 /**
  * ══════════════════════════════════════════════════════════════════
- * Button Experiment — Figma Component Set Testing
+ * Button Experiment — Comprehensive Figma Component Set Export
  * ══════════════════════════════════════════════════════════════════
  *
- * This component renders a single TP Button in ALL its variants,
- * structured so that html.to.design can import them as a proper
- * Figma Component Set with variant properties.
+ * Produces clean HTML for html.to.design import. Key features:
+ *   - 5 Figma variant properties: Variant, Size, State, Icon, Type
+ *   - 6 color variants × 3 sizes × 5 states × 5 icon positions × 2 types
+ *   - Tiered export: Core (270) / Core+Sizes (450) / Full (810)
+ *   - Pure design system HTML — no scaffolding, labels, or instructions
+ *   - Uses ONLY TP design tokens from component-tokens.ts
+ *   - <button> elements for proper Figma layer naming
  *
- * Figma Component Set naming convention:
- *   ComponentName / Property=Value, Property=Value
- *
- * Example: "Button / Variant=Primary, Size=Medium, State=Default"
- *
- * We test 3 strategies for naming:
- *   Strategy A: data-name attribute with slash + Property=Value
- *   Strategy B: aria-label with the same naming
- *   Strategy C: Wrapper title + nested naming
- *
- * The HTML export version uses inline styles (no Tailwind) so
- * html.to.design can faithfully convert them.
+ * All token values sourced from lib/component-tokens.ts (ctaTokens)
  * ══════════════════════════════════════════════════════════════════
  */
 
 import { useState } from "react"
-import { Download, Plus, Loader2, ArrowRight } from "lucide-react"
+import { Download, Plus, Loader2, ArrowRight, ChevronDown, Copy, Check, Code2 } from "lucide-react"
 
-/* ── Token values (from our design system) ── */
+/* ═══════════════════════════════════════════════════════════════════
+   TOKENS — Single source of truth from TP design system (ctaTokens)
+   ═══════════════════════════════════════════════════════════════════ */
+
 const TOKENS = {
-  radius: "10px",
-  fontFamily: "Inter, sans-serif",
-  fontSize: "14px",
-  fontWeight: "600",
-  iconSize: "20px",
-  borderWidth: "1.5px",
-  // Size heights
-  height: { sm: "32px", md: "38px", lg: "44px" },
-  paddingX: { sm: "12px", md: "14px", lg: "16px" },
-  paddingY: { sm: "6px", md: "8px", lg: "10px" },
-  // Primary
+  // Anatomy
+  radius: "10px",           // TP.cta.radius
+  fontFamily: "Inter, sans-serif", // TP.cta.font.family
+  fontSize: "14px",         // TP.cta.font.size
+  fontWeight: "600",        // TP.cta.font.weight
+  iconSize: 20,             // TP.cta.icon.size (locked)
+  borderWidth: "1.5px",     // TP.cta.border.width
+  gap: 6,                   // Internal gap between icon + label
+
+  // Size scale
+  height: { sm: 32, md: 38, lg: 44 },  // TP.cta.height.*
+  paddingX: 14,             // TP.cta.padding.x
+  paddingY: 8,              // TP.cta.padding.y
+  dropdownPadR: 8,          // Compact right padding for dropdown chevron area
+
+  // Variant color tokens
   primary: {
     bg: "#4B4AD5", bgHover: "#3C3AB3", bgDisabled: "#E2E2EA",
     text: "#FFFFFF", textDisabled: "#A2A2A8",
     focusRing: "0 0 0 4px rgba(75,74,213,0.15)",
   },
-  // Outline
   outline: {
     bg: "transparent", bgHover: "#EEEEFF", bgDisabled: "transparent",
     text: "#4B4AD5", textDisabled: "#A2A2A8",
     border: "#4B4AD5", borderDisabled: "#E2E2EA",
+    focusRing: "0 0 0 4px rgba(75,74,213,0.15)",
   },
-  // Ghost
   ghost: {
     bg: "transparent", bgHover: "#EEEEFF",
-    text: "#4B4AD5",
+    text: "#4B4AD5", textDisabled: "#A2A2A8",
+    focusRing: "0 0 0 4px rgba(75,74,213,0.15)",
   },
-  // Tonal
   tonal: {
     bg: "#EEEEFF", bgHover: "#D8D8FF",
-    text: "#4B4AD5",
+    text: "#4B4AD5", textDisabled: "#A2A2A8",
+    disabledBg: "#F1F1F5",
+    focusRing: "0 0 0 4px rgba(75,74,213,0.15)",
   },
-  // Neutral
   neutral: {
     bg: "#F1F1F5", bgHover: "#E2E2EA",
-    text: "#454551",
+    text: "#454551", textDisabled: "#A2A2A8",
+    disabledBg: "#F8F8FC",
+    focusRing: "0 0 0 4px rgba(75,74,213,0.15)",
   },
-  // Destructive
   destructive: {
     bg: "#E11D48", bgHover: "#BE123C", bgDisabled: "#E2E2EA",
     text: "#FFFFFF", textDisabled: "#A2A2A8",
+    focusRing: "0 0 0 4px rgba(225,29,72,0.15)",
   },
+  // Loading
+  loadingOpacity: 0.7,      // TP.cta.loading.opacity
 }
 
-/* ── Variant definitions ── */
+/* ═══════════════════════════════════════════════════════════════════
+   TYPES
+   ═══════════════════════════════════════════════════════════════════ */
+
 type VariantName = "Primary" | "Outline" | "Ghost" | "Tonal" | "Neutral" | "Destructive"
 type SizeName = "Small" | "Medium" | "Large"
 type StateName = "Default" | "Hover" | "Focus" | "Loading" | "Disabled"
+type IconPosition = "None" | "Left" | "Right" | "Both" | "Only"
+type ButtonType = "Standard" | "Dropdown"
+type ExportTier = "core" | "core-sizes" | "full"
 
 interface ButtonVariantStyle {
   bg: string
@@ -86,88 +97,163 @@ interface ButtonVariantStyle {
   opacity?: number
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   VARIANT STYLE RESOLVER
+   ═══════════════════════════════════════════════════════════════════ */
+
 function getVariantStyle(variant: VariantName, state: StateName): ButtonVariantStyle {
-  const v = variant.toLowerCase() as keyof typeof TOKENS
   switch (variant) {
     case "Primary":
       if (state === "Hover") return { bg: TOKENS.primary.bgHover, text: TOKENS.primary.text }
       if (state === "Focus") return { bg: TOKENS.primary.bg, text: TOKENS.primary.text, shadow: TOKENS.primary.focusRing }
-      if (state === "Loading") return { bg: TOKENS.primary.bg, text: TOKENS.primary.text, opacity: 0.7 }
+      if (state === "Loading") return { bg: TOKENS.primary.bg, text: TOKENS.primary.text, opacity: TOKENS.loadingOpacity }
       if (state === "Disabled") return { bg: TOKENS.primary.bgDisabled, text: TOKENS.primary.textDisabled }
       return { bg: TOKENS.primary.bg, text: TOKENS.primary.text }
+
     case "Outline":
       if (state === "Hover") return { bg: TOKENS.outline.bgHover, text: TOKENS.outline.text, border: TOKENS.outline.border }
-      if (state === "Focus") return { bg: "transparent", text: TOKENS.outline.text, border: TOKENS.outline.border, shadow: TOKENS.primary.focusRing }
+      if (state === "Focus") return { bg: "transparent", text: TOKENS.outline.text, border: TOKENS.outline.border, shadow: TOKENS.outline.focusRing }
+      if (state === "Loading") return { bg: "transparent", text: TOKENS.outline.text, border: TOKENS.outline.border, opacity: TOKENS.loadingOpacity }
       if (state === "Disabled") return { bg: "transparent", text: TOKENS.outline.textDisabled, border: TOKENS.outline.borderDisabled }
       return { bg: "transparent", text: TOKENS.outline.text, border: TOKENS.outline.border }
+
     case "Ghost":
       if (state === "Hover") return { bg: TOKENS.ghost.bgHover, text: TOKENS.ghost.text }
-      if (state === "Disabled") return { bg: "transparent", text: "#A2A2A8" }
+      if (state === "Focus") return { bg: "transparent", text: TOKENS.ghost.text, shadow: TOKENS.ghost.focusRing }
+      if (state === "Loading") return { bg: "transparent", text: TOKENS.ghost.text, opacity: TOKENS.loadingOpacity }
+      if (state === "Disabled") return { bg: "transparent", text: TOKENS.ghost.textDisabled }
       return { bg: "transparent", text: TOKENS.ghost.text }
+
     case "Tonal":
       if (state === "Hover") return { bg: TOKENS.tonal.bgHover, text: TOKENS.tonal.text }
-      if (state === "Disabled") return { bg: "#F1F1F5", text: "#A2A2A8" }
+      if (state === "Focus") return { bg: TOKENS.tonal.bg, text: TOKENS.tonal.text, shadow: TOKENS.tonal.focusRing }
+      if (state === "Loading") return { bg: TOKENS.tonal.bg, text: TOKENS.tonal.text, opacity: TOKENS.loadingOpacity }
+      if (state === "Disabled") return { bg: TOKENS.tonal.disabledBg, text: TOKENS.tonal.textDisabled }
       return { bg: TOKENS.tonal.bg, text: TOKENS.tonal.text }
+
     case "Neutral":
       if (state === "Hover") return { bg: TOKENS.neutral.bgHover, text: TOKENS.neutral.text }
-      if (state === "Disabled") return { bg: "#F8F8FC", text: "#A2A2A8" }
+      if (state === "Focus") return { bg: TOKENS.neutral.bg, text: TOKENS.neutral.text, shadow: TOKENS.neutral.focusRing }
+      if (state === "Loading") return { bg: TOKENS.neutral.bg, text: TOKENS.neutral.text, opacity: TOKENS.loadingOpacity }
+      if (state === "Disabled") return { bg: TOKENS.neutral.disabledBg, text: TOKENS.neutral.textDisabled }
       return { bg: TOKENS.neutral.bg, text: TOKENS.neutral.text }
+
     case "Destructive":
       if (state === "Hover") return { bg: TOKENS.destructive.bgHover, text: TOKENS.destructive.text }
-      if (state === "Focus") return { bg: TOKENS.destructive.bg, text: TOKENS.destructive.text, shadow: "0 0 0 4px rgba(225,29,72,0.15)" }
+      if (state === "Focus") return { bg: TOKENS.destructive.bg, text: TOKENS.destructive.text, shadow: TOKENS.destructive.focusRing }
+      if (state === "Loading") return { bg: TOKENS.destructive.bg, text: TOKENS.destructive.text, opacity: TOKENS.loadingOpacity }
       if (state === "Disabled") return { bg: TOKENS.destructive.bgDisabled, text: TOKENS.destructive.textDisabled }
       return { bg: TOKENS.destructive.bg, text: TOKENS.destructive.text }
+
     default:
       return { bg: TOKENS.primary.bg, text: TOKENS.primary.text }
   }
 }
 
-function getSizeProps(size: SizeName) {
-  switch (size) {
-    case "Small": return { height: TOKENS.height.sm, px: TOKENS.paddingX.sm, py: TOKENS.paddingY.sm, label: "SM" }
-    case "Medium": return { height: TOKENS.height.md, px: TOKENS.paddingX.md, py: TOKENS.paddingY.md, label: "MD" }
-    case "Large": return { height: TOKENS.height.lg, px: TOKENS.paddingX.lg, py: TOKENS.paddingY.lg, label: "LG" }
+/* ═══════════════════════════════════════════════════════════════════
+   SIZE RESOLVER
+   ═══════════════════════════════════════════════════════════════════ */
+
+function getSizeValues(size: SizeName) {
+  const heightMap = { Small: TOKENS.height.sm, Medium: TOKENS.height.md, Large: TOKENS.height.lg }
+  const h = heightMap[size]
+  return {
+    height: h,
+    px: TOKENS.paddingX,
+    py: TOKENS.paddingY,
+    iconSize: TOKENS.iconSize,
+    gap: TOKENS.gap,
+    // Icon-only: perfect square, centered icon
+    iconOnlyPad: Math.floor((h - TOKENS.iconSize) / 2),
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   DIMENSION ARRAYS
+   ═══════════════════════════════════════════════════════════════════ */
 
 const ALL_VARIANTS: VariantName[] = ["Primary", "Outline", "Ghost", "Tonal", "Neutral", "Destructive"]
 const ALL_SIZES: SizeName[] = ["Small", "Medium", "Large"]
 const ALL_STATES: StateName[] = ["Default", "Hover", "Focus", "Loading", "Disabled"]
+const ALL_ICONS: IconPosition[] = ["None", "Left", "Right", "Both", "Only"]
+const ALL_TYPES: ButtonType[] = ["Standard", "Dropdown"]
 
-/* ── Single button render ── */
+/** Check if a combination is valid (Icon=Only + Type=Dropdown is invalid) */
+function isValidCombo(icon: IconPosition, type: ButtonType): boolean {
+  return !(icon === "Only" && type === "Dropdown")
+}
+
+/** Get button combinations for a given tier */
+function getComboCount(tier: ExportTier): number {
+  let count = 0
+  const sizes = tier === "core" ? (["Medium"] as SizeName[]) : ALL_SIZES
+  const types = tier === "core-sizes" ? (["Standard"] as ButtonType[]) : ALL_TYPES
+
+  for (const _v of ALL_VARIANTS)
+    for (const _sz of sizes)
+      for (const _st of ALL_STATES)
+        for (const icon of ALL_ICONS)
+          for (const type of types)
+            if (isValidCombo(icon, type)) count++
+
+  return count
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INLINE SVG ICONS (for HTML export — no external dependencies)
+   ═══════════════════════════════════════════════════════════════════ */
+
+const SVG = {
+  plus: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  arrowRight: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+  chevronDown: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+  loader: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`,
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REACT PREVIEW BUTTON (for in-app showcase)
+   ═══════════════════════════════════════════════════════════════════ */
+
 function ExperimentButton({
-  variant,
-  size,
-  state,
-  hasIcon = false,
+  variant, size, state, icon = "None", type = "Standard",
 }: {
   variant: VariantName
   size: SizeName
   state: StateName
-  hasIcon?: boolean
+  icon?: IconPosition
+  type?: ButtonType
 }) {
   const style = getVariantStyle(variant, state)
-  const sizeProps = getSizeProps(size)
+  const sz = getSizeValues(size)
+  const isIconOnly = icon === "Only"
+  const isDropdown = type === "Dropdown"
+  const isLoading = state === "Loading"
 
-  // Figma-compatible name using Property=Value format
-  const figmaName = `Variant=${variant}, Size=${size}, State=${state}, Icon=${hasIcon ? "True" : "False"}`
+  // Compute padding
+  const padL = isIconOnly ? sz.iconOnlyPad : sz.px
+  const padR = isDropdown ? TOKENS.dropdownPadR : (isIconOnly ? sz.iconOnlyPad : sz.px)
+
+  // Left icon
+  const showLeftIcon = !isLoading && (icon === "Left" || icon === "Both" || icon === "Only")
+  // Right icon
+  const showRightIcon = !isLoading && (icon === "Right" || icon === "Both")
 
   return (
-    <div
-      data-figma-name={figmaName}
-      data-component="Button"
-      data-variant={variant}
-      data-size={size}
-      data-state={state}
-      data-icon={hasIcon ? "true" : "false"}
+    <button
+      type="button"
+      title={`Variant=${variant}, Size=${size}, State=${state}, Icon=${icon}, Type=${type}`}
+      disabled={state === "Disabled"}
       style={{
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: "6px",
-        height: sizeProps.height,
-        paddingInline: sizeProps.px,
-        paddingBlock: sizeProps.py,
+        gap: `${sz.gap}px`,
+        height: `${sz.height}px`,
+        ...(isIconOnly ? { width: `${sz.height}px`, minWidth: `${sz.height}px` } : {}),
+        paddingLeft: padL,
+        paddingRight: padR,
+        paddingTop: isIconOnly ? sz.iconOnlyPad : sz.py,
+        paddingBottom: isIconOnly ? sz.iconOnlyPad : sz.py,
         backgroundColor: style.bg,
         color: style.text,
         borderRadius: TOKENS.radius,
@@ -178,252 +264,319 @@ function ExperimentButton({
         fontSize: TOKENS.fontSize,
         fontWeight: Number(TOKENS.fontWeight),
         cursor: state === "Disabled" ? "not-allowed" : "pointer",
-        transition: "all 150ms ease",
         whiteSpace: "nowrap" as const,
+        lineHeight: "1",
       }}
-      title={figmaName}
-      aria-label={`Button / ${figmaName}`}
     >
-      {hasIcon && state !== "Loading" && <Plus size={20} style={{ flexShrink: 0 }} />}
-      {state === "Loading" && <Loader2 size={20} className="animate-spin" style={{ flexShrink: 0 }} />}
-      <span>{state === "Loading" ? "Loading…" : "Button"}</span>
-      {hasIcon && state !== "Loading" && <ArrowRight size={20} style={{ flexShrink: 0 }} />}
-    </div>
+      {isLoading && <Loader2 size={sz.iconSize} className="animate-spin" style={{ flexShrink: 0 }} />}
+      {showLeftIcon && <Plus size={sz.iconSize} style={{ flexShrink: 0 }} />}
+      {!isIconOnly && <span>{isLoading ? "Loading\u2026" : "Button"}</span>}
+      {showRightIcon && <ArrowRight size={sz.iconSize} style={{ flexShrink: 0 }} />}
+      {isDropdown && (
+        <>
+          <span style={{
+            width: "1px", alignSelf: "stretch",
+            margin: `0 ${sz.gap / 2}px`,
+            backgroundColor: "currentColor", opacity: 0.2,
+          }} />
+          <ChevronDown size={sz.iconSize} style={{ flexShrink: 0 }} />
+        </>
+      )}
+    </button>
   )
 }
 
-/* ── Export HTML for this experiment ── */
-function generateExperimentHTML(): string {
-  const variants: VariantName[] = ALL_VARIANTS
-  const sizes: SizeName[] = ALL_SIZES
-  const states: StateName[] = ALL_STATES
+/* ═══════════════════════════════════════════════════════════════════
+   FIGMA RENAME SCRIPT
+   ═══════════════════════════════════════════════════════════════════ */
 
-  // SVG icons for inline use in Figma
-  const plusIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`
-  const arrowIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`
-  const loaderIcon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`
+const FIGMA_RENAME_SCRIPT = `// Figma Plugin Console Script — Auto-rename imported button layers
+// Run after importing HTML via html.to.design.
+// Walks every "button" frame and renames using visual properties.
 
-  function getStyle(v: VariantName, s: StateName) {
-    const st = getVariantStyle(v, s)
-    const border = st.border ? `border: ${TOKENS.borderWidth} solid ${st.border};` : "border: none;"
-    const shadow = st.shadow ? `box-shadow: ${st.shadow};` : ""
-    const opacity = st.opacity ? `opacity: ${st.opacity};` : ""
-    return `background-color: ${st.bg}; color: ${st.text}; ${border} ${shadow} ${opacity}`
-  }
+function renameButtonLayers() {
+  const page = figma.currentPage;
+  let renamed = 0;
 
-  function buttonHTML(v: VariantName, sz: SizeName, st: StateName, withIcon: boolean = false) {
-    const sizeProps = getSizeProps(sz)
-    const varStyle = getStyle(v, st)
-    // THE KEY: Figma-compatible naming with Property=Value
-    const figmaName = `Variant=${v}, Size=${sz}, State=${st}, Icon=${withIcon ? "True" : "False"}`
-    const label = st === "Loading" ? "Loading…" : "Button"
-    const iconHtml = withIcon && st !== "Loading" ? plusIcon : ""
-    const trailIcon = withIcon && st !== "Loading" ? arrowIcon : ""
-    const loadIcon = st === "Loading" ? `<span style="display:inline-flex;animation:spin 1s linear infinite">${loaderIcon}</span>` : ""
+  function walk(node) {
+    if (node.type === "FRAME" || node.type === "COMPONENT" || node.type === "INSTANCE") {
+      if (node.name.toLowerCase() === "button") {
+        const fills = node.fills;
+        const bg = fills && fills.length > 0 && fills[0].type === "SOLID"
+          ? rgbToHex(fills[0].color) : "transparent";
+        const variantName = getVariantFromBg(bg);
+        const sizeName = getSizeFromHeight(node.height);
+        const stateName = getStateFromOpacity(node.opacity, bg);
+        const childCount = node.children ? node.children.length : 0;
+        const iconPos = getIconPosition(node);
+        const hasChevron = detectChevron(node);
+        const typeName = hasChevron ? "Dropdown" : "Standard";
 
-    return `      <div
-        data-figma-name="${figmaName}"
-        title="Button / ${figmaName}"
-        style="display:inline-flex;align-items:center;justify-content:center;gap:6px;height:${sizeProps.height};padding-inline:${sizeProps.px};padding-block:${sizeProps.py};border-radius:${TOKENS.radius};font-family:${TOKENS.fontFamily};font-size:${TOKENS.fontSize};font-weight:${TOKENS.fontWeight};cursor:pointer;white-space:nowrap;${varStyle}"
-      >${loadIcon}${iconHtml}<span>${label}</span>${trailIcon}</div>`
-  }
-
-  // Build the HTML — a component set wrapper with all variants inside
-  let html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TP Button — Figma Component Set Experiment</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Mulish:wght@600;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Inter, sans-serif; background: #F8F8FC; padding: 40px; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-    /* ── Section headers ── */
-    .section-title {
-      font-family: Mulish, sans-serif; font-size: 24px; font-weight: 700;
-      color: #171725; margin-bottom: 8px;
-    }
-    .section-desc {
-      font-size: 13px; color: #717179; margin-bottom: 32px; max-width: 600px;
-    }
-    .variant-group {
-      margin-bottom: 48px;
-    }
-    .variant-label {
-      font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.1em; color: #A2A2A8; margin-bottom: 12px;
-    }
-    .variant-row {
-      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-      margin-bottom: 16px;
-    }
-    .state-label {
-      font-size: 10px; color: #A2A2A8; width: 60px; text-align: right;
-      font-weight: 500; flex-shrink: 0;
-    }
-
-    /* ── Strategy markers ── */
-    .strategy-badge {
-      display: inline-block; padding: 2px 8px; border-radius: 4px;
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.05em; margin-bottom: 16px;
-    }
-    .strategy-a { background: #EEEEFF; color: #4B4AD5; }
-    .strategy-b { background: #ECFDF5; color: #059669; }
-    .strategy-c { background: #FFFBEB; color: #D97706; }
-  </style>
-</head>
-<body>
-  <h1 class="section-title">TP Button — Component Set Experiment</h1>
-  <p class="section-desc">
-    Each button below is named with Figma's Property=Value convention.
-    Import this HTML into Figma via html.to.design, then select all buttons
-    and "Combine as Variants" to create a component set.
-  </p>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       STRATEGY A: Flat list — all variants with data-figma-name
-       Each element is named: "Variant=X, Size=Y, State=Z, Icon=Bool"
-       After import → Select all → Combine as Variants
-       ═══════════════════════════════════════════════════════════ -->
-  <div class="strategy-badge strategy-a">Strategy A — Flat Property=Value Naming</div>
-
-`
-
-  // For each variant, render all state × size combos
-  for (const v of variants) {
-    html += `  <div class="variant-group">\n`
-    html += `    <div class="variant-label">${v}</div>\n`
-
-    for (const st of states) {
-      html += `    <div class="variant-row">\n`
-      html += `      <span class="state-label">${st}</span>\n`
-
-      for (const sz of sizes) {
-        html += buttonHTML(v, sz, st, false) + "\n"
+        if (variantName) {
+          node.name = "Variant=" + variantName + ", Size=" + sizeName + ", State=" + stateName + ", Icon=" + iconPos + ", Type=" + typeName;
+          renamed++;
+        }
       }
-
-      // Also render with icons for Default state
-      if (st === "Default") {
-        html += buttonHTML(v, "Medium", st, true) + "\n"
-      }
-
-      html += `    </div>\n`
-    }
-
-    html += `  </div>\n\n`
-  }
-
-  // Strategy B: Wrapper with slash naming
-  html += `
-  <!-- ═══════════════════════════════════════════════════════════
-       STRATEGY B: Slash naming — "Button/Variant/Size/State"
-       Wrapper named "Button", children named "Primary/Medium/Default"
-       ═══════════════════════════════════════════════════════════ -->
-  <div style="margin-top:64px">
-    <div class="strategy-badge strategy-b">Strategy B — Slash Naming Convention</div>
-    <p class="section-desc">
-      Wrapper named "Button" with children named using slash convention (e.g. "Primary/Medium/Default").
-      After import → Select the wrapper → Component → Create Component Set
-    </p>
-
-    <div title="Button" data-figma-name="Button" style="display:flex;flex-wrap:wrap;gap:12px;padding:24px;background:#FFFFFF;border-radius:16px;border:1px solid #E2E2EA">
-`
-
-  // Render a subset (Primary × 3 sizes × key states) with slash naming
-  const slashVariants: VariantName[] = ["Primary", "Outline", "Ghost", "Destructive"]
-  const slashStates: StateName[] = ["Default", "Hover", "Disabled"]
-  for (const v of slashVariants) {
-    for (const st of slashStates) {
-      for (const sz of sizes) {
-        const sizeProps = getSizeProps(sz)
-        const varStyle = getStyle(v, st)
-        const slashName = `${v}/${sz}/${st}`
-
-        html += `      <div
-        title="${slashName}"
-        data-figma-name="${slashName}"
-        style="display:inline-flex;align-items:center;justify-content:center;gap:6px;height:${sizeProps.height};padding-inline:${sizeProps.px};padding-block:${sizeProps.py};border-radius:${TOKENS.radius};font-family:${TOKENS.fontFamily};font-size:${TOKENS.fontSize};font-weight:${TOKENS.fontWeight};cursor:pointer;white-space:nowrap;${varStyle}"
-      ><span>Button</span></div>\n`
+      if ("children" in node) {
+        for (const child of node.children) { walk(child); }
       }
     }
   }
 
-  html += `    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       STRATEGY C: Explicit Property=Value with component wrapper
-       Wrapper: "Button" → children: "Variant=Primary, Size=Medium, State=Default"
-       ═══════════════════════════════════════════════════════════ -->
-  <div style="margin-top:64px">
-    <div class="strategy-badge strategy-c">Strategy C — Component Wrapper + Property=Value Children</div>
-    <p class="section-desc">
-      All variants wrapped in a single "Button" container. Each child uses
-      "Variant=X, Size=Y, State=Z" naming. Select children → Combine as Variants.
-    </p>
-
-    <div title="Button" style="display:flex;flex-wrap:wrap;gap:12px;padding:24px;background:#FFFFFF;border-radius:16px;border:1px solid #E2E2EA">
-`
-
-  // Render all Primary variants with Property=Value naming
-  for (const v of ALL_VARIANTS) {
-    for (const st of ["Default", "Hover", "Disabled"] as StateName[]) {
-      const sizeProps = getSizeProps("Medium")
-      const varStyle = getStyle(v, st)
-      const propName = `Variant=${v}, Size=Medium, State=${st}`
-
-      html += `      <div
-        title="${propName}"
-        data-figma-name="${propName}"
-        style="display:inline-flex;align-items:center;justify-content:center;gap:6px;height:${sizeProps.height};padding-inline:${sizeProps.px};padding-block:${sizeProps.py};border-radius:${TOKENS.radius};font-family:${TOKENS.fontFamily};font-size:${TOKENS.fontSize};font-weight:${TOKENS.fontWeight};cursor:pointer;white-space:nowrap;${varStyle}"
-      ><span>Button</span></div>\n`
-    }
+  function rgbToHex(c) {
+    const r = Math.round(c.r * 255);
+    const g = Math.round(c.g * 255);
+    const b = Math.round(c.b * 255);
+    return "#" + [r, g, b].map(x => x.toString(16).padStart(2, "0")).join("").toUpperCase();
   }
 
-  html += `    </div>
-  </div>
+  function getVariantFromBg(hex) {
+    const map = {
+      "#4B4AD5": "Primary", "#3C3AB3": "Primary",
+      "#E11D48": "Destructive", "#BE123C": "Destructive",
+      "#EEEEFF": "Tonal", "#D8D8FF": "Tonal",
+      "#F1F1F5": "Neutral", "#E2E2EA": "Neutral",
+    };
+    if (map[hex]) return map[hex];
+    if (hex === "transparent" || hex === "#FFFFFF" || hex === "#000000") return null;
+    return null;
+  }
 
-  <!-- ═══════════════════════════════════════════════════════════ -->
-  <div style="margin-top:48px;padding:24px;background:#FFFFFF;border-radius:16px;border:1px solid #E2E2EA">
-    <h2 style="font-family:Mulish,sans-serif;font-size:16px;font-weight:700;color:#171725;margin-bottom:8px">
-      How to use in Figma
-    </h2>
-    <ol style="font-size:13px;color:#454551;line-height:1.8;padding-left:20px">
-      <li>Import this HTML via <strong>html.to.design</strong> plugin</li>
-      <li>Select all button frames from one Strategy group</li>
-      <li>Right-click → <strong>Combine as Variants</strong></li>
-      <li>Figma will auto-create variant properties from the names</li>
-      <li>Rename properties as needed (Variant, Size, State, Icon)</li>
-    </ol>
-  </div>
+  function getSizeFromHeight(h) {
+    if (h <= 34) return "Small";
+    if (h <= 40) return "Medium";
+    return "Large";
+  }
 
-</body>
-</html>`
+  function getStateFromOpacity(opacity, bg) {
+    if (opacity < 1) return "Loading";
+    if (bg === "#E2E2EA") return "Disabled";
+    return "Default";
+  }
 
-  return html
+  function getIconPosition(node) {
+    if (!node.children) return "None";
+    const svgs = node.children.filter(c => c.type === "VECTOR" || c.name === "svg" || c.type === "FRAME");
+    const hasText = node.children.some(c => c.type === "TEXT");
+    if (!hasText && svgs.length > 0) return "Only";
+    if (svgs.length >= 3) return "Both"; // left + right + possibly divider
+    if (svgs.length === 2) return "Both";
+    if (svgs.length === 1) {
+      const textIdx = node.children.findIndex(c => c.type === "TEXT");
+      const svgIdx = node.children.indexOf(svgs[0]);
+      return svgIdx < textIdx ? "Left" : "Right";
+    }
+    return "None";
+  }
+
+  function detectChevron(node) {
+    if (!node.children) return false;
+    const last = node.children[node.children.length - 1];
+    return last && last.width < 24 && last.height < 24 && node.children.length > 2;
+  }
+
+  walk(page);
+  figma.notify("Renamed " + renamed + " button layers");
 }
 
-/* ── Export handler ── */
-function downloadExperimentHTML() {
-  const html = generateExperimentHTML()
+renameButtonLayers();
+figma.closePlugin();`
+
+/* ═══════════════════════════════════════════════════════════════════
+   HTML EXPORT GENERATOR — Pure design system output
+   ═══════════════════════════════════════════════════════════════════ */
+
+function generateExperimentHTML(tier: ExportTier): string {
+  const sizes: SizeName[] = tier === "core" ? ["Medium"] : ALL_SIZES
+  const types: ButtonType[] = tier === "core-sizes" ? ["Standard"] : ALL_TYPES
+
+  /** Build inline CSS style string for a button */
+  function inlineStyle(
+    v: VariantName, st: StateName, sz: SizeName,
+    iconPos: IconPosition, btnType: ButtonType,
+  ): string {
+    const style = getVariantStyle(v, st)
+    const s = getSizeValues(sz)
+    const isIconOnly = iconPos === "Only"
+    const isDropdown = btnType === "Dropdown"
+
+    const padL = isIconOnly ? s.iconOnlyPad : s.px
+    const padR = isDropdown ? TOKENS.dropdownPadR : (isIconOnly ? s.iconOnlyPad : s.px)
+    const padTB = isIconOnly ? s.iconOnlyPad : s.py
+
+    const parts: string[] = [
+      `display:inline-flex`,
+      `align-items:center`,
+      `justify-content:center`,
+      `gap:${s.gap}px`,
+      `height:${s.height}px`,
+      ...(isIconOnly ? [`width:${s.height}px`, `min-width:${s.height}px`] : []),
+      `padding:${padTB}px ${padR}px ${padTB}px ${padL}px`,
+      `background-color:${style.bg}`,
+      `color:${style.text}`,
+      `border-radius:${TOKENS.radius}`,
+      style.border ? `border:${TOKENS.borderWidth} solid ${style.border}` : `border:none`,
+      style.shadow ? `box-shadow:${style.shadow}` : ``,
+      style.opacity ? `opacity:${style.opacity}` : ``,
+      `font-family:${TOKENS.fontFamily}`,
+      `font-size:${TOKENS.fontSize}`,
+      `font-weight:${TOKENS.fontWeight}`,
+      `cursor:${st === "Disabled" ? "not-allowed" : "pointer"}`,
+      `white-space:nowrap`,
+      `line-height:1`,
+      `appearance:none`,
+      `outline:none`,
+    ]
+
+    return parts.filter(Boolean).join(";")
+  }
+
+  /** Build inner HTML for a button */
+  function innerContent(
+    st: StateName, iconPos: IconPosition, btnType: ButtonType,
+  ): string {
+    const isLoading = st === "Loading"
+    const isIconOnly = iconPos === "Only"
+    const isDropdown = btnType === "Dropdown"
+    const showLeftIcon = !isLoading && (iconPos === "Left" || iconPos === "Both" || iconPos === "Only")
+    const showRightIcon = !isLoading && (iconPos === "Right" || iconPos === "Both")
+    const label = isLoading ? "Loading\u2026" : "Button"
+
+    const parts: string[] = []
+
+    // Loading spinner
+    if (isLoading) {
+      parts.push(`<span style="display:inline-flex;flex-shrink:0;animation:spin 1s linear infinite">${SVG.loader}</span>`)
+    }
+
+    // Left icon
+    if (showLeftIcon) {
+      parts.push(`<span style="display:inline-flex;flex-shrink:0">${SVG.plus}</span>`)
+    }
+
+    // Label (skip for icon-only)
+    if (!isIconOnly) {
+      parts.push(`<span>${label}</span>`)
+    }
+
+    // Right icon
+    if (showRightIcon) {
+      parts.push(`<span style="display:inline-flex;flex-shrink:0">${SVG.arrowRight}</span>`)
+    }
+
+    // Dropdown divider + chevron
+    if (isDropdown) {
+      parts.push(`<span style="width:1px;align-self:stretch;margin:0 3px;background-color:currentColor;opacity:0.2"></span>`)
+      parts.push(`<span style="display:inline-flex;flex-shrink:0">${SVG.chevronDown}</span>`)
+    }
+
+    return parts.join("")
+  }
+
+  /** Build a single <button> HTML string */
+  function makeButton(
+    v: VariantName, sz: SizeName, st: StateName,
+    iconPos: IconPosition, btnType: ButtonType,
+  ): string {
+    const figmaName = `Variant=${v}, Size=${sz}, State=${st}, Icon=${iconPos}, Type=${btnType}`
+    const safeId = figmaName.replace(/\s/g, "").replace(/,/g, "_")
+    const disabled = st === "Disabled" ? " disabled" : ""
+
+    return `<button type="button" id="${safeId}" class="${figmaName}" data-name="${figmaName}" data-figma-name="${figmaName}" aria-label="${figmaName}" title="${figmaName}"${disabled} style="${inlineStyle(v, st, sz, iconPos, btnType)}">${innerContent(st, iconPos, btnType)}</button>`
+  }
+
+  // ── Build full HTML ──
+  const buttons: string[] = []
+
+  for (const v of ALL_VARIANTS) {
+    for (const sz of sizes) {
+      for (const st of ALL_STATES) {
+        for (const iconPos of ALL_ICONS) {
+          for (const btnType of types) {
+            if (!isValidCombo(iconPos, btnType)) continue
+            buttons.push(makeButton(v, sz, st, iconPos, btnType))
+          }
+        }
+      }
+    }
+  }
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP Button Component Set</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Inter, sans-serif; background: #F8F8FC; padding: 40px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+button { font-family: inherit; }
+</style>
+</head>
+<body>
+${buttons.join("\n")}
+</body>
+</html>`
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXPORT HANDLERS
+   ═══════════════════════════════════════════════════════════════════ */
+
+function downloadExperimentHTML(tier: ExportTier) {
+  const html = generateExperimentHTML(tier)
   const blob = new Blob([html], { type: "text/html" })
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = "tp-button-figma-experiment.html"
+  a.download = `tp-button-component-set-${tier}.html`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
 }
 
-/* ── Showcase Component ── */
+function copyRenameScript() {
+  navigator.clipboard.writeText(FIGMA_RENAME_SCRIPT)
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TIER INFO
+   ═══════════════════════════════════════════════════════════════════ */
+
+const TIER_INFO: Record<ExportTier, { label: string; desc: string }> = {
+  core: {
+    label: "Core",
+    desc: "Medium size only — all variants, states, icon positions, and types",
+  },
+  "core-sizes": {
+    label: "Core + Sizes",
+    desc: "All sizes, standard type only — all variants, states, icon positions",
+  },
+  full: {
+    label: "Full",
+    desc: "Every combination — all variants, sizes, states, icon positions, and types",
+  },
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SHOWCASE COMPONENT (React in-app preview)
+   ═══════════════════════════════════════════════════════════════════ */
+
 export function ButtonExperiment() {
-  const [activeStrategy, setActiveStrategy] = useState<"A" | "B" | "C">("A")
+  const [copied, setCopied] = useState(false)
+  const [tier, setTier] = useState<ExportTier>("core")
+  const [previewVariant, setPreviewVariant] = useState<VariantName>("Primary")
+
+  const handleCopyScript = () => {
+    copyRenameScript()
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const buttonCount = getComboCount(tier)
 
   return (
     <div className="flex flex-col gap-6">
@@ -432,145 +585,231 @@ export function ButtonExperiment() {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h3 className="text-lg font-bold text-tp-slate-900 font-heading">
-              Figma Component Set Experiment
+              Figma Component Set Export
             </h3>
             <p className="text-sm text-tp-slate-600 mt-1 max-w-xl">
-              Testing 3 naming strategies for html.to.design to import buttons as
-              a proper <strong>Figma Component Set</strong> with variant properties
-              (Variant, Size, State, Icon).
+              Export <strong>{buttonCount} buttons</strong> with 5 Figma variant properties:
+              Variant, Size, State, Icon Position, and Type.
+              Pure design system HTML — no scaffolding.
             </p>
           </div>
-          <button
-            onClick={downloadExperimentHTML}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
-            style={{ backgroundColor: "#4B4AD5" }}
-          >
-            <Download size={18} />
-            Export Experiment HTML
-          </button>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={handleCopyScript}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-tp-slate-300 bg-white text-tp-slate-700 hover:bg-tp-slate-50 transition-colors"
+            >
+              {copied ? <Check size={18} className="text-green-600" /> : <Code2 size={18} />}
+              {copied ? "Copied!" : "Copy Rename Script"}
+            </button>
+            <button
+              onClick={() => downloadExperimentHTML(tier)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors"
+              style={{ backgroundColor: "#4B4AD5" }}
+            >
+              <Download size={18} />
+              Export HTML ({buttonCount})
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Strategy tabs */}
-      <div className="flex gap-2">
-        {(["A", "B", "C"] as const).map((s) => (
+      {/* Tier Selector */}
+      <div className="flex gap-3 flex-wrap">
+        {(Object.entries(TIER_INFO) as [ExportTier, typeof TIER_INFO[ExportTier]][]).map(([key, info]) => (
           <button
-            key={s}
-            onClick={() => setActiveStrategy(s)}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-              activeStrategy === s
-                ? "bg-tp-blue-500 text-white"
-                : "bg-tp-slate-100 text-tp-slate-600 hover:bg-tp-slate-200"
+            key={key}
+            onClick={() => setTier(key)}
+            className={`flex-1 min-w-[200px] p-4 rounded-xl border-2 text-left transition-all ${
+              tier === key
+                ? "border-tp-blue-500 bg-tp-blue-50"
+                : "border-tp-slate-200 bg-white hover:border-tp-slate-300"
             }`}
           >
-            Strategy {s}
+            <div className="flex items-center justify-between mb-1">
+              <span className={`text-sm font-bold ${tier === key ? "text-tp-blue-700" : "text-tp-slate-800"}`}>
+                {info.label}
+              </span>
+              <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-full ${
+                tier === key ? "bg-tp-blue-100 text-tp-blue-700" : "bg-tp-slate-100 text-tp-slate-500"
+              }`}>
+                {getComboCount(key)}
+              </span>
+            </div>
+            <p className="text-xs text-tp-slate-500">{info.desc}</p>
           </button>
         ))}
       </div>
 
-      {/* Strategy descriptions */}
-      <div className="rounded-lg border border-tp-slate-200 bg-white p-4 text-sm">
-        {activeStrategy === "A" && (
-          <div>
-            <p className="font-semibold text-tp-slate-800 mb-1">Strategy A — Flat Property=Value Naming</p>
-            <p className="text-tp-slate-600">
-              Each button is a separate element named with <code className="bg-tp-slate-100 px-1 rounded text-xs">Variant=Primary, Size=Medium, State=Default, Icon=False</code>.
-              After importing into Figma, select all buttons → right-click → <strong>Combine as Variants</strong>.
-              Figma should auto-detect the properties from the comma-separated names.
-            </p>
-          </div>
-        )}
-        {activeStrategy === "B" && (
-          <div>
-            <p className="font-semibold text-tp-slate-800 mb-1">Strategy B — Slash Naming Convention</p>
-            <p className="text-tp-slate-600">
-              Wrapper named <code className="bg-tp-slate-100 px-1 rounded text-xs">Button</code>, children named
-              with slash convention: <code className="bg-tp-slate-100 px-1 rounded text-xs">Primary/Medium/Default</code>.
-              The text before the first <code>/</code> becomes the component set name.
-            </p>
-          </div>
-        )}
-        {activeStrategy === "C" && (
-          <div>
-            <p className="font-semibold text-tp-slate-800 mb-1">Strategy C — Component Wrapper + Property=Value Children</p>
-            <p className="text-tp-slate-600">
-              All variants inside a parent container named <code className="bg-tp-slate-100 px-1 rounded text-xs">Button</code>.
-              Each child uses explicit <code className="bg-tp-slate-100 px-1 rounded text-xs">Variant=Primary, Size=Medium, State=Default</code> naming.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Preview grid */}
-      {activeStrategy === "A" && (
-        <div className="space-y-8">
-          {ALL_VARIANTS.map((v) => (
-            <div key={v}>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tp-slate-400 mb-3">{v}</p>
-              <div className="space-y-3">
-                {ALL_STATES.map((st) => (
-                  <div key={st} className="flex items-center gap-3">
-                    <span className="text-[11px] text-tp-slate-400 w-16 text-right font-medium shrink-0">{st}</span>
-                    <div className="flex flex-wrap items-center gap-3">
-                      {ALL_SIZES.map((sz) => (
-                        <ExperimentButton key={`${v}-${sz}-${st}`} variant={v} size={sz} state={st} />
-                      ))}
-                      {st === "Default" && (
-                        <ExperimentButton variant={v} size="Medium" state={st} hasIcon />
-                      )}
-                    </div>
-                  </div>
-                ))}
+      {/* Variant Properties Overview */}
+      <div className="rounded-lg border border-tp-slate-200 bg-white p-4">
+        <p className="text-xs font-bold uppercase tracking-widest text-tp-slate-400 mb-3">Figma Variant Properties</p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {[
+            { prop: "Variant", values: "6", items: "Primary, Outline, Ghost, Tonal, Neutral, Destructive" },
+            { prop: "Size", values: tier === "core" ? "1 (MD)" : "3", items: tier === "core" ? "Medium" : "Small, Medium, Large" },
+            { prop: "State", values: "5", items: "Default, Hover, Focus, Loading, Disabled" },
+            { prop: "Icon", values: "5", items: "None, Left, Right, Both, Only" },
+            { prop: "Type", values: tier === "core-sizes" ? "1" : "2", items: tier === "core-sizes" ? "Standard" : "Standard, Dropdown" },
+          ].map(({ prop, values, items }) => (
+            <div key={prop} className="rounded-lg bg-tp-slate-50 p-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-tp-slate-700">{prop}</span>
+                <span className="text-[10px] font-mono bg-tp-slate-200 text-tp-slate-600 px-1.5 rounded">{values}</span>
               </div>
+              <p className="text-[10px] text-tp-slate-500 leading-tight">{items}</p>
             </div>
           ))}
         </div>
-      )}
+      </div>
 
-      {activeStrategy === "B" && (
-        <div className="rounded-xl border border-tp-slate-200 bg-white p-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tp-slate-400 mb-4">
-            Container: &quot;Button&quot; → Children: &quot;Variant/Size/State&quot;
+      {/* Variant preview selector */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-bold uppercase tracking-widest text-tp-slate-400">Preview variant:</span>
+        <div className="flex gap-1.5 flex-wrap">
+          {ALL_VARIANTS.map((v) => (
+            <button
+              key={v}
+              onClick={() => setPreviewVariant(v)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                previewVariant === v
+                  ? "bg-tp-blue-100 text-tp-blue-700 border border-tp-blue-300"
+                  : "bg-tp-slate-100 text-tp-slate-600 border border-transparent hover:bg-tp-slate-200"
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Button Preview Grid */}
+      <div className="space-y-6">
+        {/* Standard type */}
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tp-slate-400 mb-3">
+            {previewVariant} — Standard
           </p>
-          <div className="flex flex-wrap gap-3">
-            {(["Primary", "Outline", "Ghost", "Destructive"] as VariantName[]).map((v) =>
-              (["Default", "Hover", "Disabled"] as StateName[]).map((st) =>
-                ALL_SIZES.map((sz) => (
-                  <ExperimentButton key={`${v}-${sz}-${st}`} variant={v} size={sz} state={st} />
-                ))
-              )
-            )}
+          <div className="space-y-3">
+            {ALL_STATES.map((st) => (
+              <div key={st} className="flex items-center gap-3">
+                <span className="text-[10px] text-tp-slate-400 w-14 text-right font-medium shrink-0">{st}</span>
+                <div className="flex flex-wrap items-center gap-3">
+                  {ALL_ICONS.map((iconPos) => (
+                    <div key={iconPos} className="flex flex-col items-center gap-1">
+                      <ExperimentButton
+                        variant={previewVariant}
+                        size="Medium"
+                        state={st}
+                        icon={iconPos}
+                        type="Standard"
+                      />
+                      <span className="text-[8px] text-tp-slate-300 font-medium">{iconPos}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      )}
 
-      {activeStrategy === "C" && (
-        <div className="rounded-xl border border-tp-slate-200 bg-white p-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tp-slate-400 mb-4">
-            Container: &quot;Button&quot; → Children: &quot;Variant=X, Size=Y, State=Z&quot;
+        {/* Dropdown type */}
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tp-slate-400 mb-3">
+            {previewVariant} — Dropdown
           </p>
-          <div className="flex flex-wrap gap-3">
-            {ALL_VARIANTS.map((v) =>
-              (["Default", "Hover", "Disabled"] as StateName[]).map((st) => (
-                <ExperimentButton key={`${v}-md-${st}`} variant={v} size="Medium" state={st} />
-              ))
-            )}
+          <div className="space-y-3">
+            {ALL_STATES.map((st) => (
+              <div key={st} className="flex items-center gap-3">
+                <span className="text-[10px] text-tp-slate-400 w-14 text-right font-medium shrink-0">{st}</span>
+                <div className="flex flex-wrap items-center gap-3">
+                  {ALL_ICONS.filter(i => i !== "Only").map((iconPos) => (
+                    <div key={iconPos} className="flex flex-col items-center gap-1">
+                      <ExperimentButton
+                        variant={previewVariant}
+                        size="Medium"
+                        state={st}
+                        icon={iconPos}
+                        type="Dropdown"
+                      />
+                      <span className="text-[8px] text-tp-slate-300 font-medium">{iconPos}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      )}
 
-      {/* Figma instructions */}
+        {/* Sizes preview */}
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-tp-slate-400 mb-3">
+            {previewVariant} — All Sizes (Default State)
+          </p>
+          <div className="space-y-3">
+            {ALL_SIZES.map((sz) => (
+              <div key={sz} className="flex items-center gap-3">
+                <span className="text-[10px] text-tp-slate-400 w-14 text-right font-medium shrink-0">{sz}</span>
+                <div className="flex flex-wrap items-center gap-3">
+                  {ALL_ICONS.map((iconPos) => (
+                    <ExperimentButton
+                      key={iconPos}
+                      variant={previewVariant}
+                      size={sz}
+                      state="Default"
+                      icon={iconPos}
+                      type="Standard"
+                    />
+                  ))}
+                  {/* Also show dropdown for this size */}
+                  <span className="text-[8px] text-tp-slate-300 mx-1">|</span>
+                  {ALL_ICONS.filter(i => i !== "Only").map((iconPos) => (
+                    <ExperimentButton
+                      key={`dd-${iconPos}`}
+                      variant={previewVariant}
+                      size={sz}
+                      state="Default"
+                      icon={iconPos}
+                      type="Dropdown"
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Workflow */}
       <div className="rounded-xl border border-tp-slate-200 bg-tp-slate-50 p-5">
-        <h4 className="text-sm font-bold text-tp-slate-800 mb-3">How to create a Component Set in Figma</h4>
+        <h4 className="text-sm font-bold text-tp-slate-800 mb-3">Workflow: HTML → Figma Component Set</h4>
         <ol className="text-sm text-tp-slate-600 space-y-2 list-decimal list-inside">
-          <li>Click <strong>&quot;Export Experiment HTML&quot;</strong> above to download the file</li>
-          <li>Open Figma → run <strong>html.to.design</strong> plugin → import the HTML file</li>
-          <li>Select all the imported button frames from one strategy group</li>
-          <li>Right-click → <strong>&quot;Combine as Variants&quot;</strong></li>
-          <li>Figma will auto-create variant properties from the element names</li>
-          <li>Rename the generic properties (Property 1, Property 2…) to: <strong>Variant</strong>, <strong>Size</strong>, <strong>State</strong>, <strong>Icon</strong></li>
-          <li>Test which strategy gives the best result — the naming determines how Figma parses properties</li>
+          <li>Select export tier and click <strong>&quot;Export HTML&quot;</strong></li>
+          <li>In Figma → run <strong>html.to.design</strong> plugin → File tab → upload the HTML</li>
+          <li>Select all imported button frames</li>
+          <li>Right-click → <strong>Combine as Variants</strong></li>
+          <li><strong>Optional:</strong> Use the <strong>Rename Script</strong> to auto-name layers by their visual properties</li>
         </ol>
+      </div>
+
+      {/* Rename script */}
+      <div className="rounded-xl border border-tp-slate-700 bg-[#1E1E2E] p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-bold text-tp-slate-300">Figma Auto-Rename Script</h4>
+          <button
+            onClick={handleCopyScript}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-tp-slate-300 bg-tp-slate-700/50 hover:bg-tp-slate-700 transition-colors"
+          >
+            {copied ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+        <pre className="text-[11px] text-green-400 leading-relaxed overflow-x-auto font-mono max-h-48 overflow-y-auto">
+          {FIGMA_RENAME_SCRIPT.slice(0, 600)}...
+        </pre>
+        <p className="text-[10px] text-tp-slate-500 mt-3">
+          Paste this in Figma → Plugins → Development → Open Console. It walks every &quot;button&quot; frame and renames it
+          with Variant, Size, State, Icon, and Type properties.
+        </p>
       </div>
     </div>
   )
