@@ -401,8 +401,8 @@ export function DrAgentPage() {
                 </div>
 
                 <div className="px-3 py-4 sm:px-4 lg:px-[18px] lg:py-6">
-                  <div className="mb-4 flex flex-row flex-nowrap items-center gap-[60px]">
-                    <label className="relative flex-1 min-w-[250px] max-w-[420px]">
+                  <div className="mb-4 flex flex-row flex-nowrap items-center justify-between gap-[60px]">
+                    <label className="relative w-[420px] min-w-[250px]">
                       <SearchNormal1
                         size={20}
                         variant="Linear"
@@ -418,11 +418,11 @@ export function DrAgentPage() {
                       />
                     </label>
 
-                    <div className="relative shrink-0" ref={dateMenuRef}>
+                    <div className="relative w-[240px] min-w-[150px]" ref={dateMenuRef}>
                       <button
                         type="button"
                         onClick={() => setDateMenuOpen((value) => !value)}
-                        className="inline-flex h-[38px] min-w-[150px] max-w-[240px] items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700"
+                        className="inline-flex h-[38px] w-full items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700"
                       >
                         <span className="inline-flex items-center gap-1.5 truncate">
                           <Calendar size={18} variant="Linear" strokeWidth={1.5} className="shrink-0" />
@@ -492,7 +492,7 @@ export function DrAgentPage() {
                                 <SortIndicators />
                               </span>
                             </th>
-                            <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[280px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                            <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-0 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[260px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
                               Action
                             </th>
                           </tr>
