@@ -79,7 +79,7 @@ interface AppointmentRow {
 }
 
 const navItems: NavItem[] = [
-  { id: "appointments", label: "TP Appointment Screen", icon: Calendar2 },
+  { id: "appointments", label: "Appointments", icon: Calendar2 },
   {
     id: "ask-tatva",
     label: "Ask Tatva",
@@ -393,7 +393,7 @@ export function DrAgentPage() {
             {/* Banner — fixed, shrinks to natural height */}
             <div className="shrink-0">
               <AppointmentBanner
-                title="TP Appointment Screen"
+                title="All Appointments"
                 actions={
                   <>
                     <Button

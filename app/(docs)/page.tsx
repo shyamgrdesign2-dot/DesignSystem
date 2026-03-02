@@ -143,7 +143,7 @@ export default function DocsOverview() {
 
             <div className="relative mt-4 flex items-center gap-2">
               <Link
-                href="/dr-agent"
+                href="/tp-appointment-screen"
                 className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[10px] bg-tp-blue-500 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-tp-blue-600"
               >
                 <ExternalLink size={13} strokeWidth={2} />

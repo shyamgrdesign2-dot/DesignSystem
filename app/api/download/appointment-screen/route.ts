@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 
 export function GET() {
   try {
-    const filePath = join(process.cwd(), "components/dr-agent/DrAgentPage.tsx")
+    const filePath = join(process.cwd(), "components/tp-appointment-screen/DrAgentPage.tsx")
     const content = readFileSync(filePath, "utf-8")
 
     return new NextResponse(content, {

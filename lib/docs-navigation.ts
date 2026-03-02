@@ -125,7 +125,7 @@ export const docsNavigation: NavGroup[] = [
       {
         id: "appointment-screen",
         label: "Appointment Screen",
-        href: "/dr-agent",
+        href: "/tp-appointment-screen",
         icon: "AppointmentScreen",
         description: "Full appointment queue with tabs, filters, prescription actions, and AI-assisted workflow",
       },

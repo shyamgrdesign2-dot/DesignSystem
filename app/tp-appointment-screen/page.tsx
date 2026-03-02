@@ -1,5 +1,5 @@
 import { Mulish } from "next/font/google"
-import { DrAgentPage } from "@/components/dr-agent/DrAgentPage"
+import { DrAgentPage } from "@/components/tp-appointment-screen/DrAgentPage"
 
 const mulish = Mulish({
   subsets: ["latin"],
