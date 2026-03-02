@@ -21,13 +21,12 @@ import {
   TickCircle,
   Video,
 } from "iconsax-reactjs"
-import { ChevronDown, MoreHorizontal, Plus } from "lucide-react"
+import { ChevronDown, MoreVertical, Plus } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { SecondaryNavPanel, type NavItem } from "@/components/ui/secondary-nav-panel"
 import {
   TPButton as Button,
-  TPIconButton as IconButton,
   TPSplitButton,
 } from "@/components/tp-ui/button-system"
 
@@ -335,7 +334,7 @@ export function DrAgentPage() {
                       theme="primary"
                       size="md"
                       surface="dark"
-                      className="whitespace-nowrap"
+                      className="whitespace-nowrap !bg-[rgba(255,255,255,0.07)] backdrop-blur-sm"
                       leftIcon={<Plus size={20} strokeWidth={1.5} />}
                     >
                       Add Appointment
@@ -402,8 +401,8 @@ export function DrAgentPage() {
                 </div>
 
                 <div className="px-3 py-4 sm:px-4 lg:px-[18px] lg:py-6">
-                  <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                    <label className="relative w-full min-w-[280px] max-w-[420px]">
+                  <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-[42px]">
+                    <label className="relative w-full min-w-[250px] max-w-[420px]">
                       <SearchNormal1
                         size={20}
                         variant="Linear"
@@ -423,7 +422,7 @@ export function DrAgentPage() {
                       <button
                         type="button"
                         onClick={() => setDateMenuOpen((value) => !value)}
-                        className="inline-flex h-[38px] min-w-[160px] max-w-[240px] items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700"
+                        className="inline-flex h-[38px] min-w-[150px] max-w-[240px] items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700"
                       >
                         <span className="inline-flex items-center gap-1.5 truncate">
                           <Calendar size={18} variant="Linear" strokeWidth={1.5} className="shrink-0" />
@@ -577,7 +576,7 @@ export function DrAgentPage() {
                                   </p>
                                 </td>
 
-                                <td className="sticky right-0 z-10 min-w-[280px] bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                                <td className="sticky right-0 z-10 min-w-[280px] bg-white pl-3 pr-0 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
                                   <div className="flex items-center gap-3 whitespace-nowrap">
                                     <TPSplitButton
                                       primaryAction={{
@@ -595,20 +594,23 @@ export function DrAgentPage() {
                                       size="md"
                                     />
 
-                                    <IconButton
-                                      theme="primary"
-                                      size="md"
+                                    <button
+                                      type="button"
                                       aria-label="AI action"
-                                      icon={<AiSparkIcon />}
-                                      className="shrink-0 !bg-[linear-gradient(135deg,rgba(213,101,234,0.25)_0%,rgba(103,58,172,0.25)_45%,rgba(26,25,148,0.25)_100%)]"
-                                    />
+                                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-opacity hover:opacity-90"
+                                      style={{
+                                        background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)",
+                                      }}
+                                    >
+                                      <AiSparkIcon />
+                                    </button>
 
                                     <button
                                       type="button"
                                       aria-label="More options"
                                       className="flex shrink-0 items-center justify-center rounded-lg p-1 text-tp-slate-600 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-900"
                                     >
-                                      <MoreHorizontal size={20} strokeWidth={1.5} />
+                                      <MoreVertical size={20} strokeWidth={1.5} />
                                     </button>
                                   </div>
                                 </td>

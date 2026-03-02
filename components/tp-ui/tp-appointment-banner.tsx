@@ -103,8 +103,8 @@ export function TPAppointmentBanner({
           <button
             type="button"
             onClick={onCtaClick}
-            className="ml-4 flex shrink-0 items-center gap-2 rounded-[10px] bg-white px-4 py-2 text-sm font-semibold shadow-sm transition-all hover:bg-white/90 hover:shadow-md active:scale-[0.98]"
-            style={{ color: "var(--tp-blue-600)", height: 36 }}
+            className="ml-4 flex shrink-0 items-center gap-2 rounded-[10px] border border-white/30 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/10 active:scale-[0.98]"
+            style={{ backgroundColor: "rgba(255,255,255,0.07)", height: 36 }}
           >
             {ctaIcon || <Plus size={18} />}
             <span className="hidden sm:inline">{ctaLabel}</span>

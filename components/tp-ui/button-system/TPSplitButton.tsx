@@ -226,8 +226,9 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             style={{
               width: 1,
               minWidth: 1,
-              margin: "0 1px",
-              alignSelf: "stretch",
+              margin: `${Math.round(dims.height * 0.2)}px 1px`,
+              height: Math.round(dims.height * 0.6),
+              alignSelf: "center",
               backgroundColor: separatorColor,
               opacity: separatorOpacity,
             }}

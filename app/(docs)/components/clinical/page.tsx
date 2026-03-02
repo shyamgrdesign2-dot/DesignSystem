@@ -7,6 +7,7 @@ import {
   StatusBadgeShowcase,
   ClinicalTableShowcase,
   PatientInfoHeaderShowcase,
+  DrAgentAppointmentsShowcase,
 } from "@/components/design-system/clinical-showcase"
 
 export default function ClinicalPage() {
@@ -44,6 +45,10 @@ export default function ClinicalPage() {
 
         <section className="rounded-xl border border-tp-slate-200 bg-white p-6 shadow-sm">
           <PatientInfoHeaderShowcase />
+        </section>
+
+        <section className="rounded-xl border border-tp-slate-200 bg-white p-6 shadow-sm">
+          <DrAgentAppointmentsShowcase />
         </section>
       </div>
     </div>

@@ -12,10 +12,13 @@ import {
   Settings,
   Calendar,
   Trash2,
+  MoreVertical,
+  Video,
 } from "lucide-react"
 
 import { TPTopNavBar, defaultNavActions } from "@/components/tp-ui/tp-top-nav-bar"
 import { TPAppointmentBanner } from "@/components/tp-ui/tp-appointment-banner"
+import { TPSplitButton } from "@/components/tp-ui/button-system"
 import { TPClinicalTabs } from "@/components/tp-ui/tp-clinical-tabs"
 import { TPSearchFilterBar } from "@/components/tp-ui/tp-search-filter-bar"
 import { TPStatusBadge } from "@/components/tp-ui/tp-status-badge"
@@ -438,6 +441,129 @@ export function PatientInfoHeaderShowcase() {
             }}
           />
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ═════════════════════════════════════════════════════════════
+// 8. Dr. Agent Appointments Table Showcase
+// ═════════════════════════════════════════════════════════════
+
+function AiSparkIcon() {
+  return (
+    <span className="inline-flex size-[28px] items-center justify-center">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="ds-ai-spark-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D565EA" />
+            <stop offset="45%" stopColor="#673AAC" />
+            <stop offset="100%" stopColor="#1A1994" />
+          </linearGradient>
+        </defs>
+        <path d="M18.0841 11.612C18.4509 11.6649 18.4509 12.3351 18.0841 12.388C14.1035 12.9624 12.9624 14.1035 12.388 18.0841C12.3351 18.4509 11.6649 18.4509 11.612 18.0841C11.0376 14.1035 9.89647 12.9624 5.91594 12.388C5.5491 12.3351 5.5491 11.6649 5.91594 11.612C9.89647 11.0376 11.0376 9.89647 11.612 5.91594C11.6649 5.5491 12.3351 5.5491 12.388 5.91594C12.9624 9.89647 14.1035 11.0376 18.0841 11.612Z" fill="url(#ds-ai-spark-gradient)" />
+      </svg>
+    </span>
+  )
+}
+
+function SortIndicators() {
+  return (
+    <span className="inline-flex flex-col items-center gap-[2px]">
+      <span className="h-0 w-0 border-b-[5px] border-l-[4px] border-r-[4px] border-b-tp-slate-700 border-l-transparent border-r-transparent" />
+      <span className="h-0 w-0 border-l-[4px] border-r-[4px] border-t-[5px] border-l-transparent border-r-transparent border-t-tp-slate-500" />
+    </span>
+  )
+}
+
+const SAMPLE_ROWS = [
+  { id: "1", serial: 1, name: "Shyam GR", gender: "M", age: 35, contact: "+91-9812734567", visitType: "Follow-up", slotTime: "10:30 am", slotDate: "9th Oct 2024", hasVideo: true },
+  { id: "2", serial: 2, name: "Sita Menon", gender: "F", age: 30, contact: "+91-9988776655", visitType: "New", slotTime: "10:35 am", slotDate: "8th Oct 2024", hasVideo: true },
+  { id: "3", serial: 3, name: "Vikram Singh", gender: "M", age: 42, contact: "+91-9001234567", visitType: "New", slotTime: "10:40 am", slotDate: "12th Sep 2024", hasVideo: false },
+]
+
+export function DrAgentAppointmentsShowcase() {
+  return (
+    <div>
+      <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#a2a2a8]">
+        Appointments Table (Dr. Agent)
+      </h3>
+      <p className="mb-4 text-xs text-[#a2a2a8]">
+        Inline table with sticky action column. Action cell: TPSplitButton (outline/primary) + AI gradient icon button + MoreVertical icon. Header: 12px uppercase #F1F1F5 bg. Rows: white, hover #F1F1F5. Sticky right column has left shadow.
+      </p>
+
+      <div className="overflow-x-auto rounded-[12px] border border-tp-slate-200">
+        <table className="w-full min-w-[800px] border-collapse">
+          <thead>
+            <tr className="bg-tp-slate-100">
+              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Name</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Contact</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                <span className="inline-flex items-center gap-1.5">Visit Type <SortIndicators /></span>
+              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                <span className="inline-flex items-center gap-1.5">Slot <SortIndicators /></span>
+              </th>
+              <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[280px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {SAMPLE_ROWS.map((row) => (
+              <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
+                <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
+                <td className="px-3 py-3 align-middle">
+                  <p className="text-sm font-semibold text-tp-blue-500">{row.name}</p>
+                  <p className="mt-1 text-sm text-tp-slate-700">{row.gender}, {row.age}y</p>
+                </td>
+                <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">{row.contact}</td>
+                <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">{row.visitType}</td>
+                <td className="px-3 py-3 align-middle">
+                  <div className="text-sm text-tp-slate-700">
+                    <span className="inline-flex items-center gap-1">
+                      {row.slotTime}
+                      {row.hasVideo && <Video size={13} strokeWidth={1.5} color="var(--tp-blue-500)" />}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-tp-slate-600">{row.slotDate}</p>
+                </td>
+                <td className="sticky right-0 z-10 bg-white pl-3 pr-0 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                  <div className="flex items-center gap-3 whitespace-nowrap">
+                    <TPSplitButton
+                      primaryAction={{ label: "TabRx", onClick: () => {} }}
+                      secondaryActions={[
+                        { id: "voice-rx", label: "VoiceRx", onClick: () => {} },
+                        { id: "type-rx", label: "TypeRx", onClick: () => {} },
+                        { id: "snap-rx", label: "SnapRx", onClick: () => {} },
+                        { id: "smart-sync", label: "SmartSync", onClick: () => {} },
+                      ]}
+                      variant="outline"
+                      theme="primary"
+                      size="md"
+                    />
+                    <button
+                      type="button"
+                      aria-label="AI action"
+                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-opacity hover:opacity-90"
+                      style={{ background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)" }}
+                    >
+                      <AiSparkIcon />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="More options"
+                      className="flex shrink-0 items-center justify-center rounded-lg p-1 text-tp-slate-600 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-900"
+                    >
+                      <MoreVertical size={20} strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
