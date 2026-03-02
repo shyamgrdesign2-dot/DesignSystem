@@ -393,7 +393,7 @@ export function DrAgentPage() {
             {/* Banner — fixed, shrinks to natural height */}
             <div className="shrink-0">
               <AppointmentBanner
-                title="All Appointments"
+                title="Your Appointments"
                 actions={
                   <>
                     <Button
