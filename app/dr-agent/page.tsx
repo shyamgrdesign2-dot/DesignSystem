@@ -8,8 +8,8 @@ const mulish = Mulish({
 })
 
 export const metadata = {
-  title: "Dr Agent Appointments — TatvaPractice",
-  description: "Figma-aligned Dr Agent appointments board with queue tabs and action table.",
+  title: "TP Appointment Screen — TatvaPractice",
+  description: "TatvaPractice appointment queue with tabs, filters, and AI-assisted workflow.",
 }
 
 export default function DrAgentRoute() {

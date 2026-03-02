@@ -397,10 +397,33 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
       <div className="flex">
         {/* Left: Quick-select presets */}
         <div className="flex w-[128px] shrink-0 flex-col gap-0.5 border-r border-tp-slate-100 p-2">
-          <p className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">
-            Quick Select
+          {/* Past group */}
+          <p className="px-2 pb-0.5 pt-1 text-[9px] font-semibold uppercase tracking-wide text-tp-slate-400">
+            Past
           </p>
-          {PRESETS.map((preset) => (
+          {PRESETS.filter((p) => !p.id.startsWith("next")).map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => handlePresetClick(preset)}
+              className={cn(
+                "flex w-full items-center rounded-[8px] px-2 py-1.5 text-left text-[12px] font-medium transition-colors",
+                preset.id === stagedPreset && stagedStart && stagedEnd
+                  ? "bg-tp-blue-500 text-white"
+                  : "text-tp-slate-700 hover:bg-tp-slate-100",
+              )}
+            >
+              {preset.label}
+            </button>
+          ))}
+
+          <div className="my-1.5 mx-1 h-px bg-tp-slate-100" />
+
+          {/* Upcoming group */}
+          <p className="px-2 pb-0.5 pt-0.5 text-[9px] font-semibold uppercase tracking-wide text-tp-slate-400">
+            Upcoming
+          </p>
+          {PRESETS.filter((p) => p.id.startsWith("next")).map((preset) => (
             <button
               key={preset.id}
               type="button"
@@ -474,7 +497,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
                 <button
                   type="button"
                   onClick={() => setLeftViewDate((d) => addMonths(d, -1))}
-                  className="flex size-6 items-center justify-center rounded-[8px] text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
+                  className="flex size-6 items-center justify-center rounded-full text-tp-slate-600 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-900"
                   aria-label="Previous month"
                 >
                   <ChevronLeft size={14} strokeWidth={1.5} />
@@ -510,7 +533,7 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
                 <button
                   type="button"
                   onClick={() => setLeftViewDate((d) => addMonths(d, 1))}
-                  className="flex size-6 items-center justify-center rounded-[8px] text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
+                  className="flex size-6 items-center justify-center rounded-full text-tp-slate-600 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-900"
                   aria-label="Next month"
                 >
                   <ChevronRight size={14} strokeWidth={1.5} />
