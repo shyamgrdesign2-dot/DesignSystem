@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import {
   Activity,
   Bag2,
@@ -520,11 +521,13 @@ export function DrAgentPage() {
                                     <span className="inline-flex items-center gap-1">
                                       {row.slotTime}
                                       {row.hasVideo && (
-                                        <Video
-                                          size={13}
-                                          variant="Bulk"
-                                          color="var(--tp-blue-500)"
-                                        />
+                                        <VideoConsultTooltip>
+                                          <Video
+                                            size={13}
+                                            variant="Bulk"
+                                            color="var(--tp-violet-500)"
+                                          />
+                                        </VideoConsultTooltip>
                                       )}
                                     </span>
                                   </div>
@@ -630,6 +633,85 @@ function SortIndicators() {
   )
 }
 
+// ─── Video Consultation Tooltip ───────────────────────────────────────────────
+
+function VideoConsultTooltip({ children }: { children: React.ReactNode }) {
+  const [visible, setVisible] = useState(false)
+  const [style, setStyle] = useState<React.CSSProperties>({})
+  const triggerRef = useRef<HTMLSpanElement | null>(null)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
+  function show() {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect()
+      setStyle({
+        position: "fixed",
+        // Center above the icon, with a small gap
+        top: rect.top - 8,
+        left: rect.left + rect.width / 2,
+        transform: "translate(-50%, -100%)",
+        zIndex: 9999,
+      })
+    }
+    setVisible(true)
+  }
+
+  function hide() {
+    setVisible(false)
+  }
+
+  return (
+    <>
+      <span ref={triggerRef} onMouseEnter={show} onMouseLeave={hide} className="inline-flex cursor-pointer">
+        {children}
+      </span>
+      {visible && mounted &&
+        createPortal(
+          <div
+            style={style}
+            className="w-[208px] overflow-hidden rounded-[12px] border border-tp-slate-200 bg-white shadow-[0_8px_24px_-4px_rgba(23,23,37,0.16)]"
+          >
+            {/* Header */}
+            <div className="flex items-center gap-2 border-b border-tp-slate-100 px-3 py-2.5">
+              <span
+                className="flex size-[28px] shrink-0 items-center justify-center rounded-[7px]"
+                style={{ background: "rgba(138,77,187,0.12)" }}
+              >
+                <Video size={14} variant="Bulk" color="var(--tp-violet-500)" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[12px] font-semibold text-tp-slate-900">Video Consultation</p>
+                <p className="text-[11px] text-tp-slate-500">Scheduled call</p>
+              </div>
+            </div>
+            {/* Body */}
+            <div className="px-3 py-2.5">
+              <p className="mb-2.5 text-[11px] leading-relaxed text-tp-slate-500">
+                Patient has requested a video call for this appointment slot.
+              </p>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  className="flex-1 rounded-[8px] bg-tp-blue-500 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-tp-blue-600"
+                >
+                  Join Call
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 rounded-[8px] border border-tp-slate-200 py-1.5 text-[11px] font-medium text-tp-slate-700 transition-colors hover:bg-tp-slate-50"
+                >
+                  Reschedule
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+    </>
+  )
+}
+
 // ─── Hexagonal play-button icon (VideoTutorialIcon) ───────────────────────────
 
 function VideoTutorialIcon({
@@ -674,6 +756,14 @@ function TopHeader() {
   const [clinicSearch, setClinicSearch] = useState("")
   const clinicMenuRef = useRef<HTMLDivElement | null>(null)
   const clinicSearchRef = useRef<HTMLInputElement | null>(null)
+  const clinicListRef = useRef<HTMLDivElement | null>(null)
+  const [clinicListCanScrollDown, setClinicListCanScrollDown] = useState(false)
+
+  function updateClinicScrollState() {
+    const el = clinicListRef.current
+    if (!el) return
+    setClinicListCanScrollDown(el.scrollHeight > el.scrollTop + el.clientHeight + 2)
+  }
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
@@ -685,13 +775,23 @@ function TopHeader() {
     return () => document.removeEventListener("mousedown", onPointerDown)
   }, [])
 
-  // Focus search input when dropdown opens
+  // Focus search input + init scroll indicator when dropdown opens
   useEffect(() => {
     if (isClinicMenuOpen) {
       setClinicSearch("")
-      setTimeout(() => clinicSearchRef.current?.focus(), 50)
+      setTimeout(() => {
+        clinicSearchRef.current?.focus()
+        updateClinicScrollState()
+      }, 50)
     }
   }, [isClinicMenuOpen])
+
+  // Re-check scroll indicator when filter changes
+  useEffect(() => {
+    if (isClinicMenuOpen) {
+      requestAnimationFrame(updateClinicScrollState)
+    }
+  }, [clinicSearch, isClinicMenuOpen])
 
   const activeClinicName = DUMMY_CLINICS.find((c) => c.id === activeClinic)?.name ?? "Clinic"
 
@@ -772,41 +872,53 @@ function TopHeader() {
                 </div>
               </div>
 
-              {/* Clinic list — scrollable when many items */}
-              <div className="max-h-[200px] overflow-y-auto py-1">
-                <p className="px-3 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-tp-slate-400">
-                  Your Clinics
-                </p>
-                {filteredClinics.length === 0 ? (
-                  <p className="px-3 py-3 text-[13px] text-tp-slate-400">No clinics found</p>
-                ) : (
-                  filteredClinics.map((clinic) => (
-                    <button
-                      key={clinic.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveClinic(clinic.id)
-                        setClinicMenuOpen(false)
-                      }}
-                      className={cn(
-                        "flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors",
-                        clinic.id === activeClinic
-                          ? "bg-tp-blue-50 text-tp-blue-700"
-                          : "text-tp-slate-700 hover:bg-tp-slate-50",
-                      )}
-                    >
-                      <Hospital
-                        size={16}
-                        variant={clinic.id === activeClinic ? "Bulk" : "Linear"}
-                        strokeWidth={1.5}
-                        color={clinic.id === activeClinic ? "var(--tp-blue-500)" : "var(--tp-slate-500)"}
-                      />
-                      <span className="flex-1 truncate">{clinic.name}</span>
-                      {clinic.id === activeClinic && (
-                        <TickCircle size={14} variant="Bold" color="var(--tp-blue-500)" />
-                      )}
-                    </button>
-                  ))
+              {/* Clinic list — scrollable when many items, with scroll indicator */}
+              <div className="relative">
+                <div
+                  ref={clinicListRef}
+                  onScroll={updateClinicScrollState}
+                  className="max-h-[200px] overflow-y-auto py-1"
+                >
+                  <p className="px-3 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-tp-slate-400">
+                    Your Clinics
+                  </p>
+                  {filteredClinics.length === 0 ? (
+                    <p className="px-3 py-3 text-[13px] text-tp-slate-400">No clinics found</p>
+                  ) : (
+                    filteredClinics.map((clinic) => (
+                      <button
+                        key={clinic.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveClinic(clinic.id)
+                          setClinicMenuOpen(false)
+                        }}
+                        className={cn(
+                          "flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors",
+                          clinic.id === activeClinic
+                            ? "bg-tp-blue-50 text-tp-blue-700"
+                            : "text-tp-slate-700 hover:bg-tp-slate-50",
+                        )}
+                      >
+                        <Hospital
+                          size={16}
+                          variant={clinic.id === activeClinic ? "Bulk" : "Linear"}
+                          strokeWidth={1.5}
+                          color={clinic.id === activeClinic ? "var(--tp-blue-500)" : "var(--tp-slate-500)"}
+                        />
+                        <span className="flex-1 truncate">{clinic.name}</span>
+                        {clinic.id === activeClinic && (
+                          <TickCircle size={14} variant="Bold" color="var(--tp-blue-500)" />
+                        )}
+                      </button>
+                    ))
+                  )}
+                </div>
+                {/* Scroll-down indicator — gradient fade with chevron */}
+                {clinicListCanScrollDown && (
+                  <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex h-9 items-end justify-center rounded-b-[12px] bg-gradient-to-t from-white via-white/80 to-transparent pb-1.5">
+                    <ChevronDown size={13} strokeWidth={2} className="text-tp-slate-400" />
+                  </div>
                 )}
               </div>
             </div>
