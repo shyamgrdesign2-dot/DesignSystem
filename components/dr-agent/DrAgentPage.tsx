@@ -425,7 +425,7 @@ export function DrAgentPage() {
                             <span className={cn(
                               "inline-flex items-center justify-center rounded-full px-[5px] h-[16px] min-w-[16px] text-[10px] font-semibold tabular-nums leading-none",
                               isActive
-                                ? "bg-tp-blue-100 text-tp-blue-600"
+                                ? "bg-tp-blue-100 text-tp-blue-400"
                                 : "bg-tp-slate-100 text-tp-slate-400",
                             )}>
                               {tab.count}
@@ -449,7 +449,7 @@ export function DrAgentPage() {
                 {/* Search + filter bar — fixed, does not scroll */}
                 <div className="shrink-0 px-3 pt-4 pb-3 sm:px-4 lg:px-[18px] lg:pt-5 lg:pb-4">
                   <div className="flex flex-nowrap items-center justify-between gap-3">
-                    <label className="relative w-[420px] min-w-[250px]">
+                    <label className="relative min-w-[160px] w-full max-w-[420px]">
                       <SearchNormal1
                         size={20}
                         variant="Linear"
@@ -461,7 +461,7 @@ export function DrAgentPage() {
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder="Search by patient name / ID / mobile number"
-                        className="h-[38px] w-full rounded-[10px] border border-tp-slate-200 bg-white pl-10 pr-3 text-sm text-tp-slate-700 placeholder:text-tp-slate-400 focus:border-tp-blue-300 focus:outline-none focus:ring-2 focus:ring-tp-blue-500/15"
+                        className="h-[38px] w-full rounded-[10px] border border-tp-slate-200 bg-white pl-10 pr-3 text-sm text-ellipsis text-tp-slate-700 placeholder:text-tp-slate-400 focus:border-tp-blue-300 focus:outline-none focus:ring-2 focus:ring-tp-blue-500/15"
                       />
                     </label>
 
@@ -490,7 +490,7 @@ export function DrAgentPage() {
                       <DateRangePicker
                         value={dateFilter}
                         onChange={(sel) => setDateFilter(sel.presetId)}
-                        className="w-[180px] min-w-[80px] max-w-[180px]"
+                        className="min-w-[80px] max-w-[180px]"
                       />
                     </div>
                   </div>
@@ -500,6 +500,10 @@ export function DrAgentPage() {
                 {(vtFilter.length > 0 || slotConsult !== "all") && (
                   <div className="shrink-0 px-3 pb-3 sm:px-4 lg:px-[18px]">
                     <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-tp-slate-100 bg-tp-slate-50 px-3 py-2">
+                      <span className="shrink-0 text-[12px] font-semibold text-tp-slate-500">
+                        Filter: {activeFilterCount}
+                      </span>
+                      <span className="h-4 w-px shrink-0 bg-tp-slate-200" />
                       {slotConsult !== "all" && (
                         <FilterTag
                           label={`Slot: ${slotConsult === "video" ? "Video" : "In-Clinic"}`}
@@ -516,7 +520,7 @@ export function DrAgentPage() {
                       <button
                         type="button"
                         onClick={() => { setSlotConsult("all"); setVtFilter([]) }}
-                        className="ml-auto shrink-0 text-[12px] font-semibold text-tp-blue-500 underline underline-offset-2 decoration-tp-blue-300 hover:text-tp-blue-700 transition-colors"
+                        className="ml-auto shrink-0 text-[12px] font-semibold text-tp-warning-600 underline underline-offset-2 decoration-tp-warning-400 hover:text-tp-warning-700 transition-colors"
                       >
                         Clear all
                       </button>
@@ -530,7 +534,7 @@ export function DrAgentPage() {
                     ref={tableOverflowRef}
                     className="h-full overflow-auto px-3 pb-4 sm:px-4 lg:px-[18px]"
                   >
-                    <div className="min-w-[920px] overflow-hidden pt-1">
+                    <div className="min-w-[920px] pt-1">
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="rounded-[12px] bg-tp-slate-100">
@@ -597,64 +601,72 @@ export function DrAgentPage() {
                                   {row.serial}
                                 </td>
 
-                                <td className="overflow-hidden px-3 py-3 align-middle max-w-[220px]">
-                                  {/* Patient name: hover underline */}
-                                  <p className="cursor-pointer truncate text-sm font-semibold text-tp-blue-500 hover:underline">
-                                    {row.name}
-                                  </p>
-                                  <p className="mt-1 truncate text-sm text-tp-slate-700">
-                                    {row.gender}, {row.age}y
-                                    {row.starred && (
-                                      <span className="ml-1 text-[13px]">⭐</span>
-                                    )}
-                                  </p>
-                                </td>
-
-                                <td className="overflow-hidden px-3 py-3 align-middle max-w-[200px]">
-                                  <span className="block truncate text-sm text-tp-slate-700">
-                                    {row.contact}
-                                  </span>
-                                  {row.contactBadge && (
-                                    <span className="ml-2 inline-flex rounded-full bg-tp-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                                      {row.contactBadge}
-                                    </span>
-                                  )}
-                                </td>
-
-                                <td className="overflow-hidden px-3 py-3 align-middle text-sm text-tp-slate-700 max-w-[180px]">
-                                  <span className="truncate">{row.visitType}</span>
-                                  {row.visitBadge && (
-                                    <span
-                                      className={cn(
-                                        "ml-2 inline-flex rounded-full px-2 py-[2px] text-[10px] font-semibold",
-                                        row.visitBadge.tone === "warning"
-                                          ? "border border-tp-warning-200 bg-tp-warning-50 text-tp-warning-700"
-                                          : "bg-tp-success-100 text-tp-success-700",
+                                <td className="px-3 py-3 align-middle">
+                                  <div className="max-w-[200px] overflow-hidden">
+                                    {/* Patient name: hover underline */}
+                                    <p className="cursor-pointer truncate text-sm font-semibold text-tp-blue-500 hover:underline">
+                                      {row.name}
+                                    </p>
+                                    <p className="mt-1 truncate text-sm text-tp-slate-700">
+                                      {row.gender}, {row.age}y
+                                      {row.starred && (
+                                        <span className="ml-1 text-[13px]">⭐</span>
                                       )}
-                                    >
-                                      {row.visitBadge.text}
-                                    </span>
-                                  )}
-                                </td>
-
-                                <td className="overflow-hidden px-3 py-3 align-middle max-w-[160px]">
-                                  <div className="text-sm text-tp-slate-700">
-                                    <span className="inline-flex items-center gap-1">
-                                      {row.slotTime}
-                                      {row.hasVideo && (
-                                        <VideoConsultTooltip>
-                                          <Video
-                                            size={13}
-                                            variant="Bulk"
-                                            color="var(--tp-violet-500)"
-                                          />
-                                        </VideoConsultTooltip>
-                                      )}
-                                    </span>
+                                    </p>
                                   </div>
-                                  <p className="mt-1 text-xs text-tp-slate-600">
-                                    {row.slotDate}
-                                  </p>
+                                </td>
+
+                                <td className="px-3 py-3 align-middle">
+                                  <div className="max-w-[180px] overflow-hidden">
+                                    <span className="block truncate text-sm text-tp-slate-700">
+                                      {row.contact}
+                                    </span>
+                                    {row.contactBadge && (
+                                      <span className="inline-flex rounded-full bg-tp-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                                        {row.contactBadge}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+
+                                <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">
+                                  <div className="max-w-[160px] overflow-hidden">
+                                    <span className="truncate block">{row.visitType}</span>
+                                    {row.visitBadge && (
+                                      <span
+                                        className={cn(
+                                          "mt-0.5 inline-flex rounded-full px-2 py-[2px] text-[10px] font-semibold",
+                                          row.visitBadge.tone === "warning"
+                                            ? "border border-tp-warning-200 bg-tp-warning-50 text-tp-warning-700"
+                                            : "bg-tp-success-100 text-tp-success-700",
+                                        )}
+                                      >
+                                        {row.visitBadge.text}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+
+                                <td className="px-3 py-3 align-middle">
+                                  <div className="max-w-[150px] overflow-hidden">
+                                    <div className="text-sm text-tp-slate-700">
+                                      <span className="inline-flex items-center gap-1">
+                                        {row.slotTime}
+                                        {row.hasVideo && (
+                                          <VideoConsultTooltip>
+                                            <Video
+                                              size={13}
+                                              variant="Bulk"
+                                              color="var(--tp-violet-500)"
+                                            />
+                                          </VideoConsultTooltip>
+                                        )}
+                                      </span>
+                                    </div>
+                                    <p className="mt-1 truncate text-xs text-tp-slate-600">
+                                      {row.slotDate}
+                                    </p>
+                                  </div>
                                 </td>
 
                                 <td className={cn(
