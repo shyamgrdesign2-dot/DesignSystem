@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -58,6 +58,11 @@ function formatDate(d: Date) {
 
 function formatMonthYear(d: Date) {
   return d.toLocaleDateString("en-IN", { month: "long", year: "numeric" })
+}
+
+function formatInputDate(d: Date | null): string {
+  if (!d) return ""
+  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
 }
 
 // ─── Presets ──────────────────────────────────────────────────────────────────
@@ -121,16 +126,127 @@ function buildCalendarDays(viewDate: Date): Array<Date | null> {
   const year = viewDate.getFullYear()
   const month = viewDate.getMonth()
   const firstDay = new Date(year, month, 1)
-  // Monday-based: Sunday = 6, Monday = 0
   let startOffset = firstDay.getDay() - 1
   if (startOffset < 0) startOffset = 6
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const cells: Array<Date | null> = []
   for (let i = 0; i < startOffset; i++) cells.push(null)
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d))
-  // Pad to full rows
   while (cells.length % 7 !== 0) cells.push(null)
   return cells
+}
+
+// ─── Calendar Month Sub-component ─────────────────────────────────────────────
+
+interface CalendarMonthProps {
+  viewDate: Date
+  stagedStart: Date | null
+  stagedEnd: Date | null
+  pendingStart: Date | null
+  hoverDate: Date | null
+  onDayClick: (day: Date) => void
+  onDayHover: (day: Date | null) => void
+}
+
+function CalendarMonth({
+  viewDate,
+  stagedStart,
+  stagedEnd,
+  pendingStart,
+  hoverDate,
+  onDayClick,
+  onDayHover,
+}: CalendarMonthProps) {
+  // Effective display range (includes hover preview while selecting second date)
+  const effectiveRange: DateRange | null = (() => {
+    if (pendingStart && hoverDate) {
+      const [s, e] =
+        pendingStart <= hoverDate
+          ? [pendingStart, hoverDate]
+          : [hoverDate, pendingStart]
+      return { start: s, end: e }
+    }
+    if (stagedStart && stagedEnd) return { start: stagedStart, end: stagedEnd }
+    return null
+  })()
+
+  const isSingle =
+    effectiveRange ? isSameDay(effectiveRange.start, effectiveRange.end) : false
+  const calendarDays = buildCalendarDays(viewDate)
+
+  function isDayInRange(day: Date) {
+    if (!effectiveRange) return false
+    return day >= effectiveRange.start && day <= effectiveRange.end
+  }
+  function isDayStart(day: Date) {
+    return effectiveRange ? isSameDay(day, effectiveRange.start) : false
+  }
+  function isDayEnd(day: Date) {
+    return effectiveRange ? isSameDay(day, effectiveRange.end) : false
+  }
+  function isToday(day: Date) {
+    return isSameDay(day, new Date())
+  }
+
+  return (
+    <div className="w-[224px]">
+      {/* Weekday headers */}
+      <div className="mb-1 grid grid-cols-7">
+        {WEEKDAYS.map((w) => (
+          <div key={w} className="py-1 text-center text-[11px] font-semibold text-tp-slate-400">
+            {w}
+          </div>
+        ))}
+      </div>
+
+      {/* Day cells */}
+      <div className="grid grid-cols-7">
+        {calendarDays.map((day, i) => {
+          if (!day) return <div key={i} />
+
+          const inRange = isDayInRange(day)
+          const isStart = isDayStart(day)
+          const isEnd = isDayEnd(day)
+          const today = isToday(day)
+          const isEdge = isStart || isEnd
+          const isSingleDay = isSingle && isStart
+
+          return (
+            <div
+              key={i}
+              className={cn(
+                "relative flex h-8 items-center justify-center",
+                inRange && !isSingleDay && "bg-tp-blue-50",
+                isStart && !isSingleDay && "rounded-l-full",
+                isEnd && !isSingleDay && "rounded-r-full",
+              )}
+              onMouseEnter={() => pendingStart && onDayHover(day)}
+              onMouseLeave={() => pendingStart && onDayHover(null)}
+            >
+              <button
+                type="button"
+                onClick={() => onDayClick(day)}
+                className={cn(
+                  "relative z-10 flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-medium transition-colors",
+                  isEdge || isSingleDay
+                    ? "bg-tp-blue-500 text-white"
+                    : inRange
+                      ? "text-tp-blue-700 hover:bg-tp-blue-100"
+                      : "text-tp-slate-700 hover:bg-tp-slate-100",
+                  today && !isEdge && !inRange && "font-bold text-tp-blue-500",
+                )}
+              >
+                {day.getDate()}
+                {today && !isEdge && (
+                  <span className="absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-tp-blue-400" />
+                )}
+              </button>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -142,107 +258,134 @@ interface DateRangePickerProps {
 }
 
 export function DateRangePicker({ value, onChange, className }: DateRangePickerProps) {
-  const triggerLabel = PRESETS.find((p) => p.id === value)?.label ?? "Select date"
   const [open, setOpen] = useState(false)
-  const [viewDate, setViewDate] = useState(() => startOfDay(new Date()))
-  const [hoverDate, setHoverDate] = useState<Date | null>(null)
+  // Two-month view: left = month shown, right = left + 1
+  const [leftViewDate, setLeftViewDate] = useState(() => startOfDay(new Date()))
+  const rightViewDate = addMonths(leftViewDate, 1)
+
+  // Staged state (internal — only committed on Apply)
+  const [stagedPreset, setStagedPreset] = useState<DatePresetId>(value)
+  const [stagedStart, setStagedStart] = useState<Date | null>(null)
+  const [stagedEnd, setStagedEnd] = useState<Date | null>(null)
+
+  // Two-click range selection state
   const [pendingStart, setPendingStart] = useState<Date | null>(null)
-  const [activePreset, setActivePreset] = useState<DatePresetId>(value)
-  const [customRange, setCustomRange] = useState<DateRange | null>(null)
+  const [hoverDate, setHoverDate] = useState<Date | null>(null)
+
+  // Derive trigger label from external committed value
+  const triggerLabel = PRESETS.find((p) => p.id === value)?.label ?? "Select date"
 
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (!containerRef.current?.contains(e.target as Node)) setOpen(false)
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setOpen(false)
+      }
     }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
   }, [])
 
-  // When preset changes externally, reset
+  // When external value changes, reset staged state
   useEffect(() => {
-    setActivePreset(value)
-    setCustomRange(null)
+    setStagedPreset(value)
+    const preset = PRESETS.find((p) => p.id === value)
+    if (preset) {
+      const r = preset.getRange()
+      setStagedStart(r.start)
+      setStagedEnd(r.end)
+    }
     setPendingStart(null)
   }, [value])
 
-  // Derived: what range is currently highlighted in the calendar
-  const displayRange: DateRange | null = (() => {
-    if (pendingStart && hoverDate) {
-      const [s, e] = pendingStart <= hoverDate
-        ? [pendingStart, hoverDate]
-        : [hoverDate, pendingStart]
-      return { start: s, end: e }
+  function openPicker() {
+    // Re-init staged from current committed value when opening
+    setStagedPreset(value)
+    const preset = PRESETS.find((p) => p.id === value)
+    if (preset) {
+      const r = preset.getRange()
+      setStagedStart(r.start)
+      setStagedEnd(r.end)
     }
-    if (customRange) return customRange
-    const preset = PRESETS.find((p) => p.id === activePreset)
-    return preset ? preset.getRange() : null
-  })()
+    setPendingStart(null)
+    setHoverDate(null)
+    setOpen(true)
+  }
+
+  function handlePresetClick(preset: (typeof PRESETS)[number]) {
+    setStagedPreset(preset.id)
+    const range = preset.getRange()
+    setStagedStart(range.start)
+    setStagedEnd(range.end)
+    setPendingStart(null)
+  }
 
   function handleDayClick(day: Date) {
     if (!pendingStart) {
       // First click — start of range
       setPendingStart(day)
+      setStagedStart(day)
+      setStagedEnd(null)
+      setStagedPreset("today") // clear preset highlight while custom selecting
     } else {
       // Second click — complete range
-      const [start, end] = pendingStart <= day
-        ? [pendingStart, day]
-        : [day, pendingStart]
-      const range = { start, end }
-      setCustomRange(range)
+      const [start, end] =
+        pendingStart <= day ? [pendingStart, day] : [day, pendingStart]
+      setStagedStart(start)
+      setStagedEnd(end)
       setPendingStart(null)
-      setActivePreset("today") // clear preset highlight
-
-      // Fire onChange with custom preset-like shape
-      onChange({
-        type: "preset",
-        presetId: "today", // placeholder; caller can check range
-        range,
-        label: `${formatDate(start)} – ${formatDate(end)}`,
-      })
-      setOpen(false)
     }
   }
 
-  function handlePresetClick(preset: (typeof PRESETS)[number]) {
-    setActivePreset(preset.id)
-    setCustomRange(null)
-    setPendingStart(null)
-    const range = preset.getRange()
-    onChange({ type: "preset", presetId: preset.id, range, label: preset.label })
+  function handleApply() {
+    if (stagedStart && stagedEnd) {
+      const range = { start: stagedStart, end: stagedEnd }
+      const preset = PRESETS.find((p) => p.id === stagedPreset)
+      onChange({
+        type: "preset",
+        presetId: stagedPreset,
+        range,
+        label: preset
+          ? preset.label
+          : `${formatDate(stagedStart)} – ${formatDate(stagedEnd)}`,
+      })
+    }
     setOpen(false)
   }
 
-  function isDayInRange(day: Date) {
-    if (!displayRange) return false
-    return day >= displayRange.start && day <= displayRange.end
+  function handleCancel() {
+    setOpen(false)
+    // Discard staged changes — reset on next open
   }
-  function isDayStart(day: Date) {
-    return displayRange ? isSameDay(day, displayRange.start) : false
-  }
-  function isDayEnd(day: Date) {
-    return displayRange ? isSameDay(day, displayRange.end) : false
-  }
-  function isToday(day: Date) {
-    return isSameDay(day, new Date())
-  }
-  const isSingleDay =
-    displayRange ? isSameDay(displayRange.start, displayRange.end) : false
 
-  const calendarDays = buildCalendarDays(viewDate)
+  function handleClear() {
+    const todayPreset = PRESETS.find((p) => p.id === "today")!
+    const range = todayPreset.getRange()
+    setStagedPreset("today")
+    setStagedStart(range.start)
+    setStagedEnd(range.end)
+    setPendingStart(null)
+  }
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
-      {/* Trigger */}
+      {/* Trigger button */}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => (open ? setOpen(false) : openPicker())}
         className="inline-flex h-[38px] w-full items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700 transition-colors hover:border-tp-slate-300 hover:bg-tp-slate-50"
       >
         <span className="inline-flex min-w-0 items-center gap-1.5 truncate">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="shrink-0 text-tp-slate-500">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+            className="shrink-0 text-tp-slate-500"
+          >
             <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.5" />
             <path d="M3 9h18" stroke="currentColor" strokeWidth="1.5" />
             <path d="M8 2v4M16 2v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -261,115 +404,175 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
 
       {/* Popover */}
       {open && (
-        <div className="absolute right-0 top-[44px] z-40 flex overflow-hidden rounded-[14px] border border-tp-slate-200 bg-white shadow-[0_16px_32px_-8px_rgba(23,23,37,0.12)]">
-          {/* Left: Presets */}
-          <div className="flex w-[160px] shrink-0 flex-col gap-0.5 border-r border-tp-slate-100 p-2">
-            <p className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">
-              Quick Select
-            </p>
-            {PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => handlePresetClick(preset)}
-                className={cn(
-                  "flex w-full items-center rounded-[8px] px-2 py-2 text-left text-[13px] font-medium transition-colors",
-                  preset.id === activePreset && !customRange
-                    ? "bg-tp-blue-500 text-white"
-                    : "text-tp-slate-700 hover:bg-tp-slate-100",
-                )}
-              >
-                {preset.label}
-              </button>
-            ))}
-            {pendingStart && (
-              <p className="mt-2 rounded-[8px] bg-tp-amber-50 px-2 py-1.5 text-[11px] text-tp-warning-700">
-                Click a second date to complete the range
+        <div
+          className="absolute right-0 top-[44px] z-40 overflow-y-auto rounded-[14px] border border-tp-slate-200 bg-white shadow-[0_16px_32px_-8px_rgba(23,23,37,0.14)]"
+          style={{ minWidth: 620, maxHeight: "calc(100vh - 270px)" }}
+        >
+          <div className="flex">
+            {/* Left: Quick-select presets */}
+            <div className="flex w-[148px] shrink-0 flex-col gap-0.5 border-r border-tp-slate-100 p-2">
+              <p className="px-2 pb-1 pt-1 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">
+                Quick Select
               </p>
-            )}
-          </div>
-
-          {/* Right: Calendar */}
-          <div className="flex w-[272px] flex-col p-3">
-            {/* Month nav */}
-            <div className="mb-3 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setViewDate((d) => addMonths(d, -1))}
-                className="flex size-7 items-center justify-center rounded-[8px] text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
-                aria-label="Previous month"
-              >
-                <ChevronLeft size={16} strokeWidth={1.5} />
-              </button>
-              <span className="text-[13px] font-semibold text-tp-slate-800">
-                {formatMonthYear(viewDate)}
-              </span>
-              <button
-                type="button"
-                onClick={() => setViewDate((d) => addMonths(d, 1))}
-                className="flex size-7 items-center justify-center rounded-[8px] text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
-                aria-label="Next month"
-              >
-                <ChevronRight size={16} strokeWidth={1.5} />
-              </button>
-            </div>
-
-            {/* Weekday headers */}
-            <div className="mb-1 grid grid-cols-7">
-              {WEEKDAYS.map((w) => (
-                <div key={w} className="py-1 text-center text-[11px] font-semibold text-tp-slate-400">
-                  {w}
-                </div>
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handlePresetClick(preset)}
+                  className={cn(
+                    "flex w-full items-center rounded-[8px] px-2 py-2 text-left text-[13px] font-medium transition-colors",
+                    preset.id === stagedPreset && stagedStart && stagedEnd
+                      ? "bg-tp-blue-500 text-white"
+                      : "text-tp-slate-700 hover:bg-tp-slate-100",
+                  )}
+                >
+                  {preset.label}
+                </button>
               ))}
+
+              {pendingStart && (
+                <p className="mt-2 rounded-[8px] bg-tp-amber-50 px-2 py-1.5 text-[11px] text-tp-warning-700 leading-tight">
+                  Click a second date to complete the range
+                </p>
+              )}
             </div>
 
-            {/* Day cells */}
-            <div className="grid grid-cols-7">
-              {calendarDays.map((day, i) => {
-                if (!day) return <div key={i} />
-
-                const inRange = isDayInRange(day)
-                const isStart = isDayStart(day)
-                const isEnd = isDayEnd(day)
-                const today = isToday(day)
-                const isEdge = isStart || isEnd
-                const isSingle = isSingleDay && isStart
-
-                return (
+            {/* Right: Two-month calendars + inputs + actions */}
+            <div className="flex flex-1 flex-col p-4">
+              {/* Date range input displays */}
+              <div className="mb-4 flex items-end gap-3">
+                <div className="flex-1">
+                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">
+                    Start Date
+                  </p>
                   <div
-                    key={i}
                     className={cn(
-                      "relative flex h-8 items-center justify-center",
-                      // Range band (not for single-day)
-                      inRange && !isSingle && "bg-tp-blue-50",
-                      // Clip left/right corners of range band at edges
-                      isStart && !isSingle && "rounded-l-full",
-                      isEnd && !isSingle && "rounded-r-full",
+                      "flex h-[34px] items-center rounded-[8px] border px-3 text-[13px]",
+                      stagedStart
+                        ? "border-tp-blue-200 bg-tp-blue-50 text-tp-blue-700"
+                        : "border-tp-slate-200 bg-tp-slate-50 text-tp-slate-400",
                     )}
-                    onMouseEnter={() => pendingStart && setHoverDate(day)}
-                    onMouseLeave={() => pendingStart && setHoverDate(null)}
                   >
+                    {stagedStart
+                      ? formatInputDate(stagedStart)
+                      : "Select start date"}
+                  </div>
+                </div>
+
+                <div className="mb-1 h-px w-4 shrink-0 bg-tp-slate-300" />
+
+                <div className="flex-1">
+                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">
+                    End Date
+                  </p>
+                  <div
+                    className={cn(
+                      "flex h-[34px] items-center rounded-[8px] border px-3 text-[13px]",
+                      stagedEnd
+                        ? "border-tp-blue-200 bg-tp-blue-50 text-tp-blue-700"
+                        : "border-tp-slate-200 bg-tp-slate-50 text-tp-slate-400",
+                    )}
+                  >
+                    {stagedEnd
+                      ? formatInputDate(stagedEnd)
+                      : pendingStart
+                        ? "Click to set end date"
+                        : "Select end date"}
+                  </div>
+                </div>
+              </div>
+
+              {/* Two calendar months side by side */}
+              <div className="flex gap-5">
+                {/* Left month */}
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
                     <button
                       type="button"
-                      onClick={() => handleDayClick(day)}
-                      className={cn(
-                        "relative z-10 flex h-7 w-7 items-center justify-center rounded-full text-[13px] font-medium transition-colors",
-                        isEdge || isSingle
-                          ? "bg-tp-blue-500 text-white"
-                          : inRange
-                            ? "text-tp-blue-700 hover:bg-tp-blue-100"
-                            : "text-tp-slate-700 hover:bg-tp-slate-100",
-                        today && !isEdge && !inRange && "font-bold text-tp-blue-500",
-                      )}
+                      onClick={() => setLeftViewDate((d) => addMonths(d, -1))}
+                      className="flex size-7 items-center justify-center rounded-[8px] text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
+                      aria-label="Previous month"
                     >
-                      {day.getDate()}
-                      {today && !isEdge && (
-                        <span className="absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-tp-blue-400" />
-                      )}
+                      <ChevronLeft size={16} strokeWidth={1.5} />
+                    </button>
+                    <span className="text-[13px] font-semibold text-tp-slate-800">
+                      {formatMonthYear(leftViewDate)}
+                    </span>
+                    {/* Empty spacer to balance layout */}
+                    <div className="size-7" />
+                  </div>
+                  <CalendarMonth
+                    viewDate={leftViewDate}
+                    stagedStart={stagedStart}
+                    stagedEnd={stagedEnd}
+                    pendingStart={pendingStart}
+                    hoverDate={hoverDate}
+                    onDayClick={handleDayClick}
+                    onDayHover={setHoverDate}
+                  />
+                </div>
+
+                {/* Divider */}
+                <div className="w-px bg-tp-slate-100" />
+
+                {/* Right month */}
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    {/* Empty spacer to balance layout */}
+                    <div className="size-7" />
+                    <span className="text-[13px] font-semibold text-tp-slate-800">
+                      {formatMonthYear(rightViewDate)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setLeftViewDate((d) => addMonths(d, 1))}
+                      className="flex size-7 items-center justify-center rounded-[8px] text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
+                      aria-label="Next month"
+                    >
+                      <ChevronRight size={16} strokeWidth={1.5} />
                     </button>
                   </div>
-                )
-              })}
+                  <CalendarMonth
+                    viewDate={rightViewDate}
+                    stagedStart={stagedStart}
+                    stagedEnd={stagedEnd}
+                    pendingStart={pendingStart}
+                    hoverDate={hoverDate}
+                    onDayClick={handleDayClick}
+                    onDayHover={setHoverDate}
+                  />
+                </div>
+              </div>
+
+              {/* Action row: Clear | Cancel + Apply */}
+              <div className="mt-4 flex items-center justify-between border-t border-tp-slate-100 pt-3">
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="inline-flex items-center gap-1.5 rounded-[8px] px-3 py-1.5 text-[13px] font-medium text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
+                >
+                  <X size={13} strokeWidth={2} />
+                  Clear
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="rounded-[8px] border border-tp-slate-200 px-4 py-1.5 text-[13px] font-medium text-tp-slate-700 transition-colors hover:bg-tp-slate-100"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleApply}
+                    disabled={!stagedStart || !stagedEnd}
+                    className="rounded-[8px] bg-tp-blue-500 px-4 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-tp-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -377,4 +580,3 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
     </div>
   )
 }
-

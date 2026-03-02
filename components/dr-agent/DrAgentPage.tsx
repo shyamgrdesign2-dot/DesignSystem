@@ -21,7 +21,7 @@ import {
   TickCircle,
   Video,
 } from "iconsax-reactjs"
-import { ChevronDown, MoreVertical, Plus } from "lucide-react"
+import { ChevronDown, MoreVertical, Plus, Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { SecondaryNavPanel, type NavItem } from "@/components/ui/secondary-nav-panel"
@@ -214,7 +214,7 @@ function matchesDateFilter(rowDateKey: DateRangeKey, selected: DatePresetId) {
   if (selected === "past-3-months" || selected === "next-3-months") {
     return rowDateKey === "today" || rowDateKey === "yesterday" || rowDateKey === "past-3-months"
   }
-  // past-4-months, next-4-months, or custom → show all
+  // past-4-months, next-4-months → show all
   return true
 }
 
@@ -279,8 +279,10 @@ export function DrAgentPage() {
         </aside>
 
         <main className="flex-1 overflow-hidden">
-          <section className="h-full overflow-y-auto">
-            <div className="px-3 py-3 md:hidden">
+          {/* STICKY LAYOUT: section is a flex column — only the table body scrolls */}
+          <section className="flex h-full flex-col overflow-hidden">
+            {/* Mobile nav strip — fixed, no scroll */}
+            <div className="shrink-0 px-3 py-3 md:hidden">
               <div className="flex items-center gap-2 overflow-x-auto">
                 {navItems.map((item) => {
                   const isActive = item.id === activeRailItem
@@ -303,37 +305,44 @@ export function DrAgentPage() {
               </div>
             </div>
 
-            <AppointmentBanner
-              title="Your Appointments"
-              actions={
-                <>
-                  <Button
-                    variant="outline"
-                    theme="primary"
-                    size="md"
-                    surface="dark"
-                    className="whitespace-nowrap !bg-[rgba(255,255,255,0.13)] backdrop-blur-sm"
-                    leftIcon={<Plus size={20} strokeWidth={1.5} />}
-                  >
-                    Add Appointment
-                  </Button>
-                  <Button
-                    variant="solid"
-                    theme="primary"
-                    size="md"
-                    surface="dark"
-                    className="whitespace-nowrap"
-                    leftIcon={<TickCircle size={24} variant="Linear" strokeWidth={1.5} />}
-                  >
-                    Start Walk-In
-                  </Button>
-                </>
-              }
-            />
+            {/* Banner — fixed, shrinks to natural height */}
+            <div className="shrink-0">
+              <AppointmentBanner
+                title="Your Appointments"
+                actions={
+                  <>
+                    <Button
+                      variant="outline"
+                      theme="primary"
+                      size="md"
+                      surface="dark"
+                      className="whitespace-nowrap !bg-[rgba(255,255,255,0.13)] backdrop-blur-sm"
+                      leftIcon={<Plus size={20} strokeWidth={1.5} />}
+                    >
+                      Add Appointment
+                    </Button>
+                    <Button
+                      variant="solid"
+                      theme="primary"
+                      size="md"
+                      surface="dark"
+                      className="whitespace-nowrap"
+                      leftIcon={<TickCircle size={24} variant="Linear" strokeWidth={1.5} />}
+                    >
+                      Start Walk-In
+                    </Button>
+                  </>
+                }
+              />
+            </div>
 
-            <div className="relative z-10 -mt-[60px] px-3 pb-6 sm:px-4 lg:px-6">
-              <div className="rounded-2xl border border-tp-slate-200 bg-white">
-                <div className="overflow-x-auto border-b border-tp-slate-100 px-2 pt-2 sm:px-4 sm:pt-3 lg:px-[18px] lg:pt-[18px]">
+            {/* Card — flex-1 so it takes all remaining height; overlaps banner by 60px */}
+            {/* Note: no overflow-hidden here — the date picker popover must be able to escape */}
+            <div className="relative z-10 -mt-[60px] flex flex-1 flex-col px-3 pb-6 sm:px-4 lg:px-6">
+              <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-tp-slate-200 bg-white">
+
+                {/* Tabs row — fixed, does not scroll vertically */}
+                <div className="shrink-0 overflow-x-auto border-b border-tp-slate-100 px-2 pt-2 sm:px-4 sm:pt-3 lg:px-[18px] lg:pt-[18px]">
                   <div className="flex min-w-max items-center gap-0">
                     {appointmentTabs.map((tab) => {
                       const isActive = activeTab === tab.id
@@ -346,7 +355,10 @@ export function DrAgentPage() {
                           onClick={() => setActiveTab(tab.id)}
                           className={cn(
                             "group relative flex shrink-0 flex-col gap-2 rounded-t-lg px-3 pb-0 pt-1 transition-colors",
-                            isActive ? "text-tp-blue-500" : "text-tp-slate-700 hover:text-tp-blue-400",
+                            // hover: only background changes, text color stays same
+                            isActive
+                              ? "text-tp-blue-500"
+                              : "text-tp-slate-700 hover:bg-tp-slate-100",
                           )}
                           aria-pressed={isActive}
                         >
@@ -376,8 +388,9 @@ export function DrAgentPage() {
                   </div>
                 </div>
 
-                <div className="px-3 py-4 sm:px-4 lg:px-[18px] lg:py-6">
-                  <div className="mb-4 flex flex-row flex-nowrap items-center justify-between gap-[60px]">
+                {/* Filter bar — fixed, does not scroll */}
+                <div className="shrink-0 px-3 pt-4 pb-3 sm:px-4 lg:px-[18px] lg:pt-5 lg:pb-4">
+                  <div className="flex flex-row flex-nowrap items-center justify-between gap-[60px]">
                     <label className="relative w-[420px] min-w-[250px]">
                       <SearchNormal1
                         size={20}
@@ -400,9 +413,15 @@ export function DrAgentPage() {
                       className="w-[180px] min-w-[150px] max-w-[180px]"
                     />
                   </div>
+                </div>
 
-                  <div ref={tableOverflowRef} className="overflow-x-auto pb-1">
-                    <div className="min-w-[920px]">
+                {/* Table — flex-1, only this area scrolls */}
+                <div className="flex-1 overflow-hidden">
+                  <div
+                    ref={tableOverflowRef}
+                    className="h-full overflow-auto px-3 pb-4 sm:px-4 lg:px-[18px]"
+                  >
+                    <div className="min-w-[920px] pt-1">
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="rounded-[12px] bg-tp-slate-100">
@@ -457,7 +476,8 @@ export function DrAgentPage() {
                                 </td>
 
                                 <td className="px-3 py-3 align-middle">
-                                  <p className="text-sm font-semibold text-tp-blue-500">
+                                  {/* Patient name: hover underline */}
+                                  <p className="cursor-pointer text-sm font-semibold text-tp-blue-500 hover:underline">
                                     {row.name}
                                   </p>
                                   <p className="mt-1 text-sm text-tp-slate-700">
@@ -537,7 +557,7 @@ export function DrAgentPage() {
                                     <button
                                       type="button"
                                       aria-label="AI action"
-                                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-opacity hover:opacity-90"
+                                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105"
                                       style={{
                                         background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)",
                                       }}
@@ -562,6 +582,7 @@ export function DrAgentPage() {
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
           </section>
@@ -570,6 +591,8 @@ export function DrAgentPage() {
     </div>
   )
 }
+
+// ─── Sub-components ────────────────────────────────────────────────────────────
 
 function AiSparkIcon() {
   return (
@@ -607,18 +630,50 @@ function SortIndicators() {
   )
 }
 
+// ─── Hexagonal play-button icon (VideoTutorialIcon) ───────────────────────────
+
+function VideoTutorialIcon({
+  size = 24,
+  color = "#000000",
+}: {
+  size?: number
+  color?: string
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={color}
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path
+        d="M19.5099 5.85L13.5699 2.42C12.5999 1.86 11.3999 1.86 10.4199 2.42L4.48992 5.85C3.51992 6.41 2.91992 7.45 2.91992 8.58V15.42C2.91992 16.54 3.51992 17.58 4.48992 18.15L10.4299 21.58C11.3999 22.14 12.5999 22.14 13.5799 21.58L19.5199 18.15C20.4899 17.59 21.0899 16.55 21.0899 15.42V8.58C21.0799 7.45 20.4799 6.42 19.5099 5.85ZM14.2499 13.4L13.2099 14L12.1699 14.6C10.8399 15.37 9.74992 14.74 9.74992 13.2V12V10.8C9.74992 9.26 10.8399 8.63 12.1699 9.4L13.2099 10L14.2499 10.6C15.5799 11.37 15.5799 12.63 14.2499 13.4Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+// ─── Clinic data ──────────────────────────────────────────────────────────────
+
 const DUMMY_CLINICS = [
-  { id: "rajeshwar", name: "Rajeshwar Eye Clinic", selected: true },
+  { id: "rajeshwar", name: "Rajeshwar Eye Clinic" },
   { id: "city", name: "City Medical Centre" },
   { id: "sunrise", name: "Sunrise Hospital" },
   { id: "apollo", name: "Apollo Clinic, Banjara Hills" },
   { id: "care", name: "Care Diagnostics" },
 ]
 
+// ─── TopHeader ────────────────────────────────────────────────────────────────
+
 function TopHeader() {
   const [isClinicMenuOpen, setClinicMenuOpen] = useState(false)
   const [activeClinic, setActiveClinic] = useState(DUMMY_CLINICS[0].id)
+  const [clinicSearch, setClinicSearch] = useState("")
   const clinicMenuRef = useRef<HTMLDivElement | null>(null)
+  const clinicSearchRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
@@ -630,7 +685,19 @@ function TopHeader() {
     return () => document.removeEventListener("mousedown", onPointerDown)
   }, [])
 
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (isClinicMenuOpen) {
+      setClinicSearch("")
+      setTimeout(() => clinicSearchRef.current?.focus(), 50)
+    }
+  }, [isClinicMenuOpen])
+
   const activeClinicName = DUMMY_CLINICS.find((c) => c.id === activeClinic)?.name ?? "Clinic"
+
+  const filteredClinics = DUMMY_CLINICS.filter((c) =>
+    c.name.toLowerCase().includes(clinicSearch.toLowerCase()),
+  )
 
   return (
     <header className="flex h-[62px] shrink-0 items-center border-b border-tp-slate-100 bg-tp-slate-0 px-4 py-2.5">
@@ -643,12 +710,13 @@ function TopHeader() {
       </div>
 
       <div className="flex items-center gap-3.5">
+        {/* Tutorial icon — hexagonal play button */}
         <button
           type="button"
-          className="flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-600 transition-colors hover:bg-tp-slate-200"
+          className="flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 transition-colors hover:bg-tp-slate-200"
           aria-label="Play tutorial"
         >
-          <Video size={20} variant="Linear" strokeWidth={1.5} color="#BA7DE9" />
+          <VideoTutorialIcon size={20} color="#BA7DE9" />
         </button>
 
         <button
@@ -662,6 +730,7 @@ function TopHeader() {
 
         <div className="h-[42px] w-px bg-tp-slate-300 opacity-80" />
 
+        {/* Clinic selector with search + scrollable list */}
         <div className="relative hidden sm:block" ref={clinicMenuRef}>
           <button
             type="button"
@@ -683,41 +752,68 @@ function TopHeader() {
           </button>
 
           {isClinicMenuOpen && (
-            <div className="absolute right-0 top-[46px] z-50 min-w-[220px] overflow-hidden rounded-[12px] border border-tp-slate-200 bg-white shadow-[0_12px_24px_-4px_rgba(23,23,37,0.10)]">
-              <p className="px-3 pb-1 pt-2.5 text-[11px] font-semibold uppercase tracking-wide text-tp-slate-400">
-                Your Clinics
-              </p>
-              {DUMMY_CLINICS.map((clinic) => (
-                <button
-                  key={clinic.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveClinic(clinic.id)
-                    setClinicMenuOpen(false)
-                  }}
-                  className={cn(
-                    "flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors",
-                    clinic.id === activeClinic
-                      ? "bg-tp-blue-50 text-tp-blue-700"
-                      : "text-tp-slate-700 hover:bg-tp-slate-50",
-                  )}
-                >
-                  <Hospital
-                    size={16}
-                    variant={clinic.id === activeClinic ? "Bulk" : "Linear"}
+            <div className="absolute right-0 top-[46px] z-50 w-[240px] overflow-hidden rounded-[12px] border border-tp-slate-200 bg-white shadow-[0_12px_24px_-4px_rgba(23,23,37,0.10)]">
+              {/* Search input */}
+              <div className="border-b border-tp-slate-100 p-2">
+                <div className="relative">
+                  <Search
+                    size={14}
                     strokeWidth={1.5}
-                    color={clinic.id === activeClinic ? "var(--tp-blue-500)" : "var(--tp-slate-500)"}
+                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-tp-slate-400"
                   />
-                  <span className="flex-1 truncate">{clinic.name}</span>
-                  {clinic.id === activeClinic && (
-                    <TickCircle size={14} variant="Bold" color="var(--tp-blue-500)" />
-                  )}
-                </button>
-              ))}
+                  <input
+                    ref={clinicSearchRef}
+                    type="text"
+                    value={clinicSearch}
+                    onChange={(e) => setClinicSearch(e.target.value)}
+                    placeholder="Search clinics..."
+                    className="h-[32px] w-full rounded-[8px] border border-tp-slate-200 bg-tp-slate-50 pl-7 pr-2 text-[13px] text-tp-slate-700 placeholder:text-tp-slate-400 focus:border-tp-blue-300 focus:outline-none focus:ring-1 focus:ring-tp-blue-200"
+                  />
+                </div>
+              </div>
+
+              {/* Clinic list — scrollable when many items */}
+              <div className="max-h-[200px] overflow-y-auto py-1">
+                <p className="px-3 pb-1 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-tp-slate-400">
+                  Your Clinics
+                </p>
+                {filteredClinics.length === 0 ? (
+                  <p className="px-3 py-3 text-[13px] text-tp-slate-400">No clinics found</p>
+                ) : (
+                  filteredClinics.map((clinic) => (
+                    <button
+                      key={clinic.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveClinic(clinic.id)
+                        setClinicMenuOpen(false)
+                      }}
+                      className={cn(
+                        "flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors",
+                        clinic.id === activeClinic
+                          ? "bg-tp-blue-50 text-tp-blue-700"
+                          : "text-tp-slate-700 hover:bg-tp-slate-50",
+                      )}
+                    >
+                      <Hospital
+                        size={16}
+                        variant={clinic.id === activeClinic ? "Bulk" : "Linear"}
+                        strokeWidth={1.5}
+                        color={clinic.id === activeClinic ? "var(--tp-blue-500)" : "var(--tp-slate-500)"}
+                      />
+                      <span className="flex-1 truncate">{clinic.name}</span>
+                      {clinic.id === activeClinic && (
+                        <TickCircle size={14} variant="Bold" color="var(--tp-blue-500)" />
+                      )}
+                    </button>
+                  ))
+                )}
+              </div>
             </div>
           )}
         </div>
 
+        {/* Avatar */}
         <button
           type="button"
           className="relative inline-flex size-[42px] items-center justify-center rounded-full transition-opacity hover:opacity-80"
@@ -739,4 +835,3 @@ function TopHeader() {
     </header>
   )
 }
-

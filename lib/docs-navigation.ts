@@ -119,6 +119,18 @@ export const docsNavigation: NavGroup[] = [
       },
     ],
   },
+  {
+    label: "Live Screens",
+    items: [
+      {
+        id: "appointment-screen",
+        label: "Appointment Screen",
+        href: "/dr-agent",
+        icon: "AppointmentScreen",
+        description: "Full appointment queue with tabs, filters, prescription actions, and AI-assisted workflow",
+      },
+    ],
+  },
 ]
 
 /** Flat list of all navigation items for search */
