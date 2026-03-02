@@ -3,25 +3,29 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import {
-  Activity,
-  Bag2,
-  Calendar,
+  Calendar2,
   CalendarAdd,
-  CloseCircle,
+  ClipboardClose,
+  ClipboardText,
+  ClipboardTick,
   Clock,
-  DocumentText,
+  DocumentLike,
+  DocumentSketch,
+  Flash,
   Hospital,
-  MessageQuestion,
-  MessageText,
-  Monitor,
+  MessageCircle,
+  MessageProgramming,
+  Messages2,
   Notification,
   Profile2User,
+  Timer,
   ReceiptText,
   SearchNormal1,
+  Shop,
   TickCircle,
   Video,
 } from "iconsax-reactjs"
-import { Check, ChevronDown, ListFilter, MoreVertical, Plus, Search, X } from "lucide-react"
+import { Check, ChevronDown, ListFilter, MoreVertical, Plus, Search, Star, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { SecondaryNavPanel, type NavItem } from "@/components/ui/secondary-nav-panel"
@@ -31,6 +35,7 @@ import {
 } from "@/components/tp-ui/button-system"
 import { AppointmentBanner } from "@/components/appointments/AppointmentBanner"
 import { DateRangePicker, type DatePresetId } from "@/components/ui/date-range-picker"
+import { TPTag } from "@/components/tp-ui/tp-tag"
 
 const REF_LOGO = "/assets/b38df11ad80d11b9c1d530142443a18c2f53d406.png"
 const REF_AVATAR = "/assets/52cb18088c5b8a5db6a7711c9900d7d08a1bac42.png"
@@ -74,11 +79,11 @@ interface AppointmentRow {
 }
 
 const navItems: NavItem[] = [
-  { id: "appointments", label: "Appointm...", icon: Calendar },
+  { id: "appointments", label: "TP Appointment Screen", icon: Calendar2 },
   {
     id: "ask-tatva",
     label: "Ask Tatva",
-    icon: MessageQuestion,
+    icon: Messages2,
     badge: {
       text: "New",
       gradient:
@@ -97,22 +102,22 @@ const navItems: NavItem[] = [
   },
   { id: "all-patients", label: "All Patients", icon: Profile2User },
   { id: "follow-ups", label: "Follow-ups", icon: CalendarAdd },
-  { id: "pharmacy", label: "Pharmacy", icon: Bag2 },
-  { id: "ipd", label: "IPD", icon: Monitor },
-  { id: "daycare", label: "Daycare", icon: Hospital },
-  { id: "bulk-messages", label: "Bulk Messages", icon: MessageText },
+  { id: "pharmacy", label: "Pharmacy", icon: Shop },
+  { id: "ipd", label: "IPD", icon: Hospital },
+  { id: "daycare", label: "Daycare", icon: DocumentLike },
+  { id: "bulk-messages", label: "Bulk Messages", icon: MessageProgramming },
 ]
 
 const appointmentTabs: AppointmentTab[] = [
   { id: "queue", label: "Queue", count: 20, icon: Clock },
-  { id: "finished", label: "Finished", count: 0, icon: TickCircle },
-  { id: "cancelled", label: "Cancelled", count: 0, icon: CloseCircle },
-  { id: "draft", label: "Draft", count: 0, icon: DocumentText },
+  { id: "finished", label: "Finished", count: 0, icon: ClipboardTick },
+  { id: "cancelled", label: "Cancelled", count: 0, icon: ClipboardClose },
+  { id: "draft", label: "Draft", count: 0, icon: Timer },
   {
     id: "pending-digitisation",
     label: "Pending Digitisation",
     count: 0,
-    icon: Activity,
+    icon: DocumentSketch,
   },
 ]
 
@@ -228,11 +233,31 @@ function matchesDateFilter(rowDateKey: DateRangeKey, selected: DatePresetId) {
   return true
 }
 
+const TAB_EMPTY_MESSAGES: Record<AppointmentStatus, string> = {
+  "queue":                "There are no patients in the queue right now",
+  "finished":             "You haven't finished any consultations yet",
+  "cancelled":            "Nothing here — you haven't cancelled any appointments",
+  "draft":                "You haven't saved any drafts yet",
+  "pending-digitisation": "No pending digitisations right now",
+}
+
+const TAB_EMPTY_ICONS: Record<AppointmentStatus, React.ComponentType<any>> = {
+  "queue":                Clock,
+  "finished":             ClipboardTick,
+  "cancelled":            ClipboardClose,
+  "draft":                ClipboardText,
+  "pending-digitisation": DocumentSketch,
+}
+
 export function DrAgentPage() {
   const [activeRailItem, setActiveRailItem] = useState(navItems[0].id)
   const [activeTab, setActiveTab] = useState<AppointmentStatus>("queue")
   const [query, setQuery] = useState("")
-  const [dateFilter, setDateFilter] = useState<DatePresetId>("today")
+  const [tabDateFilters, setTabDateFilters] = useState<Partial<Record<AppointmentStatus, DatePresetId>>>({})
+  const dateFilter = tabDateFilters[activeTab] ?? "today"
+  function setDateFilter(id: DatePresetId) {
+    setTabDateFilters((prev) => ({ ...prev, [activeTab]: id }))
+  }
   const tableOverflowRef = useRef<HTMLDivElement | null>(null)
   const [isTableScrolled, setIsTableScrolled] = useState(false)
 
@@ -257,16 +282,6 @@ export function DrAgentPage() {
   const [filterMounted, setFilterMounted] = useState(false)
   useEffect(() => { setFilterMounted(true) }, [])
 
-  useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (filterPanelRef.current?.contains(e.target as Node)) return
-      if (filterBtnRef.current?.contains(e.target as Node)) return
-      setFilterOpen(false)
-    }
-    document.addEventListener("mousedown", handler)
-    return () => document.removeEventListener("mousedown", handler)
-  }, [])
-
   function handleFilterBtnClick() {
     if (filterOpen) { setFilterOpen(false); return }
     const rect = filterBtnRef.current!.getBoundingClientRect()
@@ -274,7 +289,8 @@ export function DrAgentPage() {
     setFilterOpen(true)
   }
 
-  const activeFilterCount = (vtFilter.length > 0 ? 1 : 0) + (slotConsult !== "all" ? 1 : 0)
+  const activeFilterCount = vtFilter.length + (slotConsult !== "all" ? 1 : 0)
+  const hasActiveFilters = !!(query.trim()) || vtFilter.length > 0 || slotConsult !== "all" || dateFilter !== "today"
 
   const visibleAppointments = useMemo(() => {
     let rows = queueAppointments.filter((row) => {
@@ -300,6 +316,25 @@ export function DrAgentPage() {
     }
     return rows
   }, [activeTab, dateFilter, query, slotSort, slotConsult, vtFilter])
+
+  // Calculate counts for each tab
+  const getTabCount = (tabId: AppointmentStatus) => {
+    return queueAppointments.filter((row) => {
+      const tabMatch = row.status === tabId
+      const dateMatch = matchesDateFilter(row.dateKey, dateFilter)
+      const slotMatch = slotConsult === "all" ? true
+        : slotConsult === "video" ? row.hasVideo : !row.hasVideo
+      const vtMatch = vtFilter.length === 0 ? true : vtFilter.includes(row.visitType)
+      const q = query.trim().toLowerCase()
+      if (!tabMatch || !dateMatch || !slotMatch || !vtMatch) return false
+      if (!q) return true
+      return (
+        row.name.toLowerCase().includes(q) ||
+        row.contact.toLowerCase().includes(q) ||
+        row.visitType.toLowerCase().includes(q)
+      )
+    }).length
+  }
 
   return (
     <div className="min-h-screen bg-tp-slate-100 font-sans text-tp-slate-900">
@@ -358,7 +393,7 @@ export function DrAgentPage() {
             {/* Banner — fixed, shrinks to natural height */}
             <div className="shrink-0">
               <AppointmentBanner
-                title="Your Appointments"
+                title="TP Appointment Screen"
                 actions={
                   <>
                     <Button
@@ -377,7 +412,7 @@ export function DrAgentPage() {
                       size="md"
                       surface="dark"
                       className="whitespace-nowrap"
-                      leftIcon={<TickCircle size={24} variant="Linear" strokeWidth={1.5} />}
+                      leftIcon={<Flash size={24} variant="Linear" strokeWidth={1.5} />}
                     >
                       Start Walk-In
                     </Button>
@@ -388,7 +423,7 @@ export function DrAgentPage() {
 
             {/* Card — flex-1 so it takes all remaining height; overlaps banner by 60px */}
             {/* Note: no overflow-hidden here — the date picker popover must be able to escape */}
-            <div className="relative z-10 -mt-[60px] flex flex-1 flex-col px-3 pb-6 sm:px-4 lg:px-6">
+            <div className="relative z-10 -mt-[60px] flex flex-1 flex-col px-3 pb-6 sm:px-4 lg:px-[18px]">
               <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-tp-slate-200 bg-white">
 
                 {/* Tabs row — fixed, does not scroll vertically */}
@@ -428,7 +463,7 @@ export function DrAgentPage() {
                                 ? "bg-tp-blue-100 text-tp-blue-400"
                                 : "bg-tp-slate-100 text-tp-slate-400",
                             )}>
-                              {tab.count}
+                              {getTabCount(tab.id)}
                             </span>
                           </span>
 
@@ -461,7 +496,7 @@ export function DrAgentPage() {
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         placeholder="Search by patient name / ID / mobile number"
-                        className="h-[38px] w-full rounded-[10px] border border-tp-slate-200 bg-white pl-10 pr-3 text-sm text-ellipsis text-tp-slate-700 placeholder:text-tp-slate-400 focus:border-tp-blue-300 focus:outline-none focus:ring-2 focus:ring-tp-blue-500/15"
+                        className="h-[38px] w-full rounded-[10px] border border-tp-slate-200 bg-white pl-10 pr-3 text-sm text-ellipsis text-tp-slate-700 placeholder:text-tp-slate-400 transition-colors hover:border-tp-slate-300 focus:border-tp-blue-300 focus:outline-none focus:ring-2 focus:ring-tp-blue-500/15"
                       />
                     </label>
 
@@ -478,7 +513,7 @@ export function DrAgentPage() {
                             : "border-tp-slate-200 bg-white text-tp-slate-600 hover:border-tp-slate-300 hover:bg-tp-slate-50",
                         )}
                       >
-                        <ListFilter size={15} strokeWidth={2} />
+                        <ListFilter size={15} strokeWidth={2} className="shrink-0 text-tp-slate-600" />
                         <span>Filter</span>
                         {activeFilterCount > 0 && (
                           <span className="rounded-full bg-tp-blue-500 px-1.5 py-0.5 text-[10px] font-bold text-white leading-none">
@@ -491,6 +526,7 @@ export function DrAgentPage() {
                         value={dateFilter}
                         onChange={(sel) => setDateFilter(sel.presetId)}
                         className="min-w-[80px] max-w-[180px]"
+                        hideFuturePresets={activeTab !== "queue"}
                       />
                     </div>
                   </div>
@@ -506,14 +542,16 @@ export function DrAgentPage() {
                       <span className="h-4 w-px shrink-0 bg-tp-slate-200" />
                       {slotConsult !== "all" && (
                         <FilterTag
-                          label={`Slot: ${slotConsult === "video" ? "Video" : "In-Clinic"}`}
+                          prefix="Slot"
+                          value={slotConsult === "video" ? "Teleconsultation" : "In-Clinic"}
                           onRemove={() => setSlotConsult("all")}
                         />
                       )}
                       {vtFilter.map((vt) => (
                         <FilterTag
                           key={vt}
-                          label={`Visit Type: ${vt}`}
+                          prefix="Visit Type"
+                          value={vt}
                           onRemove={() => setVtFilter((p) => p.filter((v) => v !== vt))}
                         />
                       ))}
@@ -529,10 +567,10 @@ export function DrAgentPage() {
                 )}
 
                 {/* Table — flex-1, only this area scrolls */}
-                <div className="flex-1 min-h-0 overflow-hidden">
+                <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
                   <div
                     ref={tableOverflowRef}
-                    className="h-full overflow-auto px-3 pb-4 sm:px-4 lg:px-[18px]"
+                    className="flex-1 min-h-0 overflow-auto px-3 pb-4 sm:px-4 lg:px-[18px]"
                   >
                     <div className="min-w-[920px] pt-1">
                       <table className="w-full border-collapse">
@@ -559,7 +597,7 @@ export function DrAgentPage() {
                                   slotSort !== "none" && "text-tp-blue-600",
                                 )}
                               >
-                                <span>Slot</span>
+                                <span className="uppercase">Slot</span>
                                 <ColumnSortIcon dir={slotSort} />
                               </button>
                             </th>
@@ -575,15 +613,28 @@ export function DrAgentPage() {
                         <tbody>
                           {visibleAppointments.length === 0 ? (
                             <tr>
-                              <td colSpan={6} className="py-16 text-center">
-                                <div className="flex flex-col items-center gap-2">
-                                  <SearchNormal1 size={32} variant="Linear" strokeWidth={1.2} className="text-tp-slate-300" />
-                                  <p className="text-[13px] font-medium text-tp-slate-500">No appointments match your filters.</p>
-                                  {(query || vtFilter.length > 0 || slotConsult !== "all") && (
+                              <td colSpan={6} className="py-12 text-center">
+                                <div className="flex h-full w-full flex-col items-center justify-center gap-3">
+                                  {(() => {
+                                    const EmptyIcon = TAB_EMPTY_ICONS[activeTab]
+                                    return (
+                                      <EmptyIcon
+                                        size={140}
+                                        variant="Bulk"
+                                        color="var(--tp-slate-200)"
+                                      />
+                                    )
+                                  })()}
+                                  <p className="text-[13px] font-medium text-tp-slate-500">
+                                    {hasActiveFilters
+                                      ? "No appointments matching your filters."
+                                      : TAB_EMPTY_MESSAGES[activeTab]}
+                                  </p>
+                                  {hasActiveFilters && (
                                     <button
                                       type="button"
-                                      onClick={() => { setQuery(""); setSlotConsult("all"); setVtFilter([]) }}
-                                      className="mt-1 text-[12px] font-medium text-tp-blue-500 hover:underline"
+                                      onClick={() => { setQuery(""); setSlotConsult("all"); setVtFilter([]); setTabDateFilters({}) }}
+                                      className="mt-0.5 text-[12px] font-semibold text-tp-warning-600 underline underline-offset-2 decoration-tp-warning-400 transition-colors hover:text-tp-warning-700"
                                     >
                                       Clear all filters
                                     </button>
@@ -592,13 +643,13 @@ export function DrAgentPage() {
                               </td>
                             </tr>
                           ) : (
-                            visibleAppointments.map((row) => (
+                            visibleAppointments.map((row, index) => (
                               <tr
                                 key={row.id}
                                 className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50"
                               >
                                 <td className="px-3 py-3 text-sm text-tp-slate-700">
-                                  {row.serial}
+                                  {index + 1}
                                 </td>
 
                                 <td className="px-3 py-3 align-middle">
@@ -610,7 +661,13 @@ export function DrAgentPage() {
                                     <p className="mt-1 truncate text-sm text-tp-slate-700">
                                       {row.gender}, {row.age}y
                                       {row.starred && (
-                                        <span className="ml-1 text-[13px]">⭐</span>
+                                        <span className="ml-1 inline-flex">
+                                          <Star
+                                            size={14}
+                                            fill="var(--tp-success-500)"
+                                            stroke="var(--tp-success-500)"
+                                          />
+                                        </span>
                                       )}
                                     </p>
                                   </div>
@@ -622,9 +679,15 @@ export function DrAgentPage() {
                                       {row.contact}
                                     </span>
                                     {row.contactBadge && (
-                                      <span className="inline-flex rounded-full bg-tp-blue-500 px-1.5 py-0.5 text-[10px] font-semibold text-white">
-                                        {row.contactBadge}
-                                      </span>
+                                      <div className="mt-1">
+                                        <TPTag
+                                          color="violet"
+                                          variant="light"
+                                          size="sm"
+                                        >
+                                          {row.contactBadge}
+                                        </TPTag>
+                                      </div>
                                     )}
                                   </div>
                                 </td>
@@ -633,16 +696,15 @@ export function DrAgentPage() {
                                   <div className="max-w-[160px] overflow-hidden">
                                     <span className="truncate block">{row.visitType}</span>
                                     {row.visitBadge && (
-                                      <span
-                                        className={cn(
-                                          "mt-0.5 inline-flex rounded-full px-2 py-[2px] text-[10px] font-semibold",
-                                          row.visitBadge.tone === "warning"
-                                            ? "border border-tp-warning-200 bg-tp-warning-50 text-tp-warning-700"
-                                            : "bg-tp-success-100 text-tp-success-700",
-                                        )}
-                                      >
-                                        {row.visitBadge.text}
-                                      </span>
+                                      <div className="mt-1">
+                                        <TPTag
+                                          color={row.visitBadge.tone === "warning" ? "warning" : "success"}
+                                          variant={row.visitBadge.tone === "warning" ? "light" : "light"}
+                                          size="sm"
+                                        >
+                                          {row.visitBadge.text}
+                                        </TPTag>
+                                      </div>
                                     )}
                                   </div>
                                 </td>
@@ -674,21 +736,23 @@ export function DrAgentPage() {
                                   isTableScrolled && "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.10)]",
                                 )}>
                                   <div className="flex items-center gap-3 whitespace-nowrap">
-                                    <TPSplitButton
-                                      primaryAction={{
-                                        label: "VoiceRx",
-                                        onClick: () => {},
-                                      }}
-                                      secondaryActions={[
-                                        { id: "tab-rx", label: "TabRx", onClick: () => {} },
-                                        { id: "type-rx", label: "TypeRx", onClick: () => {} },
-                                        { id: "snap-rx", label: "SnapRx", onClick: () => {} },
-                                        { id: "smart-sync", label: "SmartSync", onClick: () => {} },
-                                      ]}
-                                      variant="outline"
-                                      theme="primary"
-                                      size="md"
-                                    />
+                                    <div className="transition-all hover:scale-105 duration-200">
+                                      <TPSplitButton
+                                        primaryAction={{
+                                          label: "VoiceRx",
+                                          onClick: () => {},
+                                        }}
+                                        secondaryActions={[
+                                          { id: "tab-rx", label: "TabRx", onClick: () => {} },
+                                          { id: "type-rx", label: "TypeRx", onClick: () => {} },
+                                          { id: "snap-rx", label: "SnapRx", onClick: () => {} },
+                                          { id: "smart-sync", label: "SmartSync", onClick: () => {} },
+                                        ]}
+                                        variant="outline"
+                                        theme="primary"
+                                        size="md"
+                                      />
+                                    </div>
 
                                     <button
                                       type="button"
@@ -730,6 +794,7 @@ export function DrAgentPage() {
         <CommonFilterPanel
           style={filterStyle}
           panelRef={filterPanelRef}
+          triggerRef={filterBtnRef}
           currentConsult={slotConsult}
           currentVtFilter={vtFilter}
           onApply={(consult, vtf) => { setSlotConsult(consult); setVtFilter(vtf); setFilterOpen(false) }}
@@ -784,11 +849,11 @@ function ColumnSortIcon({ dir }: { dir: "none" | "asc" | "desc" }) {
     <span className="inline-flex flex-col items-center gap-[2px]">
       <span className={cn(
         "h-0 w-0 border-b-[4px] border-l-[3px] border-r-[3px] border-l-transparent border-r-transparent transition-colors",
-        dir === "asc" ? "border-b-tp-blue-500" : "border-b-tp-slate-200",
+        dir === "asc" ? "border-b-tp-blue-500" : "border-b-tp-slate-600",
       )} />
       <span className={cn(
         "h-0 w-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent transition-colors",
-        dir === "desc" ? "border-t-tp-blue-500" : "border-t-tp-slate-200",
+        dir === "desc" ? "border-t-tp-blue-500" : "border-t-tp-slate-600",
       )} />
     </span>
   )
@@ -796,14 +861,15 @@ function ColumnSortIcon({ dir }: { dir: "none" | "asc" | "desc" }) {
 
 // ─── Filter chip tag ──────────────────────────────────────────────────────────
 
-function FilterTag({ label, onRemove }: { label: string; onRemove: () => void }) {
+function FilterTag({ prefix, value, onRemove }: { prefix: string; value: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-tp-blue-200 bg-tp-blue-50 px-2.5 py-1 text-[11px] font-medium text-tp-blue-700">
-      {label}
+    <span className="inline-flex items-center gap-1 rounded-full border border-tp-blue-200 bg-tp-blue-50 px-2.5 py-1 text-[11px]">
+      <span className="font-medium text-tp-blue-300">{prefix}:</span>
+      <span className="font-semibold text-tp-blue-500">{value}</span>
       <button
         type="button"
         onClick={onRemove}
-        className="ml-0.5 rounded-full p-0.5 transition-colors hover:bg-tp-blue-100"
+        className="ml-0.5 rounded-full p-0.5 text-tp-blue-300 transition-colors hover:bg-tp-blue-100 hover:text-tp-blue-500"
       >
         <X size={10} strokeWidth={2.5} />
       </button>
@@ -816,12 +882,14 @@ function FilterTag({ label, onRemove }: { label: string; onRemove: () => void })
 function CommonFilterPanel({
   style,
   panelRef,
+  triggerRef,
   currentConsult,
   currentVtFilter,
   onApply,
 }: {
   style: React.CSSProperties
   panelRef: React.Ref<HTMLDivElement>
+  triggerRef: React.RefObject<HTMLButtonElement>
   currentConsult: "all" | "video" | "in-clinic"
   currentVtFilter: string[]
   onApply: (consult: "all" | "video" | "in-clinic", vtFilter: string[]) => void
@@ -829,9 +897,25 @@ function CommonFilterPanel({
   const [consult, setConsult] = useState(currentConsult)
   const [vtFilter, setVtFilter] = useState<string[]>(currentVtFilter)
 
+  // Stale-closure safe ref so the mousedown handler always sees latest onApply
+  const onApplyRef = useRef(onApply)
+  useEffect(() => { onApplyRef.current = onApply }, [onApply])
+
+  // Click-outside → apply staged filters (not discard)
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      const panel = (panelRef as React.RefObject<HTMLDivElement>).current
+      if (panel?.contains(e.target as Node)) return
+      if (triggerRef?.current?.contains(e.target as Node)) return
+      onApplyRef.current(consult, vtFilter)
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [consult, vtFilter, triggerRef, panelRef])
+
   const consultOpts: Array<{ v: "video" | "in-clinic"; label: string }> = [
-    { v: "video", label: "Video calls only" },
-    { v: "in-clinic", label: "In-clinic only" },
+    { v: "video", label: "Teleconsultation" },
+    { v: "in-clinic", label: "In-clinic" },
   ]
 
   function toggleVtType(t: string) {
@@ -855,7 +939,7 @@ function CommonFilterPanel({
       style={style}
       className="w-[236px] overflow-hidden rounded-[12px] border border-tp-slate-200 bg-white shadow-[0_8px_24px_-4px_rgba(23,23,37,0.12)]"
     >
-      {/* Consult Type section */}
+      {/* Slot Type section */}
       <div className="p-3">
         <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Slot Type</p>
         <div className="flex flex-col gap-0.5">
@@ -887,8 +971,7 @@ function CommonFilterPanel({
 
       {/* Visit Types section */}
       <div className="p-3">
-        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Visit Type</p>
-        <p className="mb-2 text-[11px] text-tp-slate-400">Select types to filter</p>
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Visit Type</p>
         <div className="flex flex-col gap-0.5">
           {ALL_VISIT_TYPES.map((t) => (
             <button
@@ -913,12 +996,12 @@ function CommonFilterPanel({
 
       <div className="mx-3 h-px bg-tp-slate-100" />
 
-      {/* Footer */}
-      <div className="flex items-center justify-between p-3 pt-2.5">
+      {/* Footer — Clear (warning orange) + Apply, right-aligned */}
+      <div className="flex items-center justify-end gap-3 border-t border-tp-slate-100 p-3 pt-2.5">
         <button
           type="button"
           onClick={handleClear}
-          className="rounded-[8px] px-2.5 py-1.5 text-[12px] font-medium text-tp-slate-500 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-700"
+          className="text-[12px] font-semibold text-tp-warning-600 underline underline-offset-2 decoration-tp-warning-400 transition-colors hover:text-tp-warning-700"
         >
           Clear
         </button>

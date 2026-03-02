@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { ChevronDown, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -255,9 +255,10 @@ interface DateRangePickerProps {
   value: DatePresetId
   onChange: (selection: DateSelection) => void
   className?: string
+  hideFuturePresets?: boolean
 }
 
-export function DateRangePicker({ value, onChange, className }: DateRangePickerProps) {
+export function DateRangePicker({ value, onChange, className, hideFuturePresets }: DateRangePickerProps) {
   const [open, setOpen] = useState(false)
   // Two-month view: left = shown month, right = left + 1
   const [leftViewDate, setLeftViewDate] = useState(() => startOfDay(new Date()))
@@ -417,27 +418,31 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
             </button>
           ))}
 
-          <div className="my-1.5 mx-1 h-px bg-tp-slate-100" />
+          {!hideFuturePresets && (
+            <>
+              <div className="my-1.5 mx-1 h-px bg-tp-slate-100" />
 
-          {/* Upcoming group */}
-          <p className="px-2 pb-0.5 pt-0.5 text-[9px] font-semibold uppercase tracking-wide text-tp-slate-400">
-            Upcoming
-          </p>
-          {PRESETS.filter((p) => p.id.startsWith("next")).map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              onClick={() => handlePresetClick(preset)}
-              className={cn(
-                "flex w-full items-center rounded-[8px] px-2 py-1.5 text-left text-[12px] font-medium transition-colors",
-                preset.id === stagedPreset && stagedStart && stagedEnd
-                  ? "bg-tp-blue-500 text-white"
-                  : "text-tp-slate-700 hover:bg-tp-slate-100",
-              )}
-            >
-              {preset.label}
-            </button>
-          ))}
+              {/* Upcoming group */}
+              <p className="px-2 pb-0.5 pt-0.5 text-[9px] font-semibold uppercase tracking-wide text-tp-slate-400">
+                Upcoming
+              </p>
+              {PRESETS.filter((p) => p.id.startsWith("next")).map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handlePresetClick(preset)}
+                  className={cn(
+                    "flex w-full items-center rounded-[8px] px-2 py-1.5 text-left text-[12px] font-medium transition-colors",
+                    preset.id === stagedPreset && stagedStart && stagedEnd
+                      ? "bg-tp-blue-500 text-white"
+                      : "text-tp-slate-700 hover:bg-tp-slate-100",
+                  )}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </>
+          )}
 
           {pendingStart && (
             <p className="mt-2 rounded-[8px] bg-tp-amber-50 px-2 py-1.5 text-[10px] leading-tight text-tp-warning-700">
@@ -556,9 +561,8 @@ export function DateRangePicker({ value, onChange, className }: DateRangePickerP
             <button
               type="button"
               onClick={handleClear}
-              className="inline-flex items-center gap-1 rounded-[8px] px-2.5 py-1.5 text-[12px] font-medium text-tp-slate-600 transition-colors hover:bg-tp-slate-100"
+              className="text-[12px] font-semibold text-tp-warning-600 underline underline-offset-2 decoration-tp-warning-400 transition-colors hover:text-tp-warning-700"
             >
-              <X size={12} strokeWidth={2} />
               Clear
             </button>
 
