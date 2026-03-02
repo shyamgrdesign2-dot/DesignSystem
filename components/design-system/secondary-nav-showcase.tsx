@@ -83,6 +83,7 @@ const navItems: NavItem[] = [
 ]
 
 type SidebarVariant = "rx" | "primary"
+type PrimaryIconTone = "brand" | "slate"
 
 /**
  * Standalone side navigation component.
@@ -99,12 +100,18 @@ export function SecondaryNavPanel({
   activeId,
   onSelect,
   variant = "rx",
+  primaryIconTone = "slate",
+  height = SECONDARY_NAV_TOKENS.panelHeight,
+  bottomSpacerPx = 0,
   renderIcon,
 }: {
   items: NavItem[]
   activeId: string
   onSelect: (id: string) => void
   variant?: SidebarVariant
+  primaryIconTone?: PrimaryIconTone
+  height?: number | string
+  bottomSpacerPx?: number
   renderIcon?: (params: {
     item: NavItem
     isActive: boolean
@@ -126,7 +133,7 @@ export function SecondaryNavPanel({
       className="relative flex flex-col overflow-x-clip"
       style={{
         width: SECONDARY_NAV_TOKENS.panelWidth,
-        height: SECONDARY_NAV_TOKENS.panelHeight,
+        height: typeof height === "number" ? `${height}px` : height,
         alignItems: "flex-start",
         borderRadius: 0,
         background: panelBackground,
@@ -136,26 +143,46 @@ export function SecondaryNavPanel({
         {items.map((item) => {
         const Icon = item.icon
         const isActive = activeId === item.id
+        const isPrimarySlate = !isRx && primaryIconTone === "slate"
         const itemTextColor = isRx ? "var(--tp-slate-0)" : "var(--tp-slate-700)"
-        const iconDefaultBg = isRx ? "rgba(255,255,255,0.25)" : "rgba(75,74,213,0.10)"
-        const iconHoverBg = isRx ? "rgba(255,255,255,0.28)" : "rgba(75,74,213,0.15)"
-        const iconDefaultColor = isRx ? "var(--tp-slate-0)" : "var(--tp-blue-500)"
+        const iconDefaultBg = isRx
+          ? "rgba(255,255,255,0.25)"
+          : isPrimarySlate
+            ? "var(--tp-slate-100)"
+            : "rgba(75,74,213,0.10)"
+        const iconHoverBg = isRx
+          ? "rgba(255,255,255,0.28)"
+          : isPrimarySlate
+            ? "var(--tp-slate-200)"
+            : "rgba(75,74,213,0.15)"
+        const iconDefaultColor = isRx
+          ? "var(--tp-slate-0)"
+          : isPrimarySlate
+            ? "var(--tp-slate-700)"
+            : "var(--tp-blue-500)"
         const iconActiveBg = isRx ? "var(--tp-slate-0)" : "var(--tp-blue-500)"
         const iconActiveColor = isRx ? "var(--tp-blue-500)" : "var(--tp-slate-0)"
-        const itemHoverBg = isRx ? "rgba(255,255,255,0.12)" : "rgba(75,74,213,0.08)"
+        const itemHoverBg = isRx
+          ? "rgba(255,255,255,0.12)"
+          : isPrimarySlate
+            ? "rgba(69,69,81,0.08)"
+            : "rgba(75,74,213,0.08)"
+        const activeItemBackground = isRx
+          ? "rgba(255,255,255,0.2)"
+          : "rgba(75,74,213,0.12)"
 
         return (
           <button
             key={item.id}
             onClick={() => onSelect(item.id)}
-            className="group relative flex shrink-0 items-center transition-colors"
+            className="group relative isolate flex shrink-0 items-center transition-colors"
             style={{
               width: SECONDARY_NAV_TOKENS.panelWidth,
-              backgroundColor: isActive ? (isRx ? "rgba(255,255,255,0.2)" : "rgba(75,74,213,0.12)") : "transparent",
+              backgroundColor: isActive ? activeItemBackground : "transparent",
             }}
           >
             <div
-              className="flex flex-1 flex-col items-center"
+              className="relative z-10 flex flex-1 flex-col items-center"
               style={{
                 gap: SECONDARY_NAV_TOKENS.iconLabelGap,
                 paddingInline: SECONDARY_NAV_TOKENS.itemPaddingX,
@@ -175,23 +202,25 @@ export function SecondaryNavPanel({
               >
                 {!isActive && (
                   <span
-                    className="pointer-events-none absolute inset-0 rounded-[10px] opacity-0 transition-opacity group-hover:opacity-100"
+                    className="pointer-events-none absolute inset-0 z-0 rounded-[10px] opacity-0 transition-opacity group-hover:opacity-100"
                     style={{ backgroundColor: iconHoverBg }}
                   />
                 )}
-                {renderIcon ? (
-                  renderIcon({
-                    item,
-                    isActive,
-                    isRx,
-                    iconSize: SECONDARY_NAV_TOKENS.iconSize,
-                  })
-                ) : (
-                  <Icon
-                    size={SECONDARY_NAV_TOKENS.iconSize}
-                    color={isActive ? iconActiveColor : iconDefaultColor}
-                  />
-                )}
+                <span className="relative z-10 inline-flex">
+                  {renderIcon ? (
+                    renderIcon({
+                      item,
+                      isActive,
+                      isRx,
+                      iconSize: SECONDARY_NAV_TOKENS.iconSize,
+                    })
+                  ) : (
+                    <Icon
+                      size={SECONDARY_NAV_TOKENS.iconSize}
+                      color={isActive ? iconActiveColor : iconDefaultColor}
+                    />
+                  )}
+                </span>
               </span>
 
               <span
@@ -217,7 +246,7 @@ export function SecondaryNavPanel({
 
             {isActive && (
               <span
-                className="absolute left-0 top-0 bottom-0"
+                className="absolute left-0 top-0 bottom-0 z-20"
                 style={{
                   width: SECONDARY_NAV_TOKENS.highlightBarWidth,
                   backgroundColor: isRx ? "var(--tp-slate-0)" : "var(--tp-blue-500)",
@@ -229,7 +258,7 @@ export function SecondaryNavPanel({
 
             {isActive && isRx && (
               <span
-                className="absolute"
+                className="absolute z-20"
                 style={{
                   right: 0,
                   top: item.badge ? 40 : "50%",
@@ -250,7 +279,7 @@ export function SecondaryNavPanel({
 
             {item.badge && (
               <span
-                className="absolute flex items-center justify-center font-medium"
+                className="absolute z-30 flex items-center justify-center font-medium"
                 style={{
                   top: 20.5,
                   right: 0,
@@ -272,13 +301,19 @@ export function SecondaryNavPanel({
 
             {!isActive && (
               <span
-                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
+                className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity group-hover:opacity-100"
                 style={{ backgroundColor: itemHoverBg }}
               />
             )}
           </button>
         )
       })}
+        {bottomSpacerPx > 0 ? (
+          <div
+            aria-hidden="true"
+            style={{ height: `${bottomSpacerPx}px` }}
+          />
+        ) : null}
       </div>
 
       {/* Bottom fade — exact Figma spec: position absolute, bottom 0 */}
@@ -306,7 +341,7 @@ export function SecondaryNavShowcase() {
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
         Primary (white) for homepage/top-level; Rx (dark blue) for in-Rx flows. Both 80px rail, Lucide icons.
-        Primary: unselected <code className="text-tp-blue-500">TP.icon.clickable.light.bg</code> (10% blue) + blue 500 icon; selected blue 500 bg + white icon; no arrow.
+        Primary: unselected TP Slate 100 icon container + TP Slate 700 icon; selected blue 500 bg + white icon; no arrow.
         Rx: unselected <code className="text-tp-blue-500">TP.icon.clickable.dark.bg</code> (25% white) + white icon; selected white bg + blue 500 icon; 3px left bar + right arrow.
       </p>
       <div className="flex flex-wrap gap-8 items-start">

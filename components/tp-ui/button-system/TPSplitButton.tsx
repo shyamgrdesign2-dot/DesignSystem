@@ -1,23 +1,18 @@
 "use client"
 
-import { forwardRef, useState, useRef, useEffect } from "react"
-import { ChevronDown } from "lucide-react"
+import { forwardRef, useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
+import { ArrowDown2 } from "iconsax-reactjs"
 import {
   getButtonTokens,
   BUTTON_SIZE_TOKENS,
 } from "@/lib/button-system/tokens"
-import type {
-  TPSplitButtonProps,
-  TPSplitButtonAction,
-  TPButtonTheme,
-  TPButtonSize,
-  TPButtonSurface,
-} from "@/lib/button-system/types"
+import type { TPSplitButtonProps } from "@/lib/button-system/types"
 import { TPButtonIcon } from "./TPButtonIcon"
 
 /**
  * Split CTA — Material UI-style divider between primary action and dropdown.
- * Clear visual separation with spacing.
+ * Menu is rendered in a portal so it is never clipped by table/scroll containers.
  */
 export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
   function TPSplitButton(
@@ -37,27 +32,58 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
     ref
   ) {
     const [internalOpen, setInternalOpen] = useState(false)
+    const [mounted, setMounted] = useState(false)
+    const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, minWidth: 0 })
+
     const containerRef = useRef<HTMLDivElement>(null)
+    const menuRef = useRef<HTMLDivElement>(null)
+
     const isControlled = controlledOpen !== undefined
     const open = isControlled ? controlledOpen : internalOpen
 
-    const setOpen = (v: boolean) => {
-      if (!isControlled) setInternalOpen(v)
-      onOpenChange?.(v)
+    const setOpen = (value: boolean) => {
+      if (!isControlled) setInternalOpen(value)
+      onOpenChange?.(value)
     }
 
     useEffect(() => {
-      function handleClickOutside(e: MouseEvent) {
-        if (
-          containerRef.current &&
-          !containerRef.current.contains(e.target as Node)
-        ) {
-          setOpen(false)
-        }
+      setMounted(true)
+    }, [])
+
+    useEffect(() => {
+      function handleClickOutside(event: MouseEvent) {
+        const target = event.target as Node
+        if (containerRef.current?.contains(target)) return
+        if (menuRef.current?.contains(target)) return
+        setOpen(false)
       }
+
       document.addEventListener("mousedown", handleClickOutside)
       return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
+
+    useEffect(() => {
+      if (!open) return
+
+      const updateMenuPosition = () => {
+        const rect = containerRef.current?.getBoundingClientRect()
+        if (!rect) return
+        setMenuPosition({
+          top: rect.bottom + 6,
+          left: rect.left,
+          minWidth: rect.width,
+        })
+      }
+
+      updateMenuPosition()
+
+      window.addEventListener("resize", updateMenuPosition)
+      window.addEventListener("scroll", updateMenuPosition, true)
+      return () => {
+        window.removeEventListener("resize", updateMenuPosition)
+        window.removeEventListener("scroll", updateMenuPosition, true)
+      }
+    }, [open])
 
     const tokens = getButtonTokens(theme, surface)
     const dims = BUTTON_SIZE_TOKENS[size]
@@ -80,7 +106,8 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
                 : borderColor
               : "currentColor"
 
-    const separatorOpacity = variant === "solid" ? 0.5 : theme === "neutral" && variant === "outline" ? 0.65 : 0.5
+    const separatorOpacity =
+      variant === "solid" ? 0.5 : theme === "neutral" && variant === "outline" ? 0.65 : 0.5
 
     const buttonBg =
       variant === "solid"
@@ -92,7 +119,7 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
               ? "#FFF1F2"
               : "#F1F1F5"
           : "transparent"
-    const buttonBorder = "none"
+
     const buttonText =
       variant === "ghost" && theme === "neutral"
         ? "#454551"
@@ -118,7 +145,7 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
       opacity: isDisabled ? 0.7 : 1,
       color: buttonText,
       backgroundColor: buttonBg,
-      border: buttonBorder,
+      border: "none",
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
@@ -126,13 +153,16 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
     }
 
     const dropdownTriggerColor =
-      loading && variant === "solid" ? "#FFFFFF" : loading && variant === "outline" ? "#454551" : buttonText
+      loading && variant === "solid"
+        ? "#FFFFFF"
+        : loading && variant === "outline"
+          ? "#454551"
+          : buttonText
 
     return (
       <div
         ref={(node) => {
-          (containerRef as React.MutableRefObject<HTMLDivElement | null>).current =
-            node
+          ;(containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node
           if (typeof ref === "function") ref(node)
           else if (ref) ref.current = node
         }}
@@ -156,7 +186,6 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
                   : "none",
           }}
         >
-          {/* Primary action — ~75% width, MUI-style */}
           <button
             type="button"
             disabled={isDisabled}
@@ -185,16 +214,13 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             ) : (
               <>
                 {primaryAction.icon && (
-                  <TPButtonIcon size={dims.iconSize}>
-                    {primaryAction.icon}
-                  </TPButtonIcon>
+                  <TPButtonIcon size={dims.iconSize}>{primaryAction.icon}</TPButtonIcon>
                 )}
                 <span className="truncate">{primaryAction.label}</span>
               </>
             )}
           </button>
 
-          {/* Divider — M3 2dp spacing between leading and trailing */}
           <div
             className="flex-shrink-0"
             style={{
@@ -208,7 +234,6 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             aria-hidden
           />
 
-          {/* Dropdown trigger — fixed width with spacing */}
           <button
             type="button"
             disabled={isDisabled}
@@ -227,55 +252,57 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             }}
           >
             <TPButtonIcon size={dims.iconSize}>
-            <ChevronDown
-              size={dims.iconSize}
-              className="transition-transform duration-200 ease-out"
-              style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
-            />
-          </TPButtonIcon>
+              <ArrowDown2
+                size={dims.iconSize}
+                variant="Linear"
+                strokeWidth={1.5}
+                className="transition-transform duration-200 ease-out"
+                style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+              />
+            </TPButtonIcon>
           </button>
         </div>
 
-        {/* Dropdown menu */}
-        {open && (
-          <div
-            className="absolute left-0 top-full z-50 mt-1 overflow-hidden"
-            style={{
-              minWidth: "100%",
-              borderRadius: 12,
-              boxShadow:
-                "0 12px 24px -4px rgba(23,23,37,0.08), 0 4px 8px -4px rgba(23,23,37,0.04)",
-              backgroundColor: "#FFFFFF",
-              border: "1px solid #E2E2EA",
-            }}
-          >
-            {secondaryActions.map((action) => (
-              <button
-                key={action.id}
-                type="button"
-                disabled={action.disabled}
-                onClick={() => {
-                  action.onClick?.()
-                  setOpen(false)
-                }}
-                className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-tp-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{
-                  color: action.danger ? "#E11D48" : "#454551",
-                }}
-              >
-                {action.icon && (
-                  <TPButtonIcon size={16}>{action.icon}</TPButtonIcon>
-                )}
-                <span className="flex-1">{action.label}</span>
-                {action.shortcut && (
-                  <span className="font-mono text-[11px] text-tp-slate-400">
-                    {action.shortcut}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
+        {open &&
+          mounted &&
+          createPortal(
+            <div
+              ref={menuRef}
+              className="overflow-hidden"
+              style={{
+                position: "fixed",
+                top: menuPosition.top,
+                left: menuPosition.left,
+                minWidth: menuPosition.minWidth,
+                borderRadius: 12,
+                zIndex: 2100,
+                boxShadow:
+                  "0 12px 24px -4px rgba(23,23,37,0.08), 0 4px 8px -4px rgba(23,23,37,0.04)",
+                backgroundColor: "#FFFFFF",
+                border: "1px solid #E2E2EA",
+              }}
+            >
+              {secondaryActions.map((action) => (
+                <button
+                  key={action.id}
+                  type="button"
+                  disabled={action.disabled}
+                  onClick={() => {
+                    action.onClick?.()
+                    setOpen(false)
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium text-tp-slate-700 transition-colors hover:bg-tp-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {action.icon && <TPButtonIcon size={16}>{action.icon}</TPButtonIcon>}
+                  <span className="flex-1">{action.label}</span>
+                  {action.shortcut && (
+                    <span className="font-mono text-[11px] text-tp-slate-400">{action.shortcut}</span>
+                  )}
+                </button>
+              ))}
+            </div>,
+            document.body
+          )}
       </div>
     )
   }

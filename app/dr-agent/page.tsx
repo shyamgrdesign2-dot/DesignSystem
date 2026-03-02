@@ -1,4 +1,11 @@
+import { Mulish } from "next/font/google"
 import { DrAgentPage } from "@/components/dr-agent/DrAgentPage"
+
+const mulish = Mulish({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  weight: ["400", "500", "600", "700", "800"],
+})
 
 export const metadata = {
   title: "Dr Agent Appointments — TatvaPractice",
@@ -6,5 +13,9 @@ export const metadata = {
 }
 
 export default function DrAgentRoute() {
-  return <DrAgentPage />
+  return (
+    <div className={mulish.variable}>
+      <DrAgentPage />
+    </div>
+  )
 }
