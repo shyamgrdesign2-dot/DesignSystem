@@ -15,10 +15,11 @@ import {
   Route,
   Layers,
   Zap,
+  HeartPulse,
 } from "lucide-react"
 
 const iconMap: Record<string, React.ComponentType<{ size: number; className?: string }>> = {
-  Colorfilter: Palette, Text: Type, Grid2: LayoutGrid, Blur: Circle, Star, Mouse: MousePointer, Edit2: Pencil, TableDocument: Table, Notification: Bell, Routing2: Route, Layer: Layers, Flash: Zap,
+  Colorfilter: Palette, Text: Type, Grid2: LayoutGrid, Blur: Circle, Star, Mouse: MousePointer, Edit2: Pencil, TableDocument: Table, Notification: Bell, Routing2: Route, Layer: Layers, Flash: Zap, Hospital: HeartPulse,
 }
 
 export default function DocsOverview() {

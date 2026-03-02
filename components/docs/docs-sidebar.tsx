@@ -17,6 +17,7 @@ import {
   Layers,
   Zap,
   LayoutDashboard,
+  HeartPulse,
 } from "lucide-react"
 
 /** Map icon name string → component for sidebar rendering */
@@ -33,6 +34,7 @@ const iconMap: Record<string, React.ComponentType<{ size: number; className?: st
   Routing2: Route,
   Layer: Layers,
   Flash: Zap,
+  Hospital: HeartPulse,
 }
 
 function NavIcon({ name, active }: { name: string; active: boolean }) {

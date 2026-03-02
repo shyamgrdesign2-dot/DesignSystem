@@ -83,3 +83,12 @@ export type { TPTreeNode } from "./tp-tree-view"
 export { TPColorPicker } from "./tp-color-picker"
 export { TPTransferList } from "./tp-transfer-list"
 export type { TPTransferItem } from "./tp-transfer-list"
+
+// ─── Clinical Components ────────────────────────────────────
+export { TPTopNavBar, defaultNavActions } from "./tp-top-nav-bar"
+export { TPAppointmentBanner } from "./tp-appointment-banner"
+export { TPClinicalTabs } from "./tp-clinical-tabs"
+export { TPSearchFilterBar } from "./tp-search-filter-bar"
+export { TPStatusBadge } from "./tp-status-badge"
+export { TPClinicalTable } from "./tp-clinical-table"
+export { TPPatientInfoHeader } from "./tp-patient-info-header"

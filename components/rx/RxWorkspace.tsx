@@ -13,9 +13,15 @@ import {
   ReceiptText,
   Ruler,
   Calendar,
+  Notification,
+  Setting2,
+  Printer,
+  DocumentDownload,
   type Icon as IconsaxIcon,
 } from "iconsax-react"
 
+import { TPTopNavBar } from "@/components/tp-ui/tp-top-nav-bar"
+import { TPPatientInfoHeader } from "@/components/tp-ui/tp-patient-info-header"
 import { ExpandedPanel } from "./ExpandedPanel"
 import {
   PastVisitPanel,
@@ -33,6 +39,7 @@ import {
 import { RxPad } from "./rxpad/RxPad"
 import type { SectionId, NavItem, CopyPayload } from "./types"
 import {
+  samplePatient,
   samplePastVisits,
   sampleVitals,
   sampleHistory,
@@ -159,7 +166,50 @@ export function RxWorkspace() {
   const currentItem = navItems.find(n => n.id === activeSection)
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-tp-slate-100">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-tp-slate-100">
+      {/* ── Top Navigation Bar ── */}
+      <TPTopNavBar
+        variant="clinical"
+        title="RX Workspace"
+        subtitle="Prescription Pad"
+        patient={{
+          name: samplePatient.name,
+          age: samplePatient.age,
+          gender: samplePatient.gender,
+          bloodGroup: samplePatient.bloodGroup,
+          uhid: samplePatient.uhid,
+        }}
+        actions={[
+          { icon: <Printer size={18} variant="Linear" />, label: "Print Prescription" },
+          { icon: <DocumentDownload size={18} variant="Linear" />, label: "Download PDF" },
+          { icon: <Notification size={18} variant="Linear" />, label: "Notifications", badge: 2 },
+          { icon: <Setting2 size={18} variant="Linear" />, label: "Settings" },
+        ]}
+        profile={{
+          name: "Dr. Ananya Sharma",
+          initials: "AS",
+        }}
+      />
+
+      {/* ── Patient Info Header ── */}
+      <TPPatientInfoHeader
+        patient={{
+          name: samplePatient.name,
+          age: samplePatient.age,
+          gender: samplePatient.gender as "Male" | "Female" | "Other",
+          bloodGroup: samplePatient.bloodGroup,
+          uhid: samplePatient.uhid,
+          phone: samplePatient.phone,
+        }}
+        visitInfo={{
+          type: "OPD",
+          date: "24 Jun 2025",
+          tokenNumber: 3,
+        }}
+      />
+
+      {/* ── 3-Column Workspace ── */}
+      <div className="flex flex-1 overflow-hidden">
       {/* ── Secondary Nav Sidebar ── */}
       <nav
         className="relative flex h-full flex-col overflow-x-clip shrink-0"
@@ -343,6 +393,7 @@ export function RxWorkspace() {
       <main className="flex-1 overflow-y-auto bg-tp-slate-50/80">
         <RxPad />
       </main>
+      </div>
     </div>
   )
 }

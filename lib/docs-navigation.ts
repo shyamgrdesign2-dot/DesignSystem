@@ -110,6 +110,13 @@ export const docsNavigation: NavGroup[] = [
         icon: "Flash",
         description: "20 new TP components — drawers, pickers, stepper, timeline, tree view, and more",
       },
+      {
+        id: "clinical",
+        label: "Clinical",
+        href: "/components/clinical",
+        icon: "Hospital",
+        description: "Top nav, banners, clinical tabs, status badges, tables, and patient info headers",
+      },
     ],
   },
 ]
