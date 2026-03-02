@@ -22,7 +22,7 @@ import {
   TickCircle,
   Video,
 } from "iconsax-reactjs"
-import { ChevronDown, MoreVertical, Plus, Search } from "lucide-react"
+import { Check, ChevronDown, ListFilter, MoreVertical, Plus, Search } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { SecondaryNavPanel, type NavItem } from "@/components/ui/secondary-nav-panel"
@@ -209,6 +209,17 @@ const queueAppointments: AppointmentRow[] = [
   },
 ]
 
+// ─── Column sort / filter helpers ────────────────────────────────────────────
+
+const ALL_VISIT_TYPES = ["Follow-up", "New", "Routine"]
+
+function parseSlotTime(t: string): number {
+  const [time, mer] = t.split(" ")
+  const [h, m] = time.split(":").map(Number)
+  const hour = mer === "pm" && h < 12 ? h + 12 : mer === "am" && h === 12 ? 0 : h
+  return hour * 60 + m
+}
+
 function matchesDateFilter(rowDateKey: DateRangeKey, selected: DatePresetId) {
   if (selected === "today") return rowDateKey === "today"
   if (selected === "yesterday") return rowDateKey === "yesterday"
@@ -235,22 +246,64 @@ export function DrAgentPage() {
     return () => el.removeEventListener("scroll", handler)
   }, [])
 
+  // ── Column sort + filter ──────────────────────────────────────────────────
+  const [slotSort, setSlotSort] = useState<"none" | "asc" | "desc">("none")
+  const [slotConsult, setSlotConsult] = useState<"all" | "video" | "in-clinic">("all")
+  const [vtSort, setVtSort] = useState<"none" | "asc" | "desc">("none")
+  const [vtFilter, setVtFilter] = useState<string[]>([])
+  const [openColMenu, setOpenColMenu] = useState<"slot" | "vt" | null>(null)
+  const [colMenuStyle, setColMenuStyle] = useState<React.CSSProperties>({})
+  const colMenuRef = useRef<HTMLDivElement | null>(null)
+  const [colMenuMounted, setColMenuMounted] = useState(false)
+  useEffect(() => { setColMenuMounted(true) }, [])
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (colMenuRef.current?.contains(e.target as Node)) return
+      if ((e.target as Element).closest('[data-col-btn]')) return
+      setOpenColMenu(null)
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [])
+
+  function handleColBtnClick(col: "slot" | "vt", btn: HTMLElement) {
+    if (openColMenu === col) { setOpenColMenu(null); return }
+    const rect = btn.getBoundingClientRect()
+    setColMenuStyle({ position: "fixed", top: rect.bottom + 4, left: rect.left, zIndex: 9999 })
+    setOpenColMenu(col)
+  }
+
   const visibleAppointments = useMemo(() => {
-    return queueAppointments.filter((row) => {
+    let rows = queueAppointments.filter((row) => {
       const tabMatch = row.status === activeTab
       const dateMatch = matchesDateFilter(row.dateKey, dateFilter)
+      const slotMatch = slotConsult === "all" ? true
+        : slotConsult === "video" ? row.hasVideo : !row.hasVideo
+      const vtMatch = vtFilter.length === 0 ? true : vtFilter.includes(row.visitType)
       const q = query.trim().toLowerCase()
-
-      if (!tabMatch || !dateMatch) return false
+      if (!tabMatch || !dateMatch || !slotMatch || !vtMatch) return false
       if (!q) return true
-
       return (
         row.name.toLowerCase().includes(q) ||
         row.contact.toLowerCase().includes(q) ||
         row.visitType.toLowerCase().includes(q)
       )
     })
-  }, [activeTab, dateFilter, query])
+    if (slotSort !== "none") {
+      rows = [...rows].sort((a, b) => {
+        const d = parseSlotTime(a.slotTime) - parseSlotTime(b.slotTime)
+        return slotSort === "asc" ? d : -d
+      })
+    }
+    if (vtSort !== "none") {
+      rows = [...rows].sort((a, b) => {
+        const d = a.visitType.localeCompare(b.visitType)
+        return vtSort === "asc" ? d : -d
+      })
+    }
+    return rows
+  }, [activeTab, dateFilter, query, slotSort, slotConsult, vtSort, vtFilter])
 
   return (
     <div className="min-h-screen bg-tp-slate-100 font-sans text-tp-slate-900">
@@ -436,16 +489,44 @@ export function DrAgentPage() {
                               Contact
                             </th>
                             <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[180px]">
-                              <span className="inline-flex items-center gap-1.5">
-                                Visit Type
-                                <SortIndicators />
-                              </span>
+                              <button
+                                data-col-btn
+                                type="button"
+                                onClick={(e) => handleColBtnClick("vt", e.currentTarget)}
+                                className={cn(
+                                  "inline-flex items-center gap-1.5 -ml-0.5 rounded-[6px] px-0.5 py-0.5 transition-colors hover:bg-tp-slate-200/70",
+                                  (vtSort !== "none" || vtFilter.length > 0) && "text-tp-blue-600",
+                                )}
+                              >
+                                <span>Visit Type</span>
+                                {vtFilter.length > 0 && (
+                                  <span className="rounded-full bg-tp-blue-100 px-1.5 py-0.5 text-[9px] font-bold normal-case tracking-normal text-tp-blue-600">
+                                    {vtFilter.length === 1 ? vtFilter[0] : `${vtFilter.length}`}
+                                  </span>
+                                )}
+                                <ListFilter size={11} strokeWidth={2} className={vtFilter.length > 0 ? "text-tp-blue-500" : "text-tp-slate-400"} />
+                                <ColumnSortIcon dir={vtSort} />
+                              </button>
                             </th>
                             <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[160px]">
-                              <span className="inline-flex items-center gap-1.5">
-                                Slot
-                                <SortIndicators />
-                              </span>
+                              <button
+                                data-col-btn
+                                type="button"
+                                onClick={(e) => handleColBtnClick("slot", e.currentTarget)}
+                                className={cn(
+                                  "inline-flex items-center gap-1.5 -ml-0.5 rounded-[6px] px-0.5 py-0.5 transition-colors hover:bg-tp-slate-200/70",
+                                  (slotSort !== "none" || slotConsult !== "all") && "text-tp-blue-600",
+                                )}
+                              >
+                                <span>Slot</span>
+                                {slotConsult !== "all" && (
+                                  <span className="rounded-full bg-tp-blue-100 px-1.5 py-0.5 text-[9px] font-bold normal-case tracking-normal text-tp-blue-600">
+                                    {slotConsult === "video" ? "Video" : "Clinic"}
+                                  </span>
+                                )}
+                                <ListFilter size={11} strokeWidth={2} className={slotConsult !== "all" ? "text-tp-blue-500" : "text-tp-slate-400"} />
+                                <ColumnSortIcon dir={slotSort} />
+                              </button>
                             </th>
                             <th className={cn(
                               "sticky right-0 z-20 w-px rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 xl:static",
@@ -591,6 +672,26 @@ export function DrAgentPage() {
           </section>
         </main>
       </div>
+
+      {/* Column filter panels — portal-rendered to escape overflow:hidden */}
+      {colMenuMounted && openColMenu === "slot" && (
+        <SlotFilterPanel
+          style={colMenuStyle}
+          panelRef={colMenuRef}
+          currentSort={slotSort}
+          currentConsult={slotConsult}
+          onApply={(sort, consult) => { setSlotSort(sort); setSlotConsult(consult); setOpenColMenu(null) }}
+        />
+      )}
+      {colMenuMounted && openColMenu === "vt" && (
+        <VisitTypeFilterPanel
+          style={colMenuStyle}
+          panelRef={colMenuRef}
+          currentSort={vtSort}
+          currentFilter={vtFilter}
+          onApply={(sort, filter) => { setVtSort(sort); setVtFilter(filter); setOpenColMenu(null) }}
+        />
+      )}
     </div>
   )
 }
@@ -630,6 +731,280 @@ function SortIndicators() {
       <span className="h-0 w-0 border-b-[5px] border-l-[4px] border-r-[4px] border-b-tp-slate-700 border-l-transparent border-r-transparent" />
       <span className="h-0 w-0 border-l-[4px] border-r-[4px] border-t-[5px] border-l-transparent border-r-transparent border-t-tp-slate-500" />
     </span>
+  )
+}
+
+// ─── Dynamic sort icon (active direction highlighted in blue) ─────────────────
+
+function ColumnSortIcon({ dir }: { dir: "none" | "asc" | "desc" }) {
+  return (
+    <span className="inline-flex flex-col items-center gap-[2px]">
+      <span className={cn(
+        "h-0 w-0 border-b-[4px] border-l-[3px] border-r-[3px] border-l-transparent border-r-transparent",
+        dir === "asc" ? "border-b-tp-blue-500" : "border-b-tp-slate-400",
+      )} />
+      <span className={cn(
+        "h-0 w-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent",
+        dir === "desc" ? "border-t-tp-blue-500" : "border-t-tp-slate-400",
+      )} />
+    </span>
+  )
+}
+
+// ─── Shared sort pill row used in both column panels ──────────────────────────
+
+function SortPillRow({
+  value,
+  onChange,
+  labels,
+}: {
+  value: "none" | "asc" | "desc"
+  onChange: (v: "none" | "asc" | "desc") => void
+  labels: [string, string] // [asc label, desc label]
+}) {
+  const opts: Array<{ v: "asc" | "none" | "desc"; icon: string; label: string }> = [
+    { v: "asc", icon: "↑", label: labels[0] },
+    { v: "none", icon: "—", label: "None" },
+    { v: "desc", icon: "↓", label: labels[1] },
+  ]
+  return (
+    <div className="grid grid-cols-3 gap-1">
+      {opts.map(({ v, icon, label }) => (
+        <button
+          key={v}
+          type="button"
+          onClick={() => onChange(v)}
+          className={cn(
+            "flex flex-col items-center gap-0.5 rounded-[8px] border px-1 py-2 transition-colors",
+            value === v
+              ? "border-tp-blue-200 bg-tp-blue-50 text-tp-blue-700"
+              : "border-tp-slate-200 text-tp-slate-600 hover:bg-tp-slate-50",
+          )}
+        >
+          <span className="text-[13px] leading-none">{icon}</span>
+          <span className="text-[10px] font-medium leading-none">{label}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+// ─── Slot column filter panel ─────────────────────────────────────────────────
+
+function SlotFilterPanel({
+  style,
+  panelRef,
+  currentSort,
+  currentConsult,
+  onApply,
+}: {
+  style: React.CSSProperties
+  panelRef: React.Ref<HTMLDivElement>
+  currentSort: "none" | "asc" | "desc"
+  currentConsult: "all" | "video" | "in-clinic"
+  onApply: (sort: "none" | "asc" | "desc", consult: "all" | "video" | "in-clinic") => void
+}) {
+  const [sort, setSort] = useState(currentSort)
+  const [consult, setConsult] = useState(currentConsult)
+
+  const consultOpts: Array<{ v: "all" | "video" | "in-clinic"; label: string }> = [
+    { v: "all", label: "All appointments" },
+    { v: "video", label: "Video calls only" },
+    { v: "in-clinic", label: "In-clinic only" },
+  ]
+
+  return createPortal(
+    <div
+      ref={panelRef}
+      style={style}
+      className="w-[208px] overflow-hidden rounded-[12px] border border-tp-slate-200 bg-white shadow-[0_8px_24px_-4px_rgba(23,23,37,0.12)]"
+    >
+      {/* Sort */}
+      <div className="p-3">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Sort</p>
+        <SortPillRow value={sort} onChange={setSort} labels={["Early", "Late"]} />
+      </div>
+
+      <div className="mx-3 h-px bg-tp-slate-100" />
+
+      {/* Consult type filter */}
+      <div className="p-3">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Consult Type</p>
+        <div className="flex flex-col gap-0.5">
+          {consultOpts.map(({ v, label }) => (
+            <button
+              key={v}
+              type="button"
+              onClick={() => setConsult(v)}
+              className="flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-left transition-colors hover:bg-tp-slate-50"
+            >
+              <span className={cn(
+                "size-4 shrink-0 rounded-full border-2 transition-colors",
+                consult === v
+                  ? "border-tp-blue-500 bg-tp-blue-500 shadow-[inset_0_0_0_2px_white]"
+                  : "border-tp-slate-300",
+              )} />
+              <span className={cn(
+                "text-[13px]",
+                consult === v ? "font-medium text-tp-slate-900" : "text-tp-slate-600",
+              )}>
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mx-3 h-px bg-tp-slate-100" />
+
+      {/* Actions */}
+      <div className="flex items-center justify-between p-3 pt-2.5">
+        <button
+          type="button"
+          onClick={() => { setSort("none"); setConsult("all") }}
+          className="rounded-[8px] px-2.5 py-1.5 text-[12px] font-medium text-tp-slate-500 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-700"
+        >
+          Clear
+        </button>
+        <button
+          type="button"
+          onClick={() => onApply(sort, consult)}
+          className="rounded-[8px] bg-tp-blue-500 px-4 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-tp-blue-600"
+        >
+          Apply
+        </button>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
+// ─── Visit Type column filter panel ──────────────────────────────────────────
+
+function VisitTypeFilterPanel({
+  style,
+  panelRef,
+  currentSort,
+  currentFilter,
+  onApply,
+}: {
+  style: React.CSSProperties
+  panelRef: React.Ref<HTMLDivElement>
+  currentSort: "none" | "asc" | "desc"
+  currentFilter: string[]
+  onApply: (sort: "none" | "asc" | "desc", filter: string[]) => void
+}) {
+  const [sort, setSort] = useState(currentSort)
+  // Empty array = all selected (no filter)
+  const [filter, setFilter] = useState<string[]>(currentFilter)
+
+  const allSelected = filter.length === 0 || filter.length === ALL_VISIT_TYPES.length
+
+  function toggleType(t: string) {
+    setFilter((prev) => {
+      // If currently all selected, switch to all-except-t
+      if (prev.length === 0) return ALL_VISIT_TYPES.filter((x) => x !== t)
+      if (prev.includes(t)) {
+        const next = prev.filter((x) => x !== t)
+        return next.length === ALL_VISIT_TYPES.length ? [] : next
+      }
+      const next = [...prev, t]
+      return next.length === ALL_VISIT_TYPES.length ? [] : next
+    })
+  }
+
+  function toggleAll() {
+    setFilter([]) // empty = all
+  }
+
+  function isChecked(t: string) {
+    return filter.length === 0 || filter.includes(t)
+  }
+
+  return createPortal(
+    <div
+      ref={panelRef}
+      style={style}
+      className="w-[208px] overflow-hidden rounded-[12px] border border-tp-slate-200 bg-white shadow-[0_8px_24px_-4px_rgba(23,23,37,0.12)]"
+    >
+      {/* Sort */}
+      <div className="p-3">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Sort</p>
+        <SortPillRow value={sort} onChange={setSort} labels={["A-Z", "Z-A"]} />
+      </div>
+
+      <div className="mx-3 h-px bg-tp-slate-100" />
+
+      {/* Visit type checkboxes */}
+      <div className="p-3">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Visit Types</p>
+        <div className="flex flex-col gap-0.5">
+          {/* All types toggle */}
+          <button
+            type="button"
+            onClick={toggleAll}
+            className="flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-left transition-colors hover:bg-tp-slate-50"
+          >
+            <span className={cn(
+              "size-4 shrink-0 rounded-[4px] border-2 flex items-center justify-center transition-colors",
+              allSelected ? "border-tp-blue-500 bg-tp-blue-500" : "border-tp-slate-300",
+            )}>
+              {allSelected && <Check size={10} strokeWidth={3} className="text-white" />}
+            </span>
+            <span className={cn(
+              "text-[13px]",
+              allSelected ? "font-medium text-tp-slate-900" : "text-tp-slate-600",
+            )}>
+              All types
+            </span>
+          </button>
+          <div className="my-1 h-px bg-tp-slate-100" />
+          {/* Individual types */}
+          {ALL_VISIT_TYPES.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => toggleType(t)}
+              className="flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-left transition-colors hover:bg-tp-slate-50"
+            >
+              <span className={cn(
+                "size-4 shrink-0 rounded-[4px] border-2 flex items-center justify-center transition-colors",
+                isChecked(t) ? "border-tp-blue-500 bg-tp-blue-500" : "border-tp-slate-300",
+              )}>
+                {isChecked(t) && <Check size={10} strokeWidth={3} className="text-white" />}
+              </span>
+              <span className={cn(
+                "text-[13px]",
+                isChecked(t) ? "font-medium text-tp-slate-900" : "text-tp-slate-600",
+              )}>
+                {t}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mx-3 h-px bg-tp-slate-100" />
+
+      {/* Actions */}
+      <div className="flex items-center justify-between p-3 pt-2.5">
+        <button
+          type="button"
+          onClick={() => { setSort("none"); setFilter([]) }}
+          className="rounded-[8px] px-2.5 py-1.5 text-[12px] font-medium text-tp-slate-500 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-700"
+        >
+          Clear
+        </button>
+        <button
+          type="button"
+          onClick={() => onApply(sort, filter)}
+          className="rounded-[8px] bg-tp-blue-500 px-4 py-1.5 text-[12px] font-semibold text-white transition-colors hover:bg-tp-blue-600"
+        >
+          Apply
+        </button>
+      </div>
+    </div>,
+    document.body,
   )
 }
 
