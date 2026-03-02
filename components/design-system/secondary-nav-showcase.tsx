@@ -234,10 +234,21 @@ export function SecondaryNavPanel({
                   lineHeight: `${SECONDARY_NAV_TOKENS.labelLineHeight}px`,
                   letterSpacing: `${SECONDARY_NAV_TOKENS.labelTracking}px`,
                   color: itemTextColor,
-                  display: "-webkit-box",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                  wordBreak: "break-word",
+                  // Single word: truncate on one line
+                  // Multiple words: wrap to max 2 lines
+                  ...(item.label.trim().split(/\s+/).length === 1
+                    ? {
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }
+                    : {
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        wordBreak: "break-word",
+                      }),
                 }}
               >
                 {item.label}

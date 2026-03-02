@@ -2,7 +2,7 @@
 
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { ArrowDown2 } from "iconsax-reactjs"
+import { ChevronDown, ChevronRight } from "lucide-react"
 import {
   getButtonTokens,
   BUTTON_SIZE_TOKENS,
@@ -226,8 +226,9 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             style={{
               width: 1,
               minWidth: 1,
-              margin: "0 1px",
-              alignSelf: "stretch",
+              margin: `${Math.round(dims.height * 0.2)}px 1px`,
+              height: Math.round(dims.height * 0.6),
+              alignSelf: "center",
               backgroundColor: separatorColor,
               opacity: separatorOpacity,
             }}
@@ -252,9 +253,8 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             }}
           >
             <TPButtonIcon size={dims.iconSize}>
-              <ArrowDown2
+              <ChevronDown
                 size={dims.iconSize}
-                variant="Linear"
                 strokeWidth={1.5}
                 className="transition-transform duration-200 ease-out"
                 style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
@@ -295,8 +295,10 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
                 >
                   {action.icon && <TPButtonIcon size={16}>{action.icon}</TPButtonIcon>}
                   <span className="flex-1">{action.label}</span>
-                  {action.shortcut && (
+                  {action.shortcut ? (
                     <span className="font-mono text-[11px] text-tp-slate-400">{action.shortcut}</span>
+                  ) : (
+                    <ChevronRight size={14} strokeWidth={1.5} className="text-tp-slate-400" />
                   )}
                 </button>
               ))}

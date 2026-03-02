@@ -1,6 +1,6 @@
 "use client"
 
-import { Ruler, Calendar, TrendUp, TrendDown } from "iconsax-react"
+import { Ruler, Calendar, TrendingUp, TrendingDown } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelEmptyState } from "../ExpandedPanel"
 import type { GrowthRecord, CopyPayload } from "../types"
@@ -48,7 +48,7 @@ function GrowthCard({
   return (
     <div className={`mb-3 rounded-lg border bg-white p-3 last:mb-0 ${isLatest ? "border-tp-blue-200" : "border-tp-slate-200"}`}>
       <div className="flex items-center gap-2 mb-2">
-        <Calendar size={14} variant="Bold" className="text-tp-blue-500" />
+        <Calendar size={14} className="text-tp-blue-500" />
         <span className="flex-1 text-[13px] font-semibold text-tp-slate-900">{formatDate(record.date)}</span>
         {isLatest && (
           <span className="rounded-full bg-tp-success-50 px-2 py-0.5 text-[10px] font-semibold text-tp-success-600">Latest</span>
@@ -72,7 +72,7 @@ function GrowthCard({
             <span className="text-[10px] text-tp-slate-400">kg</span>
             {weightDiff !== null && weightDiff !== 0 && (
               <span className={`flex items-center text-[10px] font-medium ${weightDiff > 0 ? "text-tp-warning-600" : "text-tp-success-600"}`}>
-                {weightDiff > 0 ? <TrendUp size={10} /> : <TrendDown size={10} />}
+                {weightDiff > 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                 {Math.abs(weightDiff).toFixed(1)}
               </span>
             )}
@@ -127,7 +127,7 @@ export function GrowthPanel({
   if (!records.length) {
     return (
       <PanelEmptyState
-        icon={<Ruler size={32} variant="Linear" />}
+        icon={<Ruler size={32} />}
         message="No growth records"
         description="Growth measurements will appear here"
       />

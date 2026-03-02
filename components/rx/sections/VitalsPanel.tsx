@@ -1,6 +1,6 @@
 "use client"
 
-import { Activity, Calendar, Heart, Wind, Speedometer } from "iconsax-react"
+import { Activity, Calendar, Heart, Wind, Gauge } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelEmptyState } from "../ExpandedPanel"
 import type { VitalReading, VitalStatus, CopyPayload } from "../types"
@@ -110,7 +110,7 @@ function VitalReadingCard({
         [&::-webkit-details-marker]:hidden list-none
         group-open/reading:rounded-b-none group-open/reading:border-b-0
       ">
-        <Calendar size={14} variant="Bold" className="shrink-0 text-tp-blue-500" />
+        <Calendar size={14} className="shrink-0 text-tp-blue-500" />
         <span className="flex-1 text-[13px] font-semibold text-tp-slate-900">{formatDate(reading.date)}</span>
         {isLatest && (
           <span className="rounded-full bg-tp-success-50 px-2 py-0.5 text-[10px] font-semibold text-tp-success-600">Latest</span>
@@ -126,7 +126,7 @@ function VitalReadingCard({
               value={`${reading.bloodPressure.systolic}/${reading.bloodPressure.diastolic}`}
               unit="mmHg"
               status={reading.bloodPressure.status}
-              icon={<Speedometer size={13} variant="Linear" />}
+              icon={<Gauge size={13} />}
             />
           )}
           {reading.temperature && (
@@ -143,7 +143,7 @@ function VitalReadingCard({
               value={`${reading.heartRate.value}`}
               unit="bpm"
               status={reading.heartRate.status}
-              icon={<Heart size={13} variant="Linear" />}
+              icon={<Heart size={13} />}
             />
           )}
           {reading.respiratoryRate && (
@@ -152,7 +152,7 @@ function VitalReadingCard({
               value={`${reading.respiratoryRate.value}`}
               unit="/min"
               status={reading.respiratoryRate.status}
-              icon={<Wind size={13} variant="Linear" />}
+              icon={<Wind size={13} />}
             />
           )}
           {reading.spO2 && (
@@ -200,7 +200,7 @@ export function VitalsPanel({
   if (!readings.length) {
     return (
       <PanelEmptyState
-        icon={<Activity size={32} variant="Linear" />}
+        icon={<Activity size={32} />}
         message="No vitals recorded"
         description="Vital sign readings will appear here"
       />

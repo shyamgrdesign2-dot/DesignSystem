@@ -1,6 +1,6 @@
 "use client"
 
-import { Heart, Calendar } from "iconsax-react"
+import { Heart, Calendar } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelSubSection, PanelEmptyState } from "../ExpandedPanel"
 import type { GynecEntry, CopyPayload } from "../types"
@@ -28,7 +28,7 @@ function GynecCard({ entry, onCopyToRxPad }: { entry: GynecEntry; onCopyToRxPad?
   return (
     <details open className="group/gyn mb-3 last:mb-0">
       <summary className="flex cursor-pointer items-center gap-2 rounded-lg border border-tp-slate-200 bg-white px-3 py-2.5 hover:bg-tp-slate-50 transition-colors [&::-webkit-details-marker]:hidden list-none group-open/gyn:rounded-b-none group-open/gyn:border-b-0">
-        <Calendar size={14} variant="Bold" className="shrink-0 text-tp-blue-500" />
+        <Calendar size={14} className="shrink-0 text-tp-blue-500" />
         <span className="flex-1 text-[13px] font-semibold text-tp-slate-900">{formatDate(entry.date)}</span>
       </summary>
 
@@ -121,7 +121,7 @@ export function GynecPanel({
   if (!entries.length) {
     return (
       <PanelEmptyState
-        icon={<Heart size={32} variant="Linear" />}
+        icon={<Heart size={32} />}
         message="No gynaecological records"
         description="Gynaecological history will appear here"
       />

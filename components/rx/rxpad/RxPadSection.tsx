@@ -2,14 +2,14 @@
 
 import { useState, useCallback } from "react"
 import {
-  Grid5,
+  LayoutGrid,
   Copy,
-  ExportSquare,
-  SearchNormal1,
-  CloseCircle,
-  Add,
-  Trash,
-} from "iconsax-react"
+  ExternalLink,
+  Search,
+  XCircle,
+  Plus,
+  Trash2,
+} from "lucide-react"
 
 /**
  * RxPad Section Wrapper
@@ -69,17 +69,17 @@ export function RxPadSection({
         <div className="flex items-center gap-0.5">
           {showViewToggle && (
             <button className="rounded-md p-1.5 text-tp-slate-400 hover:bg-tp-slate-100 hover:text-tp-slate-600 transition-colors" title="Grid view">
-              <Grid5 size={15} variant="Linear" />
+              <LayoutGrid size={15} />
             </button>
           )}
           {showCopy && (
             <button className="rounded-md p-1.5 text-tp-slate-400 hover:bg-tp-slate-100 hover:text-tp-slate-600 transition-colors" title="Copy section">
-              <Copy size={15} variant="Linear" />
+              <Copy size={15} />
             </button>
           )}
           {showExpand && (
             <button className="rounded-md p-1.5 text-tp-slate-400 hover:bg-tp-slate-100 hover:text-tp-slate-600 transition-colors" title="Expand">
-              <ExportSquare size={15} variant="Linear" />
+              <ExternalLink size={15} />
             </button>
           )}
         </div>
@@ -128,7 +128,7 @@ export function ChipSearchInput({
     <div className="space-y-2">
       {/* Search */}
       <div className="relative">
-        <SearchNormal1 size={16} variant="Linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
         <input
           type="text"
           value={query}
@@ -184,7 +184,7 @@ export function ChipSearchInput({
                 onClick={() => onRemove(item)}
                 className="rounded-full p-0.5 hover:bg-tp-blue-100 transition-colors"
               >
-                <CloseCircle size={12} variant="Linear" />
+                <XCircle size={12} />
               </button>
             </span>
           ))}
@@ -261,7 +261,7 @@ export function MedicationTable({
                     onClick={() => onRemove(row.id)}
                     className="rounded p-1 text-tp-slate-400 hover:bg-tp-error-50 hover:text-tp-error-500 transition-colors"
                   >
-                    <Trash size={14} variant="Linear" />
+                    <Trash2 size={14} />
                   </button>
                 </td>
               </tr>
@@ -272,7 +272,7 @@ export function MedicationTable({
 
       {/* Search to add */}
       <div className="relative">
-        <SearchNormal1 size={16} variant="Linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
         <input
           type="text"
           placeholder="Search Medication (Rx)"

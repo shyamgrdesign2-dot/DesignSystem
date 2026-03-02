@@ -1,6 +1,6 @@
 "use client"
 
-import { ChemicalGlass, Calendar, ArrowUp, ArrowDown } from "iconsax-react"
+import { FlaskConical, Calendar, ArrowUp, ArrowDown } from "lucide-react"
 import { CopyButton, CopySectionButton } from "../CopyButton"
 import { PanelSubSection, PanelEmptyState } from "../ExpandedPanel"
 import type { LabReport, LabTestResult, CopyPayload } from "../types"
@@ -89,7 +89,7 @@ function LabReportCard({
         group-open/lab:rounded-b-none group-open/lab:border-b-0
         ${hasAbnormal ? "border-tp-warning-200" : "border-tp-slate-200"}
       `}>
-        <ChemicalGlass size={14} variant="Bold" className={hasAbnormal ? "text-tp-warning-500" : "text-tp-blue-500"} />
+        <FlaskConical size={14} className={hasAbnormal ? "text-tp-warning-500" : "text-tp-blue-500"} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-[13px] font-semibold text-tp-slate-900">{report.category}</span>
@@ -148,7 +148,7 @@ export function LabResultsPanel({
   if (!reports.length) {
     return (
       <PanelEmptyState
-        icon={<ChemicalGlass size={32} variant="Linear" />}
+        icon={<FlaskConical size={32} />}
         message="No lab results"
         description="Laboratory test results will appear here"
       />

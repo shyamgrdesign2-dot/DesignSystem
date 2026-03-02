@@ -1,20 +1,37 @@
 "use client"
 
 import * as React from "react"
-import { Notification, Setting2, SearchNormal1, HambergerMenu } from "iconsax-react"
+import {
+  Bell,
+  Settings,
+  Search,
+  Menu,
+  ArrowLeft,
+  Eye,
+  FileText,
+  LogIn,
+  MoreVertical,
+  ChevronDown,
+  User,
+  Building2,
+  BookOpen,
+  Save,
+  LayoutTemplate,
+  StickyNote,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
  * TPTopNavBar — Clinical application header bar.
  *
- * Tokens:
- *   Height        56px
- *   Background    TP Slate 0 (white)
- *   Border        1px TP Slate 200 (bottom)
- *   Action icon   20px, TP Slate 500 → TP Slate 700 hover, 32px circle bg
- *   Badge dot     8px, TP Error 500
- *   Avatar        32px, rounded-full
- *   Padding       0 24px (desktop), 0 16px (mobile)
+ * Matches Figma HomeHeader / RxpadHeader exactly:
+ *   Height        62px
+ *   Background    white
+ *   Border        0.5px #F1F1F5 (bottom)
+ *   Toolbar icon  42px, bg-[#f1f1f5], rounded-[10.5px]
+ *   Badge dot     10.5px, #E11D48
+ *   Avatar        42px, rounded-full
+ *   Divider       gradient, 1.05px wide, 42px tall
  */
 
 interface NavAction {
@@ -22,6 +39,10 @@ interface NavAction {
   label: string
   onClick?: () => void
   badge?: number
+  /** Text label shown next to icon (e.g., "Preview") */
+  text?: string
+  /** Button variant for styled actions */
+  variant?: "default" | "outline" | "primary"
 }
 
 interface TPTopNavBarProps {
@@ -47,12 +68,75 @@ interface TPTopNavBarProps {
     bloodGroup?: string
     uhid?: string
   }
+  /** Clinic name for dropdown */
+  clinicName?: string
+  /** Back button handler (clinical variant) */
+  onBack?: () => void
   /** Optional search area */
   showSearch?: boolean
   onSearchClick?: () => void
   /** Mobile hamburger */
   onMenuClick?: () => void
   className?: string
+}
+
+/* ── Divider matching Figma exactly ── */
+function NavDivider() {
+  return (
+    <div
+      className="shrink-0 opacity-80"
+      style={{
+        width: "1.05px",
+        height: 42,
+        background:
+          "linear-gradient(to bottom, rgba(208,213,221,0.2) 0%, #d0d5dd 50%, rgba(208,213,221,0.2) 100%)",
+      }}
+    />
+  )
+}
+
+/* ── Icon button (42px container) ── */
+function ToolbarIconButton({
+  children,
+  label,
+  onClick,
+  badge,
+  className: extraClass,
+}: {
+  children: React.ReactNode
+  label: string
+  onClick?: () => void
+  badge?: number
+  className?: string
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "relative flex shrink-0 items-center justify-center bg-[#f1f1f5] rounded-[10.5px]",
+        extraClass,
+      )}
+      style={{ width: 42, height: 42, padding: "8.4px" }}
+      aria-label={label}
+    >
+      {children}
+      {badge != null && badge > 0 && (
+        <span
+          className="absolute flex items-center justify-center"
+          style={{
+            width: 10.5,
+            height: 10.5,
+            top: -1.14,
+            right: -1.14,
+            borderRadius: "50%",
+            backgroundColor: "#E11D48",
+            border: "1.05px solid white",
+          }}
+        />
+      )}
+    </button>
+  )
 }
 
 export function TPTopNavBar({
@@ -63,141 +147,333 @@ export function TPTopNavBar({
   actions = [],
   profile,
   patient,
+  clinicName = "Rajeshwar eye clinic",
+  onBack,
   showSearch = false,
   onSearchClick,
   onMenuClick,
   className,
 }: TPTopNavBarProps) {
+  // ── Clinical / RxPad variant ──
+  if (variant === "clinical") {
+    return (
+      <header
+        className={cn("relative flex shrink-0 items-center bg-white", className)}
+        style={{ height: 62 }}
+        data-name="Rxpad_Header"
+      >
+        <div className="flex items-center gap-[16px] pr-[16px] py-[10px] size-full">
+          {/* Back button — 80px panel */}
+          <button
+            type="button"
+            onClick={onBack}
+            className="relative flex shrink-0 items-center justify-center bg-white"
+            style={{
+              width: 80,
+              height: 60,
+              padding: "20px 15px",
+              borderRight: "0.5px solid #f1f1f5",
+              borderBottom: "0.5px solid #f1f1f5",
+            }}
+            aria-label="Go back"
+          >
+            <ArrowLeft size={24} color="#454551" />
+          </button>
+
+          {/* Patient info */}
+          <div className="flex flex-1 items-center min-h-px min-w-[280px]">
+            <div className="flex items-center gap-[6px] shrink-0">
+              {/* Avatar */}
+              <div
+                className="relative flex shrink-0 items-center justify-center bg-[#f1f1f5] rounded-full"
+                style={{ width: 40, height: 40 }}
+              >
+                <User size={22} color="#545460" />
+              </div>
+
+              {/* Name + age */}
+              <div className="flex flex-col items-start shrink-0" style={{ width: 108 }}>
+                <div className="flex items-center gap-[2px] w-full">
+                  <p
+                    className="shrink-0 text-[#454551]"
+                    style={{
+                      fontFamily: "'Poppins', sans-serif",
+                      fontWeight: 600,
+                      fontSize: 14,
+                      maxWidth: 150,
+                      lineHeight: "normal",
+                    }}
+                  >
+                    {patient?.name || "Patient Name"}
+                  </p>
+                  <ChevronDown size={16} color="#454551" className="shrink-0" />
+                </div>
+                <div
+                  className="flex items-start w-full"
+                  style={{
+                    fontFamily: "'Roboto', sans-serif",
+                    fontWeight: 400,
+                    fontSize: 12,
+                    lineHeight: "18px",
+                    letterSpacing: "0.1px",
+                  }}
+                >
+                  <span className="shrink-0 text-[#454551]">
+                    {patient?.gender || "M"}
+                  </span>
+                  <span className="shrink-0 text-[#e2e2ea] text-center w-[8px]">|</span>
+                  <span className="shrink-0 text-[#454551]">
+                    {patient?.age ? `${patient.age}y` : "25y"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Toolbar actions */}
+          <div className="flex items-center gap-[14px] shrink-0">
+            {/* Tutorial icon */}
+            <div className="shrink-0" style={{ width: 42, height: 42 }}>
+              <BookOpen size={25} color="#8A4DBB" className="opacity-80" />
+            </div>
+
+            <NavDivider />
+
+            {/* Template */}
+            <ToolbarIconButton label="Template">
+              <LayoutTemplate size={20} color="#454551" />
+            </ToolbarIconButton>
+
+            {/* Save */}
+            <ToolbarIconButton label="Save">
+              <Save size={20} color="#454551" />
+            </ToolbarIconButton>
+
+            {/* Customisation */}
+            <ToolbarIconButton label="Customisation">
+              <Settings size={20} color="#454551" />
+            </ToolbarIconButton>
+
+            {/* Custom Canvas */}
+            <ToolbarIconButton label="Custom Canvas" badge={1}>
+              <StickyNote size={20} color="#454551" />
+            </ToolbarIconButton>
+
+            <NavDivider />
+
+            {/* Preview */}
+            <button
+              type="button"
+              className="flex shrink-0 items-center justify-center gap-[6.3px] bg-[#f1f1f5] rounded-[10.5px]"
+              style={{ height: 42, padding: "8px 16px" }}
+            >
+              <Eye size={20} color="#454551" />
+              <span
+                className="shrink-0 text-center text-[#454551]"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: "14.7px",
+                  lineHeight: "normal",
+                }}
+              >
+                Preview
+              </span>
+            </button>
+
+            {/* Draft */}
+            <button
+              type="button"
+              className="relative flex shrink-0 items-center justify-center gap-[6.3px] rounded-[10.5px]"
+              style={{
+                height: 42,
+                padding: "8px 16px",
+                border: "1.05px solid #4b4ad5",
+                borderRadius: "11.025px",
+              }}
+            >
+              <FileText size={20} color="#4B4AD5" />
+              <span
+                className="shrink-0 text-center text-[#4b4ad5]"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: "14.7px",
+                  lineHeight: "normal",
+                }}
+              >
+                Draft
+              </span>
+            </button>
+
+            {/* End Visit */}
+            <button
+              type="button"
+              className="flex shrink-0 items-center justify-center gap-[6.3px] bg-[#4b4ad5] rounded-[10.5px]"
+              style={{ height: 42, padding: "8px 16px" }}
+            >
+              <LogIn size={20} color="white" />
+              <span
+                className="shrink-0 text-center text-white"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: "14.7px",
+                  lineHeight: "normal",
+                }}
+              >
+                End
+              </span>
+            </button>
+
+            {/* More options */}
+            <div className="flex shrink-0 items-center justify-center" style={{ width: 25.2, height: 25.2 }}>
+              <MoreVertical size={20} color="#454551" />
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom border */}
+        <div
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{ height: "0.5px", backgroundColor: "#f1f1f5" }}
+        />
+      </header>
+    )
+  }
+
+  // ── Default / Home variant ──
   return (
     <header
-      className={cn(
-        "flex h-14 shrink-0 items-center justify-between border-b border-tp-slate-200 bg-white px-4 lg:px-6",
-        className,
-      )}
+      className={cn("relative flex shrink-0 items-center bg-white", className)}
+      style={{ height: 62 }}
+      data-name="Home_Header"
     >
-      {/* ── Left Section ── */}
-      <div className="flex items-center gap-3 min-w-0">
-        {/* Mobile hamburger */}
-        {onMenuClick && (
+      <div className="flex items-center gap-[16px] px-[18px] py-[10px] size-full">
+        {/* ── Left: Brand Logo ── */}
+        <div className="flex flex-1 items-center min-h-px min-w-[280px]">
+          {leftContent ? (
+            leftContent
+          ) : (
+            <div className="relative shrink-0" style={{ width: 140, height: 40 }}>
+              {/* Brand text fallback */}
+              <div className="absolute inset-0 flex items-center">
+                <span
+                  className="text-[#454551]"
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                    fontSize: 18,
+                  }}
+                >
+                  {title || "TatvaPractice"}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Right: Toolbar ── */}
+        <div className="flex items-center gap-[14px] shrink-0">
+          {/* Tutorial */}
+          <div className="shrink-0 flex items-center justify-center" style={{ width: 42, height: 42 }}>
+            <BookOpen size={25} color="#8A4DBB" className="opacity-80" />
+          </div>
+
+          <NavDivider />
+
+          {/* Notifications */}
+          <ToolbarIconButton label="Notifications" badge={3}>
+            <Bell size={20} color="#454551" />
+          </ToolbarIconButton>
+
+          {/* Ask Tatva AI button */}
+          <div
+            className="relative shrink-0 overflow-hidden rounded-[11px] bg-white"
+            style={{ width: 42, height: 42 }}
+          >
+            <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-purple-400 to-blue-500" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg width="22" height="24" viewBox="0 0 22 24" fill="none">
+                <path d="M11 2L2 7v10l9 5 9-5V7l-9-5z" fill="#4b4ad5" opacity="0.8" />
+                <path d="M11 12L2 7M11 12l9-5M11 12v10" stroke="#4b4ad5" strokeWidth="1.5" />
+              </svg>
+            </div>
+          </div>
+
+          <NavDivider />
+
+          {/* Clinic dropdown */}
           <button
             type="button"
-            onClick={onMenuClick}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-tp-slate-500 hover:bg-tp-slate-100 hover:text-tp-slate-700 transition-colors lg:hidden"
-            aria-label="Open menu"
+            className="flex shrink-0 items-center justify-center gap-[6.3px] bg-[#f1f1f5] rounded-[10.5px]"
+            style={{ height: 42, padding: "8px 16px" }}
           >
-            <HambergerMenu size={20} variant="Linear" />
-          </button>
-        )}
-
-        {leftContent ? (
-          leftContent
-        ) : (
-          <div className="flex items-center gap-2 min-w-0">
-            {/* Logo / brand mark */}
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-tp-blue-500">
-              <span className="text-xs font-bold text-white font-heading">TP</span>
+            <Building2 size={20} color="#454551" />
+            <div className="flex items-center" style={{ width: 138.6 }}>
+              <span
+                className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-[#454551]"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 400,
+                  fontSize: "14.7px",
+                  lineHeight: "normal",
+                }}
+              >
+                {clinicName}
+              </span>
             </div>
-            {title && (
-              <div className="min-w-0">
-                <h1 className="text-sm font-semibold text-tp-slate-900 truncate font-heading">
-                  {title}
-                </h1>
-                {subtitle && (
-                  <p className="text-[11px] text-tp-slate-500 truncate">{subtitle}</p>
+            <ChevronDown size={20} color="#454551" />
+          </button>
+
+          {/* Profile avatar */}
+          {profile && (
+            <div className="relative shrink-0" style={{ width: 42, height: 42 }}>
+              {/* Gradient ring */}
+              <div
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: "linear-gradient(180deg, #FFDE00 0%, #FD5900 100%)",
+                }}
+              />
+              {/* Inner avatar */}
+              <div
+                className="absolute rounded-full overflow-hidden bg-white"
+                style={{
+                  top: "7.89%",
+                  left: "7.89%",
+                  right: "7.89%",
+                  bottom: "7.89%",
+                  border: "0.93px solid white",
+                }}
+              >
+                {profile.avatarUrl ? (
+                  <img
+                    src={profile.avatarUrl}
+                    alt={profile.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                    <span
+                      className="text-[#454551]"
+                      style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: 13 }}
+                    >
+                      {profile.initials || profile.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                    </span>
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Patient info (clinical variant) */}
-        {variant === "clinical" && patient && (
-          <div className="ml-4 hidden items-center gap-2 rounded-lg bg-tp-slate-50 px-3 py-1.5 lg:flex">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-tp-blue-100 text-tp-blue-600">
-              <span className="text-[10px] font-semibold">
-                {patient.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
-              </span>
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-tp-slate-900 truncate">{patient.name}</p>
-              <p className="text-[10px] text-tp-slate-500">
-                {patient.age}y {patient.gender}
-                {patient.bloodGroup && (
-                  <span className="ml-1.5 inline-flex items-center rounded-full bg-tp-error-50 px-1.5 text-[9px] font-medium text-tp-error-600">
-                    {patient.bloodGroup}
-                  </span>
-                )}
-                {patient.uhid && (
-                  <span className="ml-1.5 font-mono text-tp-slate-400">{patient.uhid}</span>
-                )}
-              </p>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* ── Right Section ── */}
-      <div className="flex items-center gap-1">
-        {/* Search trigger */}
-        {showSearch && (
-          <button
-            type="button"
-            onClick={onSearchClick}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-tp-slate-500 hover:bg-tp-slate-100 hover:text-tp-slate-700 transition-colors"
-            aria-label="Search"
-          >
-            <SearchNormal1 size={18} variant="Linear" />
-          </button>
-        )}
-
-        {/* Action icons */}
-        {actions.map((action, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={action.onClick}
-            className="relative flex h-8 w-8 items-center justify-center rounded-lg text-tp-slate-500 hover:bg-tp-slate-100 hover:text-tp-slate-700 transition-colors"
-            aria-label={action.label}
-          >
-            {action.icon}
-            {action.badge != null && action.badge > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-tp-error-500 px-1 text-[9px] font-bold text-white">
-                {action.badge > 9 ? "9+" : action.badge}
-              </span>
-            )}
-          </button>
-        ))}
-
-        {/* Divider */}
-        {actions.length > 0 && profile && (
-          <div className="mx-1 h-6 w-px bg-tp-slate-200" />
-        )}
-
-        {/* Profile */}
-        {profile && (
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-tp-slate-50 transition-colors"
-          >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-tp-blue-100 text-tp-blue-600">
-              {profile.avatarUrl ? (
-                <img
-                  src={profile.avatarUrl}
-                  alt={profile.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-xs font-semibold">
-                  {profile.initials || profile.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
-                </span>
-              )}
-            </div>
-            <span className="hidden text-xs font-medium text-tp-slate-700 lg:block">
-              {profile.name}
-            </span>
-          </button>
-        )}
-      </div>
+      {/* Bottom border */}
+      <div
+        className="absolute bottom-0 left-0 right-0 pointer-events-none"
+        style={{ height: "0.5px", backgroundColor: "#f1f1f5" }}
+      />
     </header>
   )
 }
@@ -208,12 +484,12 @@ export function TPTopNavBar({
 export function defaultNavActions(): NavAction[] {
   return [
     {
-      icon: <Notification size={18} variant="Linear" />,
+      icon: <Bell size={20} color="#454551" />,
       label: "Notifications",
       badge: 3,
     },
     {
-      icon: <Setting2 size={18} variant="Linear" />,
+      icon: <Settings size={20} color="#454551" />,
       label: "Settings",
     },
   ]

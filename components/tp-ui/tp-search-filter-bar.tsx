@@ -2,20 +2,18 @@
 
 import * as React from "react"
 import { useState, useRef, useEffect } from "react"
-import { SearchNormal1, ArrowDown2, CloseCircle } from "iconsax-react"
+import { Search, ChevronDown, XCircle, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
  * TPSearchFilterBar — Combined search input + filter dropdowns.
  *
- * Tokens:
- *   Search input     TP Slate 50 bg, TP Slate 200 border, 10px radius, 42px height
- *   Filter button    TP Slate 0 bg, TP Slate 200 border, 10px radius, 36px height
- *   Search icon      20px, TP Slate 400
- *   Chevron icon     16px, TP Slate 400
- *   Gap              8px between elements
- *   Focus border     2px TP Blue 500 + 3px ring TP Blue 500/20
- *   Responsive       Filters stack below search on < 1024px
+ * Figma reference specs:
+ *   Search input:  h-[38px], bg-white, border-[#e2e2ea], rounded-[10px]
+ *   Search icon:   left-positioned, 16-18px, #A2A2A8
+ *   Focus state:   ring-2 ring-[#4b4ad5]/20, border-[#4b4ad5]
+ *   Filter button: border-[#e2e2ea], rounded-[10px], Inter 12px
+ *   Padding:       px-[13px] py-[6px]
  */
 
 interface FilterOption {
@@ -47,12 +45,11 @@ export function TPSearchFilterBar({
 }: TPSearchFilterBarProps) {
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>
-      {/* Search input */}
+      {/* Search input — exact Figma specs */}
       <div className="relative flex-1 min-w-[200px]">
-        <SearchNormal1
+        <Search
           size={18}
-          variant="Linear"
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400 pointer-events-none"
+          className="absolute left-[13px] top-1/2 -translate-y-1/2 text-[#a2a2a8] pointer-events-none"
         />
         <input
           type="text"
@@ -60,20 +57,27 @@ export function TPSearchFilterBar({
           onChange={(e) => onSearchChange?.(e.target.value)}
           placeholder={searchPlaceholder}
           className={cn(
-            "h-[42px] w-full rounded-[10px] border border-tp-slate-200 bg-tp-slate-50 pl-10 pr-9 text-sm text-tp-slate-900",
-            "placeholder:text-tp-slate-400",
-            "focus:border-tp-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-tp-blue-500/20",
+            "w-full bg-white border border-[#e2e2ea] rounded-[10px] text-[#454551]",
+            "pl-[38px] pr-9",
+            "placeholder:text-[#a2a2a8]",
+            "focus:border-[#4b4ad5] focus:outline-none focus:ring-2 focus:ring-[#4b4ad5]/20",
             "transition-colors",
           )}
+          style={{
+            height: 38,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 14,
+            padding: "6px 13px 6px 38px",
+          }}
         />
         {searchValue && (
           <button
             type="button"
             onClick={() => onSearchChange?.("")}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-tp-slate-400 hover:text-tp-slate-600 transition-colors"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#a2a2a8] hover:text-[#454551] transition-colors"
             aria-label="Clear search"
           >
-            <CloseCircle size={16} variant="Bold" />
+            <XCircle size={16} />
           </button>
         )}
       </div>
@@ -122,29 +126,41 @@ function FilterDropdown({
     ? selectedOption.label
     : filter.label
 
+  const hasActiveFilter = filter.selectedValue && filter.selectedValue !== "all"
+
   return (
     <div ref={ref} className="relative">
       <button
         type="button"
         onClick={() => setOpen(!open)}
         className={cn(
-          "inline-flex h-9 items-center gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-xs font-medium transition-colors",
-          filter.selectedValue && filter.selectedValue !== "all"
-            ? "text-tp-blue-600 border-tp-blue-200 bg-tp-blue-50"
-            : "text-tp-slate-600 hover:border-tp-slate-300 hover:bg-tp-slate-50",
+          "inline-flex items-center gap-[6px] rounded-[10px] border transition-colors",
+          hasActiveFilter
+            ? "text-[#4b4ad5] border-[#4b4ad5]/30 bg-[#eef]"
+            : "text-[#454551] border-[#e2e2ea] bg-white hover:border-[#a2a2a8] hover:bg-[#f1f1f5]",
         )}
+        style={{
+          height: 38,
+          padding: "6px 12px",
+          fontFamily: "'Inter', sans-serif",
+          fontSize: 12,
+          fontWeight: 500,
+        }}
       >
         <span className="truncate max-w-[120px]">{displayLabel}</span>
-        <ArrowDown2
+        <ChevronDown
           size={14}
-          variant="Linear"
-          className={cn("shrink-0 text-tp-slate-400 transition-transform", open && "rotate-180")}
+          className={cn(
+            "shrink-0 transition-transform",
+            hasActiveFilter ? "text-[#4b4ad5]" : "text-[#a2a2a8]",
+            open && "rotate-180",
+          )}
         />
       </button>
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 min-w-[180px] overflow-hidden rounded-xl border border-tp-slate-200 bg-white py-1 shadow-lg animate-in fade-in slide-in-from-top-1 duration-150">
+        <div className="absolute left-0 top-full z-50 mt-1 min-w-[180px] overflow-hidden rounded-[10px] border border-[#e2e2ea] bg-white py-1 shadow-lg animate-in fade-in slide-in-from-top-1 duration-150">
           {filter.options.map((option) => (
             <button
               key={option.value}
@@ -156,15 +172,14 @@ function FilterDropdown({
               className={cn(
                 "flex w-full items-center px-3 py-2 text-xs transition-colors",
                 filter.selectedValue === option.value
-                  ? "bg-tp-blue-50 text-tp-blue-700 font-semibold"
-                  : "text-tp-slate-600 hover:bg-tp-slate-50",
+                  ? "bg-[#eef] text-[#4b4ad5] font-semibold"
+                  : "text-[#454551] hover:bg-[#f1f1f5]",
               )}
+              style={{ fontFamily: "'Inter', sans-serif" }}
             >
               <span className="flex-1 text-left">{option.label}</span>
               {filter.selectedValue === option.value && (
-                <svg className="h-3.5 w-3.5 text-tp-blue-500" viewBox="0 0 14 14" fill="none">
-                  <path d="M2.5 7l3 3 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <Check size={14} className="text-[#4b4ad5]" />
               )}
             </button>
           ))}

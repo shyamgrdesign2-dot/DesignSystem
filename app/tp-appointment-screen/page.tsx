@@ -1,5 +1,5 @@
 import { Mulish } from "next/font/google"
-import { DrAgentPage } from "@/components/dr-agent/DrAgentPage"
+import { DrAgentPage } from "@/components/tp-appointment-screen/DrAgentPage"
 
 const mulish = Mulish({
   subsets: ["latin"],
@@ -8,11 +8,11 @@ const mulish = Mulish({
 })
 
 export const metadata = {
-  title: "Dr Agent Appointments — TatvaPractice",
-  description: "Figma-aligned Dr Agent appointments board with queue tabs and action table.",
+  title: "TP Appointment Screen — TatvaPractice",
+  description: "TatvaPractice appointment queue with tabs, filters, and AI-assisted workflow.",
 }
 
-export default function DrAgentRoute() {
+export default function TPAppointmentPage() {
   return (
     <div className={mulish.variable}>
       <DrAgentPage />

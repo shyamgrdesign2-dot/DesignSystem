@@ -1,6 +1,6 @@
 "use client"
 
-import { FolderOpen, Calendar, DocumentText, Image, Document } from "iconsax-react"
+import { FolderOpen, Calendar, FileText, Image, File } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelEmptyState } from "../ExpandedPanel"
 import type { MedicalDocument, CopyPayload } from "../types"
@@ -24,9 +24,9 @@ function formatDate(d: string) {
 }
 
 const fileTypeIcons = {
-  pdf: { icon: DocumentText, color: "text-tp-error-500", bg: "bg-tp-error-50" },
+  pdf: { icon: FileText, color: "text-tp-error-500", bg: "bg-tp-error-50" },
   image: { icon: Image, color: "text-tp-blue-500", bg: "bg-tp-blue-50" },
-  doc: { icon: Document, color: "text-tp-violet-500", bg: "bg-tp-violet-50" },
+  doc: { icon: File, color: "text-tp-violet-500", bg: "bg-tp-violet-50" },
 }
 
 const docTypeBg: Record<string, string> = {
@@ -47,7 +47,7 @@ function DocumentCard({ doc, onCopy }: { doc: MedicalDocument; onCopy: () => voi
   return (
     <div className="group/item flex items-start gap-3 rounded-lg border border-tp-slate-200 bg-white px-3 py-2.5 mb-2 last:mb-0 hover:border-tp-blue-200 hover:shadow-sm transition-all cursor-pointer">
       <div className={`flex items-center justify-center rounded-lg w-9 h-9 shrink-0 ${ft.bg}`}>
-        <Icon size={18} variant="Bold" className={ft.color} />
+        <Icon size={18} className={ft.color} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-medium text-tp-slate-800 truncate">{doc.title}</p>
@@ -86,7 +86,7 @@ export function MedicalRecordsPanel({
   if (!documents.length) {
     return (
       <PanelEmptyState
-        icon={<FolderOpen size={32} variant="Linear" />}
+        icon={<FolderOpen size={32} />}
         message="No medical records"
         description="Uploaded documents will appear here"
       />

@@ -1,6 +1,6 @@
 "use client"
 
-import { Profile2User, Calendar } from "iconsax-react"
+import { Users, Calendar } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelSubSection, PanelEmptyState } from "../ExpandedPanel"
 import type { ObstetricHistory, CopyPayload } from "../types"
@@ -47,7 +47,7 @@ export function ObstetricPanel({
   if (!history) {
     return (
       <PanelEmptyState
-        icon={<Profile2User size={32} variant="Linear" />}
+        icon={<Users size={32} />}
         message="No obstetric history"
         description="Obstetric records will appear here"
       />

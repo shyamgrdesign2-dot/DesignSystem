@@ -1,6 +1,6 @@
 "use client"
 
-import { Book, Warning2, HeartAdd, Scissor, People, ProfileCircle } from "iconsax-react"
+import { BookOpen, AlertTriangle, HeartPulse, Scissors, Users, UserCircle } from "lucide-react"
 import { CopyButton, CopySectionButton } from "../CopyButton"
 import { PanelSubSection, PanelEmptyState } from "../ExpandedPanel"
 import type { MedicalHistory, CopyPayload } from "../types"
@@ -27,9 +27,8 @@ function AllergyCard({ allergy, onCopy }: { allergy: MedicalHistory["allergies"]
 
   return (
     <div className={`group/item flex items-start gap-2.5 rounded-lg border px-3 py-2 mb-2 last:mb-0 ${rule.style}`}>
-      <Warning2
+      <AlertTriangle
         size={16}
-        variant="Bold"
         className={`shrink-0 mt-0.5 ${
           allergy.severity === "severe" ? "text-tp-error-500" : "text-tp-warning-500"
         }`}
@@ -66,7 +65,7 @@ function ChronicConditionCard({ condition, onCopy }: { condition: MedicalHistory
 
   return (
     <div className="group/item flex items-start gap-2.5 rounded-lg border border-tp-slate-200 bg-white px-3 py-2 mb-2 last:mb-0">
-      <HeartAdd size={14} variant="Linear" className="shrink-0 mt-0.5 text-tp-slate-400" />
+      <HeartPulse size={14} className="shrink-0 mt-0.5 text-tp-slate-400" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-tp-slate-800">{condition.condition}</span>
@@ -92,7 +91,7 @@ function ChronicConditionCard({ condition, onCopy }: { condition: MedicalHistory
 function SurgicalCard({ surgery, onCopy }: { surgery: MedicalHistory["surgicalHistory"][0]; onCopy: () => void }) {
   return (
     <div className="group/item flex items-start gap-2.5 rounded-lg border border-tp-slate-200 bg-white px-3 py-2 mb-2 last:mb-0">
-      <Scissor size={14} variant="Linear" className="shrink-0 mt-0.5 text-tp-slate-400" />
+      <Scissors size={14} className="shrink-0 mt-0.5 text-tp-slate-400" />
       <div className="flex-1 min-w-0">
         <span className="text-xs font-medium text-tp-slate-800">{surgery.procedure}</span>
         <p className="text-[11px] text-tp-slate-500 mt-0.5">
@@ -111,7 +110,7 @@ function SurgicalCard({ surgery, onCopy }: { surgery: MedicalHistory["surgicalHi
 function FamilyHistoryCard({ entry, onCopy }: { entry: MedicalHistory["familyHistory"][0]; onCopy: () => void }) {
   return (
     <div className="group/item flex items-start gap-2.5 rounded-lg border border-tp-slate-200 bg-white px-3 py-2 mb-2 last:mb-0">
-      <People size={14} variant="Linear" className="shrink-0 mt-0.5 text-tp-slate-400" />
+      <Users size={14} className="shrink-0 mt-0.5 text-tp-slate-400" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-tp-slate-800">{entry.condition}</span>
