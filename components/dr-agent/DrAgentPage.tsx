@@ -29,6 +29,8 @@ import {
   TPButton as Button,
   TPSplitButton,
 } from "@/components/tp-ui/button-system"
+import { AppointmentBanner } from "@/components/appointments/AppointmentBanner"
+import { DateRangePicker, type DatePresetId } from "@/components/ui/date-range-picker"
 
 const REF_LOGO = "/assets/b38df11ad80d11b9c1d530142443a18c2f53d406.png"
 const REF_AVATAR = "/assets/52cb18088c5b8a5db6a7711c9900d7d08a1bac42.png"
@@ -115,12 +117,6 @@ const appointmentTabs: AppointmentTab[] = [
   },
 ]
 
-const DATE_RANGE_OPTIONS: { id: DateRangeKey; label: string }[] = [
-  { id: "today", label: "Today" },
-  { id: "yesterday", label: "Yesterday" },
-  { id: "past-3-months", label: "Past 3 Months" },
-  { id: "past-4-months", label: "Past 4 Months" },
-]
 
 const queueAppointments: AppointmentRow[] = [
   {
@@ -212,12 +208,13 @@ const queueAppointments: AppointmentRow[] = [
   },
 ]
 
-function matchesDateFilter(rowDateKey: DateRangeKey, selected: DateRangeKey) {
+function matchesDateFilter(rowDateKey: DateRangeKey, selected: DatePresetId) {
   if (selected === "today") return rowDateKey === "today"
   if (selected === "yesterday") return rowDateKey === "yesterday"
-  if (selected === "past-3-months") {
+  if (selected === "past-3-months" || selected === "next-3-months") {
     return rowDateKey === "today" || rowDateKey === "yesterday" || rowDateKey === "past-3-months"
   }
+  // past-4-months, next-4-months, or custom → show all
   return true
 }
 
@@ -225,26 +222,17 @@ export function DrAgentPage() {
   const [activeRailItem, setActiveRailItem] = useState(navItems[0].id)
   const [activeTab, setActiveTab] = useState<AppointmentStatus>("queue")
   const [query, setQuery] = useState("")
-  const [dateFilter, setDateFilter] = useState<DateRangeKey>("today")
-  const [isDateMenuOpen, setDateMenuOpen] = useState(false)
-
-  const dateMenuRef = useRef<HTMLDivElement | null>(null)
+  const [dateFilter, setDateFilter] = useState<DatePresetId>("today")
+  const tableOverflowRef = useRef<HTMLDivElement | null>(null)
+  const [isTableScrolled, setIsTableScrolled] = useState(false)
 
   useEffect(() => {
-    function onPointerDown(event: MouseEvent) {
-      if (!dateMenuRef.current) return
-      if (!dateMenuRef.current.contains(event.target as Node)) {
-        setDateMenuOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", onPointerDown)
-    return () => document.removeEventListener("mousedown", onPointerDown)
+    const el = tableOverflowRef.current
+    if (!el) return
+    const handler = () => setIsTableScrolled(el.scrollLeft > 0)
+    el.addEventListener("scroll", handler, { passive: true })
+    return () => el.removeEventListener("scroll", handler)
   }, [])
-
-  const currentDateFilterLabel = useMemo(() => {
-    return DATE_RANGE_OPTIONS.find((option) => option.id === dateFilter)?.label ?? "Today"
-  }, [dateFilter])
 
   const visibleAppointments = useMemo(() => {
     return queueAppointments.filter((row) => {
@@ -315,48 +303,36 @@ export function DrAgentPage() {
               </div>
             </div>
 
-            <div
-              className="relative h-[149px] w-full overflow-hidden rounded-b-[16px]"
-              style={{
-                background:
-                  "radial-gradient(99.09% 59.99% at 50% 55.44%, #46286C 0%, #25113E 39.08%, #372153 78.16%, #6C4F90 100%)",
-              }}
-            >
-              <div className="relative h-full px-3 pt-6 sm:px-6 lg:px-[18px]">
-                <div className="flex items-center justify-between gap-3">
-                  <h1 className="min-w-0 flex-1 font-heading text-[24px] font-bold leading-[1.15] text-white">
-                    Your Appointments
-                  </h1>
-
-                  <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                    <Button
-                      variant="outline"
-                      theme="primary"
-                      size="md"
-                      surface="dark"
-                      className="whitespace-nowrap !bg-[rgba(255,255,255,0.07)] backdrop-blur-sm"
-                      leftIcon={<Plus size={20} strokeWidth={1.5} />}
-                    >
-                      Add Appointment
-                    </Button>
-
-                    <Button
-                      variant="solid"
-                      theme="primary"
-                      size="md"
-                      surface="dark"
-                      className="whitespace-nowrap"
-                      leftIcon={<TickCircle size={24} variant="Linear" strokeWidth={1.5} />}
-                    >
-                      Start Walk-In
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AppointmentBanner
+              title="Your Appointments"
+              actions={
+                <>
+                  <Button
+                    variant="outline"
+                    theme="primary"
+                    size="md"
+                    surface="dark"
+                    className="whitespace-nowrap !bg-[rgba(255,255,255,0.13)] backdrop-blur-sm"
+                    leftIcon={<Plus size={20} strokeWidth={1.5} />}
+                  >
+                    Add Appointment
+                  </Button>
+                  <Button
+                    variant="solid"
+                    theme="primary"
+                    size="md"
+                    surface="dark"
+                    className="whitespace-nowrap"
+                    leftIcon={<TickCircle size={24} variant="Linear" strokeWidth={1.5} />}
+                  >
+                    Start Walk-In
+                  </Button>
+                </>
+              }
+            />
 
             <div className="relative z-10 -mt-[60px] px-3 pb-6 sm:px-4 lg:px-6">
-              <div className="rounded-2xl border border-tp-slate-200 bg-white shadow-[0_10px_24px_rgba(23,23,37,0.08)]">
+              <div className="rounded-2xl border border-tp-slate-200 bg-white">
                 <div className="overflow-x-auto border-b border-tp-slate-100 px-2 pt-2 sm:px-4 sm:pt-3 lg:px-[18px] lg:pt-[18px]">
                   <div className="flex min-w-max items-center gap-0">
                     {appointmentTabs.map((tab) => {
@@ -369,8 +345,8 @@ export function DrAgentPage() {
                           type="button"
                           onClick={() => setActiveTab(tab.id)}
                           className={cn(
-                            "group relative flex shrink-0 flex-col gap-2 px-3 pb-0 pt-0",
-                            isActive ? "text-tp-blue-500" : "text-tp-slate-700",
+                            "group relative flex shrink-0 flex-col gap-2 rounded-t-lg px-3 pb-0 pt-1 transition-colors",
+                            isActive ? "text-tp-blue-500" : "text-tp-slate-700 hover:text-tp-blue-400",
                           )}
                           aria-pressed={isActive}
                         >
@@ -418,55 +394,14 @@ export function DrAgentPage() {
                       />
                     </label>
 
-                    <div className="relative w-[180px] min-w-[150px] max-w-[180px]" ref={dateMenuRef}>
-                      <button
-                        type="button"
-                        onClick={() => setDateMenuOpen((value) => !value)}
-                        className="inline-flex h-[38px] w-full items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700"
-                      >
-                        <span className="inline-flex items-center gap-1.5 truncate">
-                          <Calendar size={18} variant="Linear" strokeWidth={1.5} className="shrink-0" />
-                          <span className="truncate">{currentDateFilterLabel}</span>
-                        </span>
-                        <ChevronDown size={14} strokeWidth={1.5} />
-                      </button>
-
-                      {isDateMenuOpen && (
-                        <div className="absolute right-0 top-[42px] z-30 min-w-[160px] rounded-[10px] border border-tp-slate-200 bg-white p-1 shadow-[0_10px_24px_rgba(23,23,37,0.1)]">
-                          {DATE_RANGE_OPTIONS.map((option) => {
-                            const selected = option.id === dateFilter
-                            return (
-                              <button
-                                key={option.id}
-                                type="button"
-                                onClick={() => {
-                                  setDateFilter(option.id)
-                                  setDateMenuOpen(false)
-                                }}
-                                className={cn(
-                                  "flex w-full items-center justify-between rounded-[8px] px-3 py-2 text-left text-sm transition-colors",
-                                  selected
-                                    ? "bg-tp-blue-50 text-tp-blue-700"
-                                    : "text-tp-slate-700 hover:bg-tp-slate-50",
-                                )}
-                              >
-                                {option.label}
-                                {selected && (
-                                  <TickCircle
-                                    size={14}
-                                    variant="Bold"
-                                    color="var(--tp-blue-500)"
-                                  />
-                                )}
-                              </button>
-                            )
-                          })}
-                        </div>
-                      )}
-                    </div>
+                    <DateRangePicker
+                      value={dateFilter}
+                      onChange={(sel) => setDateFilter(sel.presetId)}
+                      className="w-[180px] min-w-[150px] max-w-[180px]"
+                    />
                   </div>
 
-                  <div className="overflow-x-auto pb-1">
+                  <div ref={tableOverflowRef} className="overflow-x-auto pb-1">
                     <div className="min-w-[920px]">
                       <table className="w-full border-collapse">
                         <thead>
@@ -492,7 +427,10 @@ export function DrAgentPage() {
                                 <SortIndicators />
                               </span>
                             </th>
-                            <th className="sticky right-0 z-20 w-px rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                            <th className={cn(
+                              "sticky right-0 z-20 w-px rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 xl:static",
+                              isTableScrolled && "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.10)]",
+                            )}>
                               Action
                             </th>
                           </tr>
@@ -564,8 +502,7 @@ export function DrAgentPage() {
                                       {row.hasVideo && (
                                         <Video
                                           size={13}
-                                          variant="Linear"
-                                          strokeWidth={1.5}
+                                          variant="Bulk"
                                           color="var(--tp-blue-500)"
                                         />
                                       )}
@@ -576,7 +513,10 @@ export function DrAgentPage() {
                                   </p>
                                 </td>
 
-                                <td className="sticky right-0 z-10 w-px bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                                <td className={cn(
+                                  "sticky right-0 z-10 w-px bg-white px-3 py-3 align-middle xl:static",
+                                  isTableScrolled && "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.10)]",
+                                )}>
                                   <div className="flex items-center gap-3 whitespace-nowrap">
                                     <TPSplitButton
                                       primaryAction={{
@@ -667,7 +607,31 @@ function SortIndicators() {
   )
 }
 
+const DUMMY_CLINICS = [
+  { id: "rajeshwar", name: "Rajeshwar Eye Clinic", selected: true },
+  { id: "city", name: "City Medical Centre" },
+  { id: "sunrise", name: "Sunrise Hospital" },
+  { id: "apollo", name: "Apollo Clinic, Banjara Hills" },
+  { id: "care", name: "Care Diagnostics" },
+]
+
 function TopHeader() {
+  const [isClinicMenuOpen, setClinicMenuOpen] = useState(false)
+  const [activeClinic, setActiveClinic] = useState(DUMMY_CLINICS[0].id)
+  const clinicMenuRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    function onPointerDown(event: MouseEvent) {
+      if (!clinicMenuRef.current?.contains(event.target as Node)) {
+        setClinicMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", onPointerDown)
+    return () => document.removeEventListener("mousedown", onPointerDown)
+  }, [])
+
+  const activeClinicName = DUMMY_CLINICS.find((c) => c.id === activeClinic)?.name ?? "Clinic"
+
   return (
     <header className="flex h-[62px] shrink-0 items-center border-b border-tp-slate-100 bg-tp-slate-0 px-4 py-2.5">
       <div className="flex min-w-0 flex-1 items-center">
@@ -681,15 +645,15 @@ function TopHeader() {
       <div className="flex items-center gap-3.5">
         <button
           type="button"
-          className="flex size-[42px] items-center justify-center rounded-[10.5px] bg-[#f1f1f5]"
+          className="flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-600 transition-colors hover:bg-tp-slate-200"
           aria-label="Play tutorial"
         >
-          <VideoTutorialIcon size={20} color="#BA7DE9" />
+          <Video size={20} variant="Linear" strokeWidth={1.5} color="#BA7DE9" />
         </button>
 
         <button
           type="button"
-          className="relative inline-flex size-[42px] items-center justify-center rounded-xl bg-tp-slate-100 text-tp-slate-700"
+          className="relative inline-flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-700 transition-colors hover:bg-tp-slate-200"
           aria-label="Notifications"
         >
           <Notification size={20} variant="Linear" strokeWidth={1.5} />
@@ -698,21 +662,65 @@ function TopHeader() {
 
         <div className="h-[42px] w-px bg-tp-slate-300 opacity-80" />
 
-        <button
-          type="button"
-          className="hidden items-center gap-1.5 rounded-xl bg-tp-slate-100 px-4 py-2 sm:inline-flex"
-          aria-label="Switch clinic"
-        >
-          <Hospital size={20} variant="Linear" strokeWidth={1.5} color="var(--tp-slate-700)" />
-          <span className="max-w-[120px] truncate text-[14.7px] text-tp-slate-700">
-            Rajeshwar eye cli...
-          </span>
-          <ChevronDown size={18} strokeWidth={1.5} />
-        </button>
+        <div className="relative hidden sm:block" ref={clinicMenuRef}>
+          <button
+            type="button"
+            onClick={() => setClinicMenuOpen((v) => !v)}
+            className="inline-flex items-center gap-1.5 rounded-[10px] bg-tp-slate-100 px-4 py-2 transition-colors hover:bg-tp-slate-200"
+            aria-label="Switch clinic"
+            aria-expanded={isClinicMenuOpen}
+          >
+            <Hospital size={20} variant="Linear" strokeWidth={1.5} color="var(--tp-slate-700)" />
+            <span className="max-w-[120px] truncate text-[14.7px] text-tp-slate-700">
+              {activeClinicName.length > 18 ? activeClinicName.substring(0, 18) + "…" : activeClinicName}
+            </span>
+            <ChevronDown
+              size={18}
+              strokeWidth={1.5}
+              className="transition-transform duration-200"
+              style={{ transform: isClinicMenuOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+            />
+          </button>
+
+          {isClinicMenuOpen && (
+            <div className="absolute right-0 top-[46px] z-50 min-w-[220px] overflow-hidden rounded-[12px] border border-tp-slate-200 bg-white shadow-[0_12px_24px_-4px_rgba(23,23,37,0.10)]">
+              <p className="px-3 pb-1 pt-2.5 text-[11px] font-semibold uppercase tracking-wide text-tp-slate-400">
+                Your Clinics
+              </p>
+              {DUMMY_CLINICS.map((clinic) => (
+                <button
+                  key={clinic.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveClinic(clinic.id)
+                    setClinicMenuOpen(false)
+                  }}
+                  className={cn(
+                    "flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors",
+                    clinic.id === activeClinic
+                      ? "bg-tp-blue-50 text-tp-blue-700"
+                      : "text-tp-slate-700 hover:bg-tp-slate-50",
+                  )}
+                >
+                  <Hospital
+                    size={16}
+                    variant={clinic.id === activeClinic ? "Bulk" : "Linear"}
+                    strokeWidth={1.5}
+                    color={clinic.id === activeClinic ? "var(--tp-blue-500)" : "var(--tp-slate-500)"}
+                  />
+                  <span className="flex-1 truncate">{clinic.name}</span>
+                  {clinic.id === activeClinic && (
+                    <TickCircle size={14} variant="Bold" color="var(--tp-blue-500)" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <button
           type="button"
-          className="relative inline-flex size-[42px] items-center justify-center rounded-full"
+          className="relative inline-flex size-[42px] items-center justify-center rounded-full transition-opacity hover:opacity-80"
           aria-label="Profile"
         >
           <span
@@ -732,26 +740,3 @@ function TopHeader() {
   )
 }
 
-function VideoTutorialIcon({
-  size = 24,
-  color = "#000000",
-}: {
-  size?: number
-  color?: string
-}) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill={color}
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path
-        d="M19.5099 5.85L13.5699 2.42C12.5999 1.86 11.3999 1.86 10.4199 2.42L4.48992 5.85C3.51992 6.41 2.91992 7.45 2.91992 8.58V15.42C2.91992 16.54 3.51992 17.58 4.48992 18.15L10.4299 21.58C11.3999 22.14 12.5999 22.14 13.5799 21.58L19.5199 18.15C20.4899 17.59 21.0899 16.55 21.0899 15.42V8.58C21.0799 7.45 20.4799 6.42 19.5099 5.85ZM14.2499 13.4L13.2099 14L12.1699 14.6C10.8399 15.37 9.74992 14.74 9.74992 13.2V12V10.8C9.74992 9.26 10.8399 8.63 12.1699 9.4L13.2099 10L14.2499 10.6C15.5799 11.37 15.5799 12.63 14.2499 13.4Z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}
