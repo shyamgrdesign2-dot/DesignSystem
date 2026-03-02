@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Activity,
-  ArrowDown2,
   Bag2,
   Calendar,
   CalendarAdd,
@@ -15,7 +14,6 @@ import {
   MessageQuestion,
   MessageText,
   Monitor,
-  More,
   Notification,
   Profile2User,
   ReceiptText,
@@ -23,20 +21,15 @@ import {
   TickCircle,
   Video,
 } from "iconsax-reactjs"
-import { ChevronDown, Plus } from "lucide-react"
+import { ChevronDown, MoreHorizontal, Plus } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { SecondaryNavPanel, type NavItem } from "@/components/ui/secondary-nav-panel"
 import {
   TPButton as Button,
   TPIconButton as IconButton,
+  TPSplitButton,
 } from "@/components/tp-ui/button-system"
-import {
-  TPDropdownMenu,
-  TPDropdownMenuContent,
-  TPDropdownMenuItem,
-  TPDropdownMenuTrigger,
-} from "@/components/tp-ui/tp-dropdown-menu"
 
 const REF_LOGO = "/assets/b38df11ad80d11b9c1d530142443a18c2f53d406.png"
 const REF_AVATAR = "/assets/52cb18088c5b8a5db6a7711c9900d7d08a1bac42.png"
@@ -327,7 +320,7 @@ export function DrAgentPage() {
               className="relative h-[149px] w-full overflow-hidden rounded-b-[16px]"
               style={{
                 background:
-                  "radial-gradient(99.09% 59.99% at 50% 55.44%, #8A4DBB 0%, #3E1C64 39.08%, #572A81 78.16%, #A461D8 100%)",
+                  "radial-gradient(99.09% 59.99% at 50% 55.44%, #46286C 0%, #25113E 39.08%, #372153 78.16%, #6C4F90 100%)",
               }}
             >
               <div className="relative h-full px-3 pt-6 sm:px-6 lg:px-[18px]">
@@ -410,7 +403,7 @@ export function DrAgentPage() {
 
                 <div className="px-3 py-4 sm:px-4 lg:px-[18px] lg:py-6">
                   <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                    <label className="relative w-full max-w-[411px]">
+                    <label className="relative w-full min-w-[280px] max-w-[420px]">
                       <SearchNormal1
                         size={20}
                         variant="Linear"
@@ -421,7 +414,7 @@ export function DrAgentPage() {
                         type="text"
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
-                        placeholder="Search by patient name"
+                        placeholder="Search by patient name / ID / mobile number"
                         className="h-[38px] w-full rounded-[10px] border border-tp-slate-200 bg-white pl-10 pr-3 text-sm text-tp-slate-700 placeholder:text-tp-slate-400 focus:border-tp-blue-300 focus:outline-none focus:ring-2 focus:ring-tp-blue-500/15"
                       />
                     </label>
@@ -430,17 +423,17 @@ export function DrAgentPage() {
                       <button
                         type="button"
                         onClick={() => setDateMenuOpen((value) => !value)}
-                        className="inline-flex h-[38px] min-w-[210px] items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700"
+                        className="inline-flex h-[38px] min-w-[160px] max-w-[240px] items-center justify-between gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 text-[14px] font-medium text-tp-slate-700"
                       >
-                        <span className="inline-flex items-center gap-1.5">
-                          <Calendar size={18} variant="Linear" strokeWidth={1.5} />
-                          {currentDateFilterLabel}
+                        <span className="inline-flex items-center gap-1.5 truncate">
+                          <Calendar size={18} variant="Linear" strokeWidth={1.5} className="shrink-0" />
+                          <span className="truncate">{currentDateFilterLabel}</span>
                         </span>
                         <ChevronDown size={14} strokeWidth={1.5} />
                       </button>
 
                       {isDateMenuOpen && (
-                        <div className="absolute right-0 top-[42px] z-30 min-w-[210px] rounded-[10px] border border-tp-slate-200 bg-white p-1 shadow-[0_10px_24px_rgba(23,23,37,0.1)]">
+                        <div className="absolute right-0 top-[42px] z-30 min-w-[160px] rounded-[10px] border border-tp-slate-200 bg-white p-1 shadow-[0_10px_24px_rgba(23,23,37,0.1)]">
                           {DATE_RANGE_OPTIONS.map((option) => {
                             const selected = option.id === dateFilter
                             return (
@@ -475,38 +468,34 @@ export function DrAgentPage() {
                   </div>
 
                   <div className="overflow-x-auto pb-1">
-                    <div className="min-w-[1080px]">
+                    <div className="min-w-[920px]">
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="rounded-[12px] bg-tp-slate-100">
-                            <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                            <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[40px] max-w-[56px] w-[48px]">
                               #
                             </th>
-                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[220px]">
                               Name
                             </th>
-                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[200px]">
                               Contact
                             </th>
-                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[180px]">
                               <span className="inline-flex items-center gap-1.5">
                                 Visit Type
                                 <SortIndicators />
                               </span>
                             </th>
-                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                            <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[160px]">
                               <span className="inline-flex items-center gap-1.5">
                                 Slot
                                 <SortIndicators />
                               </span>
                             </th>
-                            <th className="sticky right-[72px] z-20 w-[170px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 lg:static">
+                            <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[280px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
                               Action
                             </th>
-                            <th
-                              className="sticky right-0 z-20 w-[96px] rounded-r-[12px] bg-tp-slate-100 px-3 py-3 lg:static"
-                              aria-hidden="true"
-                            />
                           </tr>
                         </thead>
 
@@ -514,7 +503,7 @@ export function DrAgentPage() {
                           {visibleAppointments.length === 0 ? (
                             <tr>
                               <td
-                                colSpan={7}
+                                colSpan={6}
                                 className="px-4 py-12 text-center text-sm text-tp-slate-500"
                               >
                                 No appointments found for this selection.
@@ -588,57 +577,39 @@ export function DrAgentPage() {
                                   </p>
                                 </td>
 
-                                <td className="sticky right-[72px] z-10 w-[170px] bg-white px-3 py-3 align-middle lg:static">
-                                  <TPDropdownMenu>
-                                    <TPDropdownMenuTrigger asChild>
-                                      <Button
-                                        variant="outline"
-                                        theme="primary"
-                                        size="md"
-                                        className="whitespace-nowrap"
-                                      >
-                                        <span className="inline-flex items-center">
-                                          TabRx
-                                          <span className="mx-2 h-full border-l border-current/20" />
-                                          <ArrowDown2 size={24} variant="Linear" strokeWidth={1.5} />
-                                        </span>
-                                      </Button>
-                                    </TPDropdownMenuTrigger>
-                                    <TPDropdownMenuContent
-                                      align="start"
-                                      sideOffset={6}
-                                      className="min-w-[170px]"
-                                    >
-                                      <TPDropdownMenuItem>View History</TPDropdownMenuItem>
-                                      <TPDropdownMenuItem>Convert to Rx</TPDropdownMenuItem>
-                                    </TPDropdownMenuContent>
-                                  </TPDropdownMenu>
-                                </td>
+                                <td className="sticky right-0 z-10 min-w-[280px] bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                                  <div className="flex items-center gap-3 whitespace-nowrap">
+                                    <TPSplitButton
+                                      primaryAction={{
+                                        label: "TabRx",
+                                        onClick: () => {},
+                                      }}
+                                      secondaryActions={[
+                                        { id: "voice-rx", label: "VoiceRx", onClick: () => {} },
+                                        { id: "type-rx", label: "TypeRx", onClick: () => {} },
+                                        { id: "snap-rx", label: "SnapRx", onClick: () => {} },
+                                        { id: "smart-sync", label: "SmartSync", onClick: () => {} },
+                                      ]}
+                                      variant="outline"
+                                      theme="primary"
+                                      size="md"
+                                    />
 
-                                <td className="sticky right-0 z-10 w-[96px] bg-white px-3 py-3 align-middle lg:static">
-                                  <div className="flex items-center gap-2 whitespace-nowrap">
                                     <IconButton
                                       theme="primary"
                                       size="md"
                                       aria-label="AI action"
                                       icon={<AiSparkIcon />}
-                                      className="shrink-0 bg-[linear-gradient(135deg,var(--ai-pink)_0%,var(--ai-violet)_45%,var(--ai-indigo)_100%)]"
+                                      className="shrink-0 !bg-[linear-gradient(135deg,rgba(213,101,234,0.25)_0%,rgba(103,58,172,0.25)_45%,rgba(26,25,148,0.25)_100%)]"
                                     />
 
-                                    <IconButton
-                                      theme="neutral"
-                                      size="md"
+                                    <button
+                                      type="button"
                                       aria-label="More options"
-                                      icon={
-                                        <More
-                                          size={20}
-                                          variant="Linear"
-                                          strokeWidth={1.5}
-                                          color="var(--tp-slate-700)"
-                                        />
-                                      }
-                                      className="shrink-0"
-                                    />
+                                      className="flex shrink-0 items-center justify-center rounded-lg p-1 text-tp-slate-600 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-900"
+                                    >
+                                      <MoreHorizontal size={20} strokeWidth={1.5} />
+                                    </button>
                                   </div>
                                 </td>
                               </tr>
@@ -660,18 +631,25 @@ export function DrAgentPage() {
 
 function AiSparkIcon() {
   return (
-    <span className="inline-flex size-[24px] items-center justify-center text-white">
+    <span className="inline-flex size-[28px] items-center justify-center">
       <svg
-        width="24"
-        height="24"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
       >
+        <defs>
+          <linearGradient id="ai-spark-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D565EA" />
+            <stop offset="45%" stopColor="#673AAC" />
+            <stop offset="100%" stopColor="#1A1994" />
+          </linearGradient>
+        </defs>
         <path
           d="M18.0841 11.612C18.4509 11.6649 18.4509 12.3351 18.0841 12.388C14.1035 12.9624 12.9624 14.1035 12.388 18.0841C12.3351 18.4509 11.6649 18.4509 11.612 18.0841C11.0376 14.1035 9.89647 12.9624 5.91594 12.388C5.5491 12.3351 5.5491 11.6649 5.91594 11.612C9.89647 11.0376 11.0376 9.89647 11.612 5.91594C11.6649 5.5491 12.3351 5.5491 12.388 5.91594C12.9624 9.89647 14.1035 11.0376 18.0841 11.612Z"
-          fill="currentColor"
+          fill="url(#ai-spark-gradient)"
         />
       </svg>
     </span>
@@ -701,12 +679,10 @@ function TopHeader() {
       <div className="flex items-center gap-3.5">
         <button
           type="button"
-          className="flex size-[44px] items-center justify-center rounded-full"
+          className="flex size-[42px] items-center justify-center rounded-[10.5px] bg-[#f1f1f5]"
           aria-label="Play tutorial"
         >
-          <span className="ml-0.5 inline-flex h-11 w-11 items-center justify-center rounded-full bg-tp-slate-0 text-tp-violet-600">
-            <VideoTutorialIcon size={20} color="currentColor" />
-          </span>
+          <VideoTutorialIcon size={20} color="#BA7DE9" />
         </button>
 
         <button
