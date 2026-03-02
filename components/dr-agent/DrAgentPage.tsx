@@ -401,8 +401,8 @@ export function DrAgentPage() {
                 </div>
 
                 <div className="px-3 py-4 sm:px-4 lg:px-[18px] lg:py-6">
-                  <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-[42px]">
-                    <label className="relative w-full min-w-[250px] max-w-[420px]">
+                  <div className="mb-4 flex flex-row flex-nowrap items-center gap-[60px]">
+                    <label className="relative flex-1 min-w-[250px] max-w-[420px]">
                       <SearchNormal1
                         size={20}
                         variant="Linear"
@@ -418,7 +418,7 @@ export function DrAgentPage() {
                       />
                     </label>
 
-                    <div className="relative" ref={dateMenuRef}>
+                    <div className="relative shrink-0" ref={dateMenuRef}>
                       <button
                         type="button"
                         onClick={() => setDateMenuOpen((value) => !value)}
@@ -576,15 +576,15 @@ export function DrAgentPage() {
                                   </p>
                                 </td>
 
-                                <td className="sticky right-0 z-10 min-w-[280px] bg-white pl-3 pr-0 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                                <td className="sticky right-0 z-10 min-w-[280px] bg-white px-0 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
                                   <div className="flex items-center gap-3 whitespace-nowrap">
                                     <TPSplitButton
                                       primaryAction={{
-                                        label: "TabRx",
+                                        label: "VoiceRx",
                                         onClick: () => {},
                                       }}
                                       secondaryActions={[
-                                        { id: "voice-rx", label: "VoiceRx", onClick: () => {} },
+                                        { id: "tab-rx", label: "TabRx", onClick: () => {} },
                                         { id: "type-rx", label: "TypeRx", onClick: () => {} },
                                         { id: "snap-rx", label: "SnapRx", onClick: () => {} },
                                         { id: "smart-sync", label: "SmartSync", onClick: () => {} },

@@ -529,12 +529,12 @@ export function DrAgentAppointmentsShowcase() {
                   </div>
                   <p className="mt-1 text-xs text-tp-slate-600">{row.slotDate}</p>
                 </td>
-                <td className="sticky right-0 z-10 bg-white pl-3 pr-0 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                <td className="sticky right-0 z-10 bg-white px-0 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
                   <div className="flex items-center gap-3 whitespace-nowrap">
                     <TPSplitButton
-                      primaryAction={{ label: "TabRx", onClick: () => {} }}
+                      primaryAction={{ label: "VoiceRx", onClick: () => {} }}
                       secondaryActions={[
-                        { id: "voice-rx", label: "VoiceRx", onClick: () => {} },
+                        { id: "tab-rx", label: "TabRx", onClick: () => {} },
                         { id: "type-rx", label: "TypeRx", onClick: () => {} },
                         { id: "snap-rx", label: "SnapRx", onClick: () => {} },
                         { id: "smart-sync", label: "SmartSync", onClick: () => {} },
