@@ -423,10 +423,10 @@ export function DrAgentPage() {
                               {tab.label}
                             </span>
                             <span className={cn(
-                              "rounded-full px-[7px] py-[2px] text-[11px] font-semibold tabular-nums min-w-[20px] text-center leading-none",
+                              "inline-flex items-center justify-center rounded-full px-[5px] h-[16px] min-w-[16px] text-[10px] font-semibold tabular-nums leading-none",
                               isActive
-                                ? "bg-tp-blue-500 text-white"
-                                : "bg-tp-slate-200/80 text-tp-slate-500",
+                                ? "bg-tp-blue-100 text-tp-blue-600"
+                                : "bg-tp-slate-100 text-tp-slate-400",
                             )}>
                               {tab.count}
                             </span>
@@ -490,7 +490,7 @@ export function DrAgentPage() {
                       <DateRangePicker
                         value={dateFilter}
                         onChange={(sel) => setDateFilter(sel.presetId)}
-                        className="w-[180px] min-w-[150px] max-w-[180px]"
+                        className="w-[180px] min-w-[80px] max-w-[180px]"
                       />
                     </div>
                   </div>
@@ -498,31 +498,29 @@ export function DrAgentPage() {
 
                 {/* Active filter tags — shown between search bar and table */}
                 {(vtFilter.length > 0 || slotConsult !== "all") && (
-                  <div className="shrink-0 flex flex-wrap items-center gap-2 px-3 pb-3 sm:px-4 lg:px-[18px]">
-                    <span className="shrink-0 text-[12px] font-medium text-tp-slate-500">
-                      Filter: {activeFilterCount}
-                    </span>
-                    <span className="h-4 w-px shrink-0 bg-tp-slate-200" />
-                    {slotConsult !== "all" && (
-                      <FilterTag
-                        label={`Slot: ${slotConsult === "video" ? "Video" : "In-Clinic"}`}
-                        onRemove={() => setSlotConsult("all")}
-                      />
-                    )}
-                    {vtFilter.map((vt) => (
-                      <FilterTag
-                        key={vt}
-                        label={`Visit Type: ${vt}`}
-                        onRemove={() => setVtFilter((p) => p.filter((v) => v !== vt))}
-                      />
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => { setSlotConsult("all"); setVtFilter([]) }}
-                      className="ml-1 shrink-0 text-[12px] font-medium text-tp-slate-400 transition-colors hover:text-tp-slate-600"
-                    >
-                      Clear all
-                    </button>
+                  <div className="shrink-0 px-3 pb-3 sm:px-4 lg:px-[18px]">
+                    <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-tp-slate-100 bg-tp-slate-50 px-3 py-2">
+                      {slotConsult !== "all" && (
+                        <FilterTag
+                          label={`Slot: ${slotConsult === "video" ? "Video" : "In-Clinic"}`}
+                          onRemove={() => setSlotConsult("all")}
+                        />
+                      )}
+                      {vtFilter.map((vt) => (
+                        <FilterTag
+                          key={vt}
+                          label={`Visit Type: ${vt}`}
+                          onRemove={() => setVtFilter((p) => p.filter((v) => v !== vt))}
+                        />
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => { setSlotConsult("all"); setVtFilter([]) }}
+                        className="ml-auto shrink-0 text-[12px] font-semibold text-tp-blue-500 underline underline-offset-2 decoration-tp-blue-300 hover:text-tp-blue-700 transition-colors"
+                      >
+                        Clear all
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -532,7 +530,7 @@ export function DrAgentPage() {
                     ref={tableOverflowRef}
                     className="h-full overflow-auto px-3 pb-4 sm:px-4 lg:px-[18px]"
                   >
-                    <div className="min-w-[920px] pt-1">
+                    <div className="min-w-[920px] overflow-hidden pt-1">
                       <table className="w-full border-collapse">
                         <thead>
                           <tr className="rounded-[12px] bg-tp-slate-100">
@@ -599,12 +597,12 @@ export function DrAgentPage() {
                                   {row.serial}
                                 </td>
 
-                                <td className="px-3 py-3 align-middle">
+                                <td className="overflow-hidden px-3 py-3 align-middle max-w-[220px]">
                                   {/* Patient name: hover underline */}
-                                  <p className="cursor-pointer text-sm font-semibold text-tp-blue-500 hover:underline">
+                                  <p className="cursor-pointer truncate text-sm font-semibold text-tp-blue-500 hover:underline">
                                     {row.name}
                                   </p>
-                                  <p className="mt-1 text-sm text-tp-slate-700">
+                                  <p className="mt-1 truncate text-sm text-tp-slate-700">
                                     {row.gender}, {row.age}y
                                     {row.starred && (
                                       <span className="ml-1 text-[13px]">⭐</span>
@@ -612,8 +610,8 @@ export function DrAgentPage() {
                                   </p>
                                 </td>
 
-                                <td className="px-3 py-3 align-middle">
-                                  <span className="text-sm text-tp-slate-700">
+                                <td className="overflow-hidden px-3 py-3 align-middle max-w-[200px]">
+                                  <span className="block truncate text-sm text-tp-slate-700">
                                     {row.contact}
                                   </span>
                                   {row.contactBadge && (
@@ -623,8 +621,8 @@ export function DrAgentPage() {
                                   )}
                                 </td>
 
-                                <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">
-                                  <span>{row.visitType}</span>
+                                <td className="overflow-hidden px-3 py-3 align-middle text-sm text-tp-slate-700 max-w-[180px]">
+                                  <span className="truncate">{row.visitType}</span>
                                   {row.visitBadge && (
                                     <span
                                       className={cn(
@@ -639,7 +637,7 @@ export function DrAgentPage() {
                                   )}
                                 </td>
 
-                                <td className="px-3 py-3 align-middle">
+                                <td className="overflow-hidden px-3 py-3 align-middle max-w-[160px]">
                                   <div className="text-sm text-tp-slate-700">
                                     <span className="inline-flex items-center gap-1">
                                       {row.slotTime}
@@ -773,12 +771,12 @@ function ColumnSortIcon({ dir }: { dir: "none" | "asc" | "desc" }) {
   return (
     <span className="inline-flex flex-col items-center gap-[2px]">
       <span className={cn(
-        "h-0 w-0 border-b-[4px] border-l-[3px] border-r-[3px] border-l-transparent border-r-transparent",
-        dir === "asc" ? "border-b-tp-blue-500" : "border-b-tp-slate-400",
+        "h-0 w-0 border-b-[4px] border-l-[3px] border-r-[3px] border-l-transparent border-r-transparent transition-colors",
+        dir === "asc" ? "border-b-tp-blue-500" : "border-b-tp-slate-200",
       )} />
       <span className={cn(
-        "h-0 w-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent",
-        dir === "desc" ? "border-t-tp-blue-500" : "border-t-tp-slate-400",
+        "h-0 w-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent transition-colors",
+        dir === "desc" ? "border-t-tp-blue-500" : "border-t-tp-slate-200",
       )} />
     </span>
   )
@@ -819,28 +817,19 @@ function CommonFilterPanel({
   const [consult, setConsult] = useState(currentConsult)
   const [vtFilter, setVtFilter] = useState<string[]>(currentVtFilter)
 
-  const consultOpts: Array<{ v: "all" | "video" | "in-clinic"; label: string }> = [
-    { v: "all", label: "All appointments" },
+  const consultOpts: Array<{ v: "video" | "in-clinic"; label: string }> = [
     { v: "video", label: "Video calls only" },
     { v: "in-clinic", label: "In-clinic only" },
   ]
 
-  const allVtSelected = vtFilter.length === 0 || vtFilter.length === ALL_VISIT_TYPES.length
-
   function toggleVtType(t: string) {
-    setVtFilter((prev) => {
-      if (prev.length === 0) return ALL_VISIT_TYPES.filter((x) => x !== t)
-      if (prev.includes(t)) {
-        const next = prev.filter((x) => x !== t)
-        return next.length === ALL_VISIT_TYPES.length ? [] : next
-      }
-      const next = [...prev, t]
-      return next.length === ALL_VISIT_TYPES.length ? [] : next
-    })
+    setVtFilter((prev) =>
+      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
+    )
   }
 
   function isVtChecked(t: string) {
-    return vtFilter.length === 0 || vtFilter.includes(t)
+    return vtFilter.includes(t)
   }
 
   function handleClear() {
@@ -886,24 +875,9 @@ function CommonFilterPanel({
 
       {/* Visit Types section */}
       <div className="p-3">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Visit Type</p>
+        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-tp-slate-400">Visit Type</p>
+        <p className="mb-2 text-[11px] text-tp-slate-400">Select types to filter</p>
         <div className="flex flex-col gap-0.5">
-          <button
-            type="button"
-            onClick={() => setVtFilter([])}
-            className="flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 text-left transition-colors hover:bg-tp-slate-50"
-          >
-            <span className={cn(
-              "flex size-4 shrink-0 items-center justify-center rounded-[4px] border-2 transition-colors",
-              allVtSelected ? "border-tp-blue-500 bg-tp-blue-500" : "border-tp-slate-300",
-            )}>
-              {allVtSelected && <Check size={10} strokeWidth={3} className="text-white" />}
-            </span>
-            <span className={cn("text-[13px]", allVtSelected ? "font-medium text-tp-slate-900" : "text-tp-slate-600")}>
-              All types
-            </span>
-          </button>
-          <div className="my-1 h-px bg-tp-slate-100" />
           {ALL_VISIT_TYPES.map((t) => (
             <button
               key={t}
