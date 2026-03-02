@@ -1,6 +1,6 @@
 "use client"
 
-import { Eye, Calendar } from "iconsax-react"
+import { Eye, Calendar } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelSubSection, PanelEmptyState } from "../ExpandedPanel"
 import type { OphthalEntry, CopyPayload } from "../types"
@@ -27,7 +27,7 @@ function OphthalCard({ entry, onCopyToRxPad }: { entry: OphthalEntry; onCopyToRx
   return (
     <details open className="group/oph mb-3 last:mb-0">
       <summary className="flex cursor-pointer items-center gap-2 rounded-lg border border-tp-slate-200 bg-white px-3 py-2.5 hover:bg-tp-slate-50 transition-colors [&::-webkit-details-marker]:hidden list-none group-open/oph:rounded-b-none group-open/oph:border-b-0">
-        <Calendar size={14} variant="Bold" className="shrink-0 text-tp-blue-500" />
+        <Calendar size={14} className="shrink-0 text-tp-blue-500" />
         <span className="flex-1 text-[13px] font-semibold text-tp-slate-900">{formatDate(entry.date)}</span>
       </summary>
 
@@ -127,7 +127,7 @@ export function OphthalPanel({
   if (!entries.length) {
     return (
       <PanelEmptyState
-        icon={<Eye size={32} variant="Linear" />}
+        icon={<Eye size={32} />}
         message="No ophthalmic records"
         description="Eye examination records will appear here"
       />

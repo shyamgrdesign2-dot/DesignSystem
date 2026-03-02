@@ -3,16 +3,16 @@
 import { useState, useCallback } from "react"
 import {
   Activity,
-  Health,
-  MedalStar,
-  Notepad,
-  Hospital,
-  ChemicalGlass,
+  Heart,
+  Award,
+  ClipboardList,
+  Pill,
+  FlaskConical,
   Calendar,
-  Edit2,
-  DocumentText,
-  Add,
-} from "iconsax-react"
+  Pencil,
+  FileText,
+  Plus,
+} from "lucide-react"
 import { RxPadSection, ChipSearchInput, MedicationTable } from "./RxPadSection"
 import type { MedicationRowData } from "./RxPadSection"
 import {
@@ -107,7 +107,7 @@ export function RxPad() {
       {/* ── 1. Symptoms ── */}
       <RxPadSection
         title="Symptoms"
-        icon={<Health size={18} variant="Bulk" />}
+        icon={<Heart size={18} />}
       >
         <ChipSearchInput
           placeholder="Search Symptoms"
@@ -121,7 +121,7 @@ export function RxPad() {
       {/* ── 2. Examinations ── */}
       <RxPadSection
         title="Examinations"
-        icon={<MedalStar size={18} variant="Bulk" />}
+        icon={<Award size={18} />}
       >
         <ChipSearchInput
           placeholder="Search Examinations"
@@ -135,7 +135,7 @@ export function RxPad() {
       {/* ── 3. Diagnosis ── */}
       <RxPadSection
         title="Diagnosis"
-        icon={<Notepad size={18} variant="Bulk" />}
+        icon={<ClipboardList size={18} />}
       >
         <ChipSearchInput
           placeholder="Search Diagnosis"
@@ -149,7 +149,7 @@ export function RxPad() {
       {/* ── 4. Vitals ── */}
       <RxPadSection
         title="Vitals"
-        icon={<Activity size={18} variant="Bulk" />}
+        icon={<Activity size={18} />}
         showViewToggle={false}
       >
         <div className="grid grid-cols-3 gap-3 max-lg:grid-cols-2">
@@ -265,7 +265,7 @@ export function RxPad() {
       {/* ── 5. Medication (Rx) ── */}
       <RxPadSection
         title="Medication (Rx)"
-        icon={<Hospital size={18} variant="Bulk" />}
+        icon={<Pill size={18} />}
       >
         <MedicationTable
           rows={medications}
@@ -278,7 +278,7 @@ export function RxPad() {
       {/* ── 6. Advices ── */}
       <RxPadSection
         title="Advices"
-        icon={<Edit2 size={18} variant="Bulk" />}
+        icon={<Pencil size={18} />}
         showViewToggle={false}
         autofillLabel="Autofill from OPD (24 Jun 2025)"
       >
@@ -320,7 +320,7 @@ export function RxPad() {
       {/* ── 7. Lab Investigation ── */}
       <RxPadSection
         title="Lab Investigation"
-        icon={<ChemicalGlass size={18} variant="Bulk" />}
+        icon={<FlaskConical size={18} />}
         autofillLabel="Autofill from OPD (24 Jun 2025)"
       >
         <ChipSearchInput
@@ -336,7 +336,7 @@ export function RxPad() {
       <div className="grid grid-cols-2 gap-3 max-lg:grid-cols-1">
         <RxPadSection
           title="Follow-up"
-          icon={<Calendar size={18} variant="Bulk" />}
+          icon={<Calendar size={18} />}
           showViewToggle={false}
           showCopy={false}
           showExpand={false}
@@ -356,7 +356,7 @@ export function RxPad() {
                 "
               />
               <button className="rounded-lg border border-tp-slate-200 bg-tp-slate-50 p-2 text-tp-slate-500 hover:bg-tp-slate-100 transition-colors" title="Calendar">
-                <Calendar size={16} variant="Linear" />
+                <Calendar size={16} />
               </button>
             </div>
             <div className="flex gap-2">
@@ -381,7 +381,7 @@ export function RxPad() {
 
         <RxPadSection
           title="Additional Notes"
-          icon={<DocumentText size={18} variant="Bulk" />}
+          icon={<FileText size={18} />}
           showViewToggle={false}
           showCopy={false}
           showExpand={false}
@@ -403,7 +403,7 @@ export function RxPad() {
 
       {/* ── Add Medical History link ── */}
       <button className="flex items-center gap-2 self-start rounded-lg px-3 py-2 text-xs font-medium text-tp-blue-500 hover:bg-tp-blue-50 transition-colors">
-        <Add size={16} variant="Linear" />
+        <Plus size={16} />
         Add Medical History
       </button>
 

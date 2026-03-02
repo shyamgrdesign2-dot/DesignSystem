@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Health, MedalStar, Hospital, ChemicalGlass, Notepad, ArrowRight2 } from "iconsax-react"
+import { Calendar, HeartPulse, Award, Pill, FlaskConical, ClipboardList, ChevronRight } from "lucide-react"
 import { CopyButton, CopySectionButton } from "../CopyButton"
 import { PanelSubSection, PanelEmptyState } from "../ExpandedPanel"
 import type { PastVisitEntry, CopyPayload } from "../types"
@@ -98,7 +98,7 @@ function VisitCard({
         [&::-webkit-details-marker]:hidden list-none
         group-open/visit:rounded-b-none group-open/visit:border-b-0
       ">
-        <Calendar size={16} variant="Bold" className="shrink-0 text-tp-blue-500" />
+        <Calendar size={16} className="shrink-0 text-tp-blue-500" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-[13px] font-semibold text-tp-slate-900">{formatDate(visit.date)}</span>
@@ -118,9 +118,8 @@ function VisitCard({
           showOnHover={false}
           size={14}
         />
-        <ArrowRight2
+        <ChevronRight
           size={14}
-          variant="Linear"
           className="shrink-0 text-tp-slate-400 transition-transform group-open/visit:rotate-90"
         />
       </summary>
@@ -131,7 +130,7 @@ function VisitCard({
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1.5">
-                <Health size={13} variant="Linear" className="text-tp-slate-400" />
+                <HeartPulse size={13} className="text-tp-slate-400" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-tp-slate-500">Symptoms</span>
               </div>
               <CopySectionButton
@@ -158,7 +157,7 @@ function VisitCard({
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1.5">
-                <MedalStar size={13} variant="Linear" className="text-tp-slate-400" />
+                <Award size={13} className="text-tp-slate-400" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-tp-slate-500">Examination</span>
               </div>
               <CopySectionButton
@@ -185,7 +184,7 @@ function VisitCard({
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1.5">
-                <Notepad size={13} variant="Linear" className="text-tp-slate-400" />
+                <ClipboardList size={13} className="text-tp-slate-400" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-tp-slate-500">Diagnosis</span>
               </div>
               <CopySectionButton
@@ -212,7 +211,7 @@ function VisitCard({
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1.5">
-                <Hospital size={13} variant="Linear" className="text-tp-slate-400" />
+                <Pill size={13} className="text-tp-slate-400" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-tp-slate-500">Medications</span>
               </div>
               <CopySectionButton
@@ -265,7 +264,7 @@ function VisitCard({
         {/* Follow-up */}
         {visit.followUp && (
           <div className="flex items-center gap-2 rounded-lg bg-tp-blue-50/60 px-2.5 py-1.5">
-            <Calendar size={13} variant="Linear" className="text-tp-blue-500" />
+            <Calendar size={13} className="text-tp-blue-500" />
             <span className="text-[11px] font-medium text-tp-blue-600">Follow-up: {visit.followUp}</span>
           </div>
         )}
@@ -289,7 +288,7 @@ export function PastVisitPanel({
   if (!visits.length) {
     return (
       <PanelEmptyState
-        icon={<Calendar size={32} variant="Linear" />}
+        icon={<Calendar size={32} />}
         message="No past visits"
         description="Previous consultations will appear here"
       />

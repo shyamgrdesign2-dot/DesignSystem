@@ -1,6 +1,6 @@
 "use client"
 
-import { Health, Calendar, TickCircle, Clock, Warning2 } from "iconsax-react"
+import { ShieldCheck, Calendar, CheckCircle, Clock, AlertTriangle } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelSubSection, PanelEmptyState } from "../ExpandedPanel"
 import type { VaccineCategory, VaccineRecord, VaccineStatus, CopyPayload } from "../types"
@@ -26,15 +26,15 @@ function formatDate(d: string) {
 function StatusIcon({ status }: { status: VaccineStatus }) {
   switch (status) {
     case "Completed":
-      return <TickCircle size={14} variant="Bold" className="text-tp-success-500" />
+      return <CheckCircle size={14} className="text-tp-success-500" />
     case "Due":
-      return <Clock size={14} variant="Linear" className="text-tp-blue-500" />
+      return <Clock size={14} className="text-tp-blue-500" />
     case "Overdue":
-      return <Warning2 size={14} variant="Bold" className="text-tp-error-500" />
+      return <AlertTriangle size={14} className="text-tp-error-500" />
     case "Scheduled":
-      return <Calendar size={14} variant="Linear" className="text-tp-violet-500" />
+      return <Calendar size={14} className="text-tp-violet-500" />
     case "Missed":
-      return <Warning2 size={14} variant="Linear" className="text-tp-slate-400" />
+      return <AlertTriangle size={14} className="text-tp-slate-400" />
   }
 }
 
@@ -85,7 +85,7 @@ export function VaccinePanel({
   if (!categories.length) {
     return (
       <PanelEmptyState
-        icon={<Health size={32} variant="Linear" />}
+        icon={<ShieldCheck size={32} />}
         message="No vaccination records"
         description="Vaccination history will appear here"
       />

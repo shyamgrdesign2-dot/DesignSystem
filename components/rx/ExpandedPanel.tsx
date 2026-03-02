@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect } from "react"
-import { ArrowLeft2, CloseCircle } from "iconsax-react"
+import { ArrowLeft, XCircle } from "lucide-react"
 import type { SectionId } from "./types"
 
 interface ExpandedPanelProps {
@@ -91,7 +91,7 @@ export function ExpandedPanel({
           "
           aria-label="Close panel"
         >
-          <ArrowLeft2 size={18} variant="Linear" />
+          <ArrowLeft size={18} />
         </button>
 
         {icon && (
@@ -133,7 +133,7 @@ export function ExpandedPanel({
           "
           aria-label="Close panel"
         >
-          <CloseCircle size={18} variant="Linear" />
+          <XCircle size={18} />
         </button>
       </div>
 

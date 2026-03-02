@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, TickCircle, CloseCircle, Clock, Refresh2 } from "iconsax-react"
+import { Calendar, CheckCircle, XCircle, Clock, RefreshCw } from "lucide-react"
 import { CopyButton } from "../CopyButton"
 import { PanelEmptyState } from "../ExpandedPanel"
 import type { FollowUpEntry, FollowUpStatus, CopyPayload } from "../types"
@@ -25,11 +25,11 @@ function formatDate(d: string) {
 
 function StatusIcon({ status }: { status: FollowUpStatus }) {
   switch (status) {
-    case "Scheduled": return <Clock size={14} variant="Linear" className="text-tp-blue-500" />
-    case "Completed": return <TickCircle size={14} variant="Bold" className="text-tp-success-500" />
-    case "Missed": return <CloseCircle size={14} variant="Bold" className="text-tp-error-500" />
-    case "Cancelled": return <CloseCircle size={14} variant="Linear" className="text-tp-slate-400" />
-    case "Rescheduled": return <Refresh2 size={14} variant="Linear" className="text-tp-warning-500" />
+    case "Scheduled": return <Clock size={14} className="text-tp-blue-500" />
+    case "Completed": return <CheckCircle size={14} className="text-tp-success-500" />
+    case "Missed": return <XCircle size={14} className="text-tp-error-500" />
+    case "Cancelled": return <XCircle size={14} className="text-tp-slate-400" />
+    case "Rescheduled": return <RefreshCw size={14} className="text-tp-warning-500" />
   }
 }
 
@@ -83,7 +83,7 @@ export function FollowUpPanel({
   if (!entries.length) {
     return (
       <PanelEmptyState
-        icon={<Calendar size={32} variant="Linear" />}
+        icon={<Calendar size={32} />}
         message="No follow-ups"
         description="Follow-up appointments will appear here"
       />

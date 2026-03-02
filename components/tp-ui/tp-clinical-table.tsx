@@ -2,22 +2,22 @@
 
 import * as React from "react"
 import { useState, useMemo, useCallback } from "react"
-import { ArrowUp, ArrowDown } from "iconsax-react"
+import { ArrowUp, ArrowDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
  * TPClinicalTable — Generic data table for clinical listings.
  *
- * Tokens:
- *   Header bg       TP Slate 50
- *   Header text     TP Slate 600, Inter 600 11px uppercase
+ * Figma reference specs:
+ *   Header bg       #F1F1F5 (TP Slate 100)
+ *   Header text     Inter Semi Bold 12px, uppercase, #454551
  *   Row bg          white
- *   Row hover       TP Slate 50
- *   Row border      1px TP Slate 100 bottom
- *   Selected bg     TP Blue 50
- *   Checkbox        20px, radius 6px, TP Blue 500 checked
- *   Container       1px TP Slate 200 border, 12px radius
- *   Sort arrows     TP Blue 500 active, TP Slate 300 inactive
+ *   Row hover       #F1F1F5/60
+ *   Row border      1px #E2E2EA bottom
+ *   Selected bg     #EEF (TP Blue 50)
+ *   Checkbox        20px, radius 6px, #4b4ad5 checked
+ *   Container       1px #E2E2EA border, 12px radius
+ *   Sort arrows     #4b4ad5 active, #A2A2A8 inactive
  *   Action column   sticky right, inset shadow
  */
 
@@ -125,7 +125,7 @@ export function TPClinicalTable<T>({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-tp-slate-200 bg-white",
+        "overflow-hidden rounded-xl border border-[#e2e2ea] bg-white",
         className,
       )}
     >
@@ -133,7 +133,7 @@ export function TPClinicalTable<T>({
         <table className="w-full border-collapse text-sm">
           {/* ── Header ── */}
           <thead>
-            <tr className="bg-tp-slate-50">
+            <tr className="bg-[#f1f1f5]">
               {/* Selection checkbox */}
               {selectable && (
                 <th className="w-12 px-3 py-3 text-center">
@@ -149,16 +149,21 @@ export function TPClinicalTable<T>({
                 <th
                   key={col.id}
                   className={cn(
-                    "px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-tp-slate-600",
+                    "px-3 py-3 text-left text-[#454551]",
                     col.align === "center" && "text-center",
                     col.align === "right" && "text-right",
-                    col.sortable && "cursor-pointer select-none hover:text-tp-slate-900",
+                    col.sortable && "cursor-pointer select-none hover:text-[#454551]",
                     col.sticky &&
-                      "sticky right-0 bg-tp-slate-50 shadow-[inset_4px_0_6px_-4px_rgba(23,23,37,0.08)]",
+                      "sticky right-0 bg-[#f1f1f5] shadow-[inset_4px_0_6px_-4px_rgba(23,23,37,0.08)]",
                   )}
                   style={{
                     width: col.width,
                     minWidth: col.minWidth,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 600,
+                    fontSize: 12,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
                   }}
                   onClick={() => col.sortable && handleSort(col.id)}
                 >
@@ -168,20 +173,18 @@ export function TPClinicalTable<T>({
                       <span className="inline-flex flex-col -space-y-1">
                         <ArrowUp
                           size={10}
-                          variant="Bold"
                           className={cn(
                             sortColumn === col.id && sortDirection === "asc"
-                              ? "text-tp-blue-500"
-                              : "text-tp-slate-300",
+                              ? "text-[#4b4ad5]"
+                              : "text-[#a2a2a8]",
                           )}
                         />
                         <ArrowDown
                           size={10}
-                          variant="Bold"
                           className={cn(
                             sortColumn === col.id && sortDirection === "desc"
-                              ? "text-tp-blue-500"
-                              : "text-tp-slate-300",
+                              ? "text-[#4b4ad5]"
+                              : "text-[#a2a2a8]",
                           )}
                         />
                       </span>
@@ -198,10 +201,10 @@ export function TPClinicalTable<T>({
               // Loading skeleton
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i}>
-                  {selectable && <td className="px-3 py-3"><div className="mx-auto h-5 w-5 animate-pulse rounded bg-tp-slate-100" /></td>}
+                  {selectable && <td className="px-3 py-3"><div className="mx-auto h-5 w-5 animate-pulse rounded bg-[#f1f1f5]" /></td>}
                   {columns.map((col) => (
                     <td key={col.id} className="px-3 py-3">
-                      <div className="h-4 w-3/4 animate-pulse rounded bg-tp-slate-100" />
+                      <div className="h-4 w-3/4 animate-pulse rounded bg-[#f1f1f5]" />
                     </td>
                   ))}
                 </tr>
@@ -213,8 +216,8 @@ export function TPClinicalTable<T>({
                   colSpan={columns.length + (selectable ? 1 : 0)}
                   className="px-6 py-12 text-center"
                 >
-                  {emptyIcon && <div className="mb-3 flex justify-center text-tp-slate-300">{emptyIcon}</div>}
-                  <p className="text-sm text-tp-slate-400">{emptyMessage}</p>
+                  {emptyIcon && <div className="mb-3 flex justify-center text-[#a2a2a8]">{emptyIcon}</div>}
+                  <p className="text-sm text-[#a2a2a8]">{emptyMessage}</p>
                 </td>
               </tr>
             ) : (
@@ -225,8 +228,8 @@ export function TPClinicalTable<T>({
                   <tr
                     key={id}
                     className={cn(
-                      "border-t border-tp-slate-100 transition-colors",
-                      isSelected ? "bg-tp-blue-50" : "hover:bg-tp-slate-50/60",
+                      "border-t border-[#e2e2ea] transition-colors",
+                      isSelected ? "bg-[#eef]" : "hover:bg-[#f1f1f5]/60",
                       onRowClick && "cursor-pointer",
                     )}
                     onClick={() => onRowClick?.(row)}
@@ -247,12 +250,12 @@ export function TPClinicalTable<T>({
                       <td
                         key={col.id}
                         className={cn(
-                          "px-3 py-3 text-tp-slate-900",
+                          "px-3 py-3 text-[#454551]",
                           col.align === "center" && "text-center",
                           col.align === "right" && "text-right",
                           col.sticky &&
                             "sticky right-0 bg-white shadow-[inset_4px_0_6px_-4px_rgba(23,23,37,0.08)]",
-                          col.sticky && isSelected && "bg-tp-blue-50",
+                          col.sticky && isSelected && "bg-[#eef]",
                         )}
                         style={{ width: col.width, minWidth: col.minWidth }}
                       >
@@ -294,8 +297,8 @@ function Checkbox({
       className={cn(
         "inline-flex h-5 w-5 items-center justify-center rounded-[6px] border-[1.5px] transition-all",
         checked || indeterminate
-          ? "border-tp-blue-500 bg-tp-blue-500 shadow-[0_1px_2px_rgba(75,74,213,0.2)]"
-          : "border-tp-slate-300 bg-white hover:border-tp-slate-400",
+          ? "border-[#4b4ad5] bg-[#4b4ad5] shadow-[0_1px_2px_rgba(75,74,213,0.2)]"
+          : "border-[#a2a2a8] bg-white hover:border-[#454551]",
       )}
       {...props}
     >

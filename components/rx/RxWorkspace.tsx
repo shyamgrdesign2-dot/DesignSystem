@@ -2,25 +2,20 @@
 
 import { useState, useCallback } from "react"
 import {
+  Receipt,
   Activity,
-  Book,
-  ChemicalGlass,
+  BookOpen,
   Eye,
   FolderOpen,
-  Health,
+  ShieldCheck,
   Heart,
-  Profile2User,
-  ReceiptText,
+  Users,
   Ruler,
   Calendar,
-  Notification,
-  Setting2,
-  Printer,
-  DocumentDownload,
-  type Icon as IconsaxIcon,
-} from "iconsax-react"
+  FlaskConical,
+  type LucideIcon,
+} from "lucide-react"
 
-import { TPTopNavBar } from "@/components/tp-ui/tp-top-nav-bar"
 import { TPPatientInfoHeader } from "@/components/tp-ui/tp-patient-info-header"
 import { ExpandedPanel } from "./ExpandedPanel"
 import {
@@ -56,7 +51,7 @@ import {
 /**
  * RX Workspace — Full Layout
  * ──────────────────────────
- * Combines: Secondary Nav Sidebar + Expanded Section Panel + RxPad Content Area
+ * Combines: Secondary Nav Sidebar (dark) + Expanded Section Panel + RxPad Content Area
  *
  * Layout (desktop):
  *   ┌──────┬────────────┬──────────────────────────────────┐
@@ -65,18 +60,13 @@ import {
  *   │      │  Panel     │                                  │
  *   └──────┴────────────┴──────────────────────────────────┘
  *
- * Layout (tablet):
- *   Nav sidebar shrinks panel to 320px, RxPad adapts
- *
- * Layout (mobile):
- *   Nav becomes bottom bar, panels become sheets
- *
- * Design tokens:
- *   - Workspace bg: TP Slate 100 (#F1F1F5)
- *   - Nav sidebar: 80px, dark blue gradient (rx variant)
- *   - Panel: 360px, white bg, right border
- *   - RxPad: flex-1, subtle bg
- *   - All heights: 100vh (full viewport)
+ * Design tokens (dark sidebar variant for RxWorkspace):
+ *   - Nav sidebar: 80px, dark blue gradient
+ *   - Active item: white bg icon with blue icon color
+ *   - Inactive: semi-transparent white containers, white icons
+ *   - Left highlight bar: 3px white
+ *   - Right arrow: white triangle
+ *   - Labels: white text
  */
 
 const SECONDARY_NAV_TOKENS = {
@@ -103,23 +93,23 @@ const SECONDARY_NAV_TOKENS = {
   bottomFadeHeight: 120,
 } as const
 
-const navItems: (NavItem & { iconComponent: IconsaxIcon; count?: number })[] = [
-  { id: "past-visits", label: "Past Visits", icon: "ReceiptText", iconComponent: ReceiptText, count: 3 },
+const navItems: (NavItem & { iconComponent: LucideIcon; count?: number })[] = [
+  { id: "past-visits", label: "Past Visits", icon: "Receipt", iconComponent: Receipt, count: 3 },
   {
     id: "vitals", label: "Vitals", icon: "Activity", iconComponent: Activity, count: 3,
     badge: { text: "New", gradient: "linear-gradient(257.32deg, rgb(22, 163, 74) 0%, rgb(68, 207, 119) 47.222%, rgb(22, 163, 74) 94.444%)" },
   },
   {
-    id: "history", label: "History", icon: "Book", iconComponent: Book,
+    id: "history", label: "History", icon: "BookOpen", iconComponent: BookOpen,
     badge: { text: "Trial", gradient: "linear-gradient(257.32deg, rgb(241, 82, 35) 0%, rgb(255, 152, 122) 47.222%, rgb(241, 82, 35) 94.444%)" },
   },
   { id: "ophthal", label: "Ophthal", icon: "Eye", iconComponent: Eye, count: 1 },
   { id: "gynec", label: "Gynec", icon: "Heart", iconComponent: Heart, count: 1 },
-  { id: "obstetric", label: "Obstetric", icon: "Profile2User", iconComponent: Profile2User },
-  { id: "vaccine", label: "Vaccine", icon: "Health", iconComponent: Health },
+  { id: "obstetric", label: "Obstetric", icon: "Users", iconComponent: Users },
+  { id: "vaccine", label: "Vaccine", icon: "ShieldCheck", iconComponent: ShieldCheck },
   { id: "growth", label: "Growth", icon: "Ruler", iconComponent: Ruler, count: 3 },
   { id: "records", label: "Records", icon: "FolderOpen", iconComponent: FolderOpen, count: 4 },
-  { id: "lab-results", label: "Lab Results", icon: "ChemicalGlass", iconComponent: ChemicalGlass, count: 3 },
+  { id: "lab-results", label: "Lab Results", icon: "FlaskConical", iconComponent: FlaskConical, count: 3 },
   { id: "follow-up", label: "Follow-up", icon: "Calendar", iconComponent: Calendar, count: 4 },
 ]
 
@@ -141,7 +131,7 @@ function getSectionIcon(sectionId: SectionId): React.ReactNode {
   const item = navItems.find(n => n.id === sectionId)
   if (!item) return null
   const Icon = item.iconComponent
-  return <Icon size={18} variant="Bulk" />
+  return <Icon size={18} color="#4b4ad5" />
 }
 
 export function RxWorkspace() {
@@ -166,32 +156,8 @@ export function RxWorkspace() {
   const currentItem = navItems.find(n => n.id === activeSection)
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-tp-slate-100">
-      {/* ── Top Navigation Bar ── */}
-      <TPTopNavBar
-        variant="clinical"
-        title="RX Workspace"
-        subtitle="Prescription Pad"
-        patient={{
-          name: samplePatient.name,
-          age: samplePatient.age,
-          gender: samplePatient.gender,
-          bloodGroup: samplePatient.bloodGroup,
-          uhid: samplePatient.uhid,
-        }}
-        actions={[
-          { icon: <Printer size={18} variant="Linear" />, label: "Print Prescription" },
-          { icon: <DocumentDownload size={18} variant="Linear" />, label: "Download PDF" },
-          { icon: <Notification size={18} variant="Linear" />, label: "Notifications", badge: 2 },
-          { icon: <Setting2 size={18} variant="Linear" />, label: "Settings" },
-        ]}
-        profile={{
-          name: "Dr. Ananya Sharma",
-          initials: "AS",
-        }}
-      />
-
-      {/* ── Patient Info Header ── */}
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#f1f1f5]">
+      {/* ── Patient Info Header (RxPad variant — 62px) ── */}
       <TPPatientInfoHeader
         patient={{
           name: samplePatient.name,
@@ -210,7 +176,7 @@ export function RxWorkspace() {
 
       {/* ── 3-Column Workspace ── */}
       <div className="flex flex-1 overflow-hidden">
-      {/* ── Secondary Nav Sidebar ── */}
+      {/* ── Secondary Nav Sidebar (DARK variant for RxWorkspace) ── */}
       <nav
         className="relative flex h-full flex-col overflow-x-clip shrink-0"
         style={{
@@ -254,7 +220,6 @@ export function RxWorkspace() {
                     )}
                     <Icon
                       size={SECONDARY_NAV_TOKENS.iconSize}
-                      variant={isActive ? "Bulk" : "Linear"}
                       color={isActive ? "var(--tp-blue-500)" : "var(--tp-slate-0)"}
                     />
                   </span>
@@ -390,7 +355,7 @@ export function RxWorkspace() {
       )}
 
       {/* ── RxPad Main Content Area ── */}
-      <main className="flex-1 overflow-y-auto bg-tp-slate-50/80">
+      <main className="flex-1 overflow-y-auto bg-[#f1f1f5]/80">
         <RxPad />
       </main>
       </div>

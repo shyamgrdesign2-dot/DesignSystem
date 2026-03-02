@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { Copy, TickCircle } from "iconsax-react"
+import { Copy, CheckCircle } from "lucide-react"
 
 interface CopyButtonProps {
   /** Tooltip text shown on hover */
@@ -70,9 +70,9 @@ export function CopyButton({
       aria-label={tooltip}
     >
       {copied ? (
-        <TickCircle size={size} variant="Bold" />
+        <CheckCircle size={size} />
       ) : (
-        <Copy size={size} variant="Linear" />
+        <Copy size={size} />
       )}
     </button>
   )
@@ -116,12 +116,12 @@ export function CopySectionButton({
     >
       {copied ? (
         <>
-          <TickCircle size={14} variant="Bold" />
+          <CheckCircle size={14} />
           <span>Copied</span>
         </>
       ) : (
         <>
-          <Copy size={14} variant="Linear" />
+          <Copy size={14} />
           <span>{label}</span>
         </>
       )}
