@@ -418,7 +418,7 @@ export function DrAgentPage() {
                       />
                     </label>
 
-                    <div className="relative w-[180px] min-w-[150px]" ref={dateMenuRef}>
+                    <div className="relative w-[180px] min-w-[150px] max-w-[180px]" ref={dateMenuRef}>
                       <button
                         type="button"
                         onClick={() => setDateMenuOpen((value) => !value)}
@@ -492,7 +492,7 @@ export function DrAgentPage() {
                                 <SortIndicators />
                               </span>
                             </th>
-                            <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                            <th className="sticky right-0 z-20 w-px rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
                               Action
                             </th>
                           </tr>
@@ -576,7 +576,7 @@ export function DrAgentPage() {
                                   </p>
                                 </td>
 
-                                <td className="sticky right-0 z-10 bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
+                                <td className="sticky right-0 z-10 w-px bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)] xl:static xl:shadow-none">
                                   <div className="flex items-center gap-3 whitespace-nowrap">
                                     <TPSplitButton
                                       primaryAction={{
