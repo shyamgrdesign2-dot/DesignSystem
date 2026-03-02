@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type React from "react"
 import {
   Activity,
   BookOpen,
@@ -23,7 +24,7 @@ export interface NavBadge {
 export interface NavItem {
   id: string
   label: string
-  icon: LucideIcon
+  icon: LucideIcon | React.ComponentType<any>
   badge?: NavBadge
 }
 
@@ -98,11 +99,18 @@ export function SecondaryNavPanel({
   activeId,
   onSelect,
   variant = "rx",
+  renderIcon,
 }: {
   items: NavItem[]
   activeId: string
   onSelect: (id: string) => void
   variant?: SidebarVariant
+  renderIcon?: (params: {
+    item: NavItem
+    isActive: boolean
+    isRx: boolean
+    iconSize: number
+  }) => React.ReactNode
 }) {
   const isRx = variant === "rx"
   const panelBackground = isRx
@@ -171,10 +179,19 @@ export function SecondaryNavPanel({
                     style={{ backgroundColor: iconHoverBg }}
                   />
                 )}
-                <Icon
-                  size={SECONDARY_NAV_TOKENS.iconSize}
-                  color={isActive ? iconActiveColor : iconDefaultColor}
-                />
+                {renderIcon ? (
+                  renderIcon({
+                    item,
+                    isActive,
+                    isRx,
+                    iconSize: SECONDARY_NAV_TOKENS.iconSize,
+                  })
+                ) : (
+                  <Icon
+                    size={SECONDARY_NAV_TOKENS.iconSize}
+                    color={isActive ? iconActiveColor : iconDefaultColor}
+                  />
+                )}
               </span>
 
               <span
