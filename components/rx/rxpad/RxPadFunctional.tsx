@@ -1118,12 +1118,12 @@ function EditableTableModule({
                 <col style={sideColumnStyle} />
               </colgroup>
               <thead>
-                <tr className="h-[38px] bg-tp-slate-50 font-['Inter',sans-serif] text-tp-slate-500">
+                <tr className="h-[38px] bg-tp-slate-50 font-['Inter',sans-serif] text-[12px] text-tp-slate-500">
                 <th className="border-r border-tp-slate-100 px-0 py-2 text-center font-semibold" style={sideColumnStyle} />
                 {columns.map((column) => (
                   <th
                     key={column.key}
-                    className="border-r border-tp-slate-100 px-3 py-2 text-left text-[14px] font-semibold"
+                    className="border-r border-tp-slate-100 px-3 py-2 text-left text-[12px] font-semibold"
                     style={getResponsiveColumnStyle(column)}
                   >
                     {column.label}
@@ -1131,7 +1131,7 @@ function EditableTableModule({
                 ))}
                 <th
                   className={[
-                    "relative px-0 py-2 text-center text-[14px] font-semibold",
+                    "relative px-0 py-2 text-center text-[12px] font-semibold",
                     stickyActionHeaderClass,
                   ].join(" ")}
                   style={sideColumnStyle}
