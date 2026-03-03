@@ -5,7 +5,7 @@
  * - iconsax for requested utility nav items
  */
 import React, { useEffect, useRef, useState } from "react"
-import { ArrowDown2, Glass, Note1, NoteText, Notepad2, Ruler } from "iconsax-reactjs"
+import { ArrowDown2, DocumentText, Glass, Note1, Notepad2, Ruler } from "iconsax-reactjs"
 
 import { TPMedicalIcon } from "@/components/tp-ui"
 
@@ -106,7 +106,7 @@ const NAV_ITEMS: Array<{
   { id: "growth", label: "Growth", icon: { kind: "iconsax", Icon: Ruler } },
   { id: "medicalRecords", label: "Records", icon: { kind: "iconsax", Icon: Notepad2 } },
   { id: "labResults", label: "Lab Results", icon: { kind: "medical", name: "Lab" } },
-  { id: "personalNotes", label: "Personal Notes", icon: { kind: "iconsax", Icon: NoteText } },
+  { id: "personalNotes", label: "Personal Notes", icon: { kind: "iconsax", Icon: DocumentText } },
 ]
 
 function DrAgentGlyph({ active }: { active: boolean }) {
