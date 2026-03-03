@@ -129,6 +129,13 @@ export const docsNavigation: NavGroup[] = [
         icon: "AppointmentScreen",
         description: "Full appointment queue with tabs, filters, prescription actions, and AI-assisted workflow",
       },
+      {
+        id: "rxpad-screen",
+        label: "RxPad Screen",
+        href: "/Rxpad",
+        icon: "RxPadScreen",
+        description: "RxPad workspace with top nav, secondary sidebar, historic panels, and editable Rx modules",
+      },
     ],
   },
 ]

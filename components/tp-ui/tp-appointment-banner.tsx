@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
  *   Border-radius    16px
  *   Title            Mulish 700, 24px, white
  *   Subtitle         Inter 400, 14px, white/70%
- *   CTA button       white bg, TP Blue 600 text, 10px radius, 36px height
+ *   CTA button       white 7% overlay + blur, white border/text, 10px radius, 36px height
  *   Padding          32px horizontal, 24px vertical
  */
 
@@ -103,8 +103,8 @@ export function TPAppointmentBanner({
           <button
             type="button"
             onClick={onCtaClick}
-            className="ml-4 flex shrink-0 items-center gap-2 rounded-[10px] border border-white/30 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/10 active:scale-[0.98]"
-            style={{ backgroundColor: "rgba(255,255,255,0.13)", height: 36 }}
+            className="ml-4 flex shrink-0 items-center gap-2 rounded-[10px] border border-white/35 bg-white/[0.07] px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-[8px] transition-all hover:bg-white/[0.14] hover:shadow-md active:scale-[0.98]"
+            style={{ height: 36 }}
           >
             {ctaIcon || <Plus size={18} />}
             <span className="hidden sm:inline">{ctaLabel}</span>

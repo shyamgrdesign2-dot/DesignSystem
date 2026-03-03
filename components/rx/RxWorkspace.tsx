@@ -181,7 +181,8 @@ export function RxWorkspace() {
         className="relative flex h-full flex-col overflow-x-clip shrink-0"
         style={{
           width: SECONDARY_NAV_TOKENS.panelWidth,
-          background: `radial-gradient(ellipse at -180% 40%, var(--tp-blue-900) 0%, var(--tp-blue-800) 25%, var(--tp-blue-700) 50%, var(--tp-blue-500) 100%)`,
+          background:
+            "radial-gradient(256.21% 808.53% at -194.95% 36.46%, var(--core-primary-900, #161558) 0%, #232277 25%, #313097 50%, #4B4AD5 100%), #FFF",
         }}
       >
         <div className="flex-1 overflow-y-auto overflow-x-hidden">

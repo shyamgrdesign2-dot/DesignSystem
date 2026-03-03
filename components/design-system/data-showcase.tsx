@@ -71,7 +71,7 @@ export function DataTableShowcase() {
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Data Table</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Sortable table with row selection, status labels (pill radius), and neutral CTA-style action buttons. Constraint: No toolbar row -- actions live in a sticky right column with an inset shadow (-4px) for scroll separation. Sort icons use filled triangles (TP Blue when active, TP Slate 300 when inactive). Row selection highlights entire row in TP Blue 50. Action buttons use 8px radius with TP Slate 100 background and darken on hover.
+        Sortable table with row selection, status labels (pill radius), and neutral CTA-style action buttons. Constraint: No toolbar row -- actions live in a sticky right column with a floating outer shadow for scroll separation. Sort icons use filled triangles (TP Blue when active, TP Slate 300 when inactive). Row selection highlights entire row in TP Blue 50. Action buttons use 8px radius with TP Slate 100 background and darken on hover.
       </p>
 
       <div
@@ -106,7 +106,7 @@ export function DataTableShowcase() {
                   <th
                     key={i}
                     className={`px-4 py-3 text-left font-semibold text-tp-slate-700 whitespace-nowrap ${i === 4 ? "sticky right-0 bg-tp-slate-50" : ""}`}
-                    style={i === 4 ? { boxShadow: "-4px 0 8px -4px rgba(23,23,37,0.08)" } : undefined}
+                    style={i === 4 ? { boxShadow: "-10px 0 14px 2px rgba(23,23,37,0.12)" } : undefined}
                   >
                     {i < 4 ? (
                       <button
@@ -197,7 +197,7 @@ export function DataTableShowcase() {
                       className="px-4 py-3 sticky right-0"
                       style={{
                         backgroundColor: isSelected ? "#EEEEFF" : "#FFFFFF",
-                        boxShadow: "-4px 0 8px -4px rgba(23,23,37,0.08)",
+                        boxShadow: "-10px 0 14px 2px rgba(23,23,37,0.10)",
                       }}
                     >
                       <div className="flex items-center gap-1.5">

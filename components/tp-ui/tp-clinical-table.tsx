@@ -12,13 +12,13 @@ import { cn } from "@/lib/utils"
  *   Header bg       #F1F1F5 (TP Slate 100)
  *   Header text     Inter Semi Bold 12px, uppercase, #454551
  *   Row bg          white
- *   Row hover       #F1F1F5/60
- *   Row border      1px #E2E2EA bottom
- *   Selected bg     #EEF (TP Blue 50)
- *   Checkbox        20px, radius 6px, #4b4ad5 checked
- *   Container       1px #E2E2EA border, 12px radius
- *   Sort arrows     #4b4ad5 active, #A2A2A8 inactive
- *   Action column   sticky right, inset shadow
+ *   Row hover       TP Slate 50
+ *   Row border      1px TP Slate 100 bottom
+ *   Selected bg     TP Blue 50
+ *   Checkbox        20px, radius 6px, TP Blue 500 checked
+ *   Container       1px TP Slate 200 border, 12px radius
+ *   Sort arrows     TP Blue 500 active, TP Slate 300 inactive
+ *   Action column   sticky right, floating shadow
  */
 
 // ─── Types ──────────────────────────────────────────────────
@@ -154,7 +154,7 @@ export function TPClinicalTable<T>({
                     col.align === "right" && "text-right",
                     col.sortable && "cursor-pointer select-none hover:text-[#454551]",
                     col.sticky &&
-                      "sticky right-0 bg-[#f1f1f5] shadow-[inset_4px_0_6px_-4px_rgba(23,23,37,0.08)]",
+                      "sticky right-0 bg-tp-slate-50 shadow-[-10px_0_14px_2px_rgba(23,23,37,0.12)]",
                   )}
                   style={{
                     width: col.width,
@@ -254,8 +254,8 @@ export function TPClinicalTable<T>({
                           col.align === "center" && "text-center",
                           col.align === "right" && "text-right",
                           col.sticky &&
-                            "sticky right-0 bg-white shadow-[inset_4px_0_6px_-4px_rgba(23,23,37,0.08)]",
-                          col.sticky && isSelected && "bg-[#eef]",
+                            "sticky right-0 bg-white shadow-[-10px_0_14px_2px_rgba(23,23,37,0.10)]",
+                          col.sticky && isSelected && "bg-tp-blue-50",
                         )}
                         style={{ width: col.width, minWidth: col.minWidth }}
                       >

@@ -36,6 +36,7 @@ const iconMap: Record<string, React.ComponentType<{ size: number; className?: st
   Flash: Zap,
   Hospital: HeartPulse,
   AppointmentScreen: CalendarDays,
+  RxPadScreen: Pencil,
 }
 
 export default function DocsOverview() {
@@ -152,6 +153,43 @@ export default function DocsOverview() {
               <a
                 href="/api/download/appointment-screen"
                 download="AppointmentScreen.tsx"
+                className="inline-flex items-center justify-center gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 py-2 text-xs font-medium text-tp-slate-700 transition-colors hover:bg-tp-slate-50"
+              >
+                <Download size={13} strokeWidth={2} />
+                Code
+              </a>
+            </div>
+          </div>
+
+          {/* RxPad Screen card */}
+          <div className="relative overflow-hidden rounded-xl border border-tp-violet-100 bg-gradient-to-br from-tp-violet-50 via-white to-white p-5 shadow-[0_1px_3px_rgba(23,23,37,0.06)] ring-1 ring-tp-violet-100/60">
+            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-tp-violet-100/45" />
+
+            <div className="relative flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-tp-violet-500 text-white shadow-sm">
+                <Pencil size={20} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-sm font-semibold text-tp-slate-900">
+                  RxPad Screen
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-tp-slate-500">
+                  RxPad workspace with top nav, secondary sidebar, historical context, and editable Rx tables
+                </p>
+              </div>
+            </div>
+
+            <div className="relative mt-4 flex items-center gap-2">
+              <Link
+                href="/Rxpad"
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[10px] bg-tp-violet-500 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-tp-violet-600"
+              >
+                <ExternalLink size={13} strokeWidth={2} />
+                View Screen
+              </Link>
+              <a
+                href="/api/download/rxpad-screen"
+                download="RxPadScreen.tsx"
                 className="inline-flex items-center justify-center gap-1.5 rounded-[10px] border border-tp-slate-200 bg-white px-3 py-2 text-xs font-medium text-tp-slate-700 transition-colors hover:bg-tp-slate-50"
               >
                 <Download size={13} strokeWidth={2} />
