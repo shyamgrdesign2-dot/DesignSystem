@@ -107,6 +107,7 @@ export { TPRxPadTopNav } from "./tp-rxpad-top-nav"
 export { TPRxPadSecondarySidebar } from "./tp-rxpad-secondary-sidebar"
 export { TPRxPadShell } from "./tp-rxpad-shell"
 export { TPRxPadSearchInput } from "./tp-rxpad-search-input"
+export { TPInputDropdownField } from "./tp-input-dropdown-field"
 export {
   TPRxPadSection,
   TPRxChipSearchInput,

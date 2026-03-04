@@ -18,7 +18,7 @@ export function RxPadPage() {
       <TPRxPadShell
         topNav={
           <TPRxPadTopNav
-            className="relative h-[62px] w-full bg-white"
+            className="relative z-[140] h-[62px] w-full bg-white"
             onBack={() => router.push("/tp-appointment-screen")}
           />
         }

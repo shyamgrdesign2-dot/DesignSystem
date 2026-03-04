@@ -21,6 +21,10 @@ export const TPRxPadSearchInput = React.forwardRef<HTMLInputElement, TPRxPadSear
         <input
           ref={ref}
           {...props}
+          autoComplete={props.autoComplete ?? "off"}
+          autoCorrect={props.autoCorrect ?? "off"}
+          autoCapitalize={props.autoCapitalize ?? "none"}
+          spellCheck={props.spellCheck ?? false}
           className={cn(
             "h-[42px] w-full rounded-[10px] border border-tp-slate-300 bg-white pl-9 pr-3 text-[14px] font-['Inter',sans-serif] text-tp-slate-700 placeholder:text-tp-slate-400 transition-colors hover:border-tp-slate-400 focus:border-tp-blue-500 focus:outline-none focus:ring-2 focus:ring-tp-blue-500/20",
             className,

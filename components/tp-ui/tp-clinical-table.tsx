@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useEffect, useRef } from "react"
 import { ArrowUp, ArrowDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -68,6 +68,9 @@ export function TPClinicalTable<T>({
 }: TPClinicalTableProps<T>) {
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const [isTableOverflowing, setIsTableOverflowing] = useState(false)
+  const [showStickyShadow, setShowStickyShadow] = useState(false)
 
   // Sorting
   const handleSort = useCallback(
@@ -122,6 +125,37 @@ export function TPClinicalTable<T>({
     }
   }
 
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    const updateStickyState = () => {
+      const hasOverflow = el.scrollWidth > el.clientWidth + 1
+      const maxScrollLeft = Math.max(0, el.scrollWidth - el.clientWidth)
+      setIsTableOverflowing(hasOverflow)
+      setShowStickyShadow(hasOverflow && el.scrollLeft < maxScrollLeft - 1)
+    }
+
+    updateStickyState()
+    el.addEventListener("scroll", updateStickyState, { passive: true })
+    window.addEventListener("resize", updateStickyState)
+
+    let observer: ResizeObserver | null = null
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(updateStickyState)
+      observer.observe(el)
+      if (el.firstElementChild instanceof HTMLElement) {
+        observer.observe(el.firstElementChild)
+      }
+    }
+
+    return () => {
+      el.removeEventListener("scroll", updateStickyState)
+      window.removeEventListener("resize", updateStickyState)
+      observer?.disconnect()
+    }
+  }, [columns.length, data.length, loading])
+
   return (
     <div
       className={cn(
@@ -129,8 +163,8 @@ export function TPClinicalTable<T>({
         className,
       )}
     >
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
+      <div ref={scrollRef} className="relative overflow-x-auto">
+        <table className="w-full min-w-full table-fixed border-separate border-spacing-0 text-sm">
           {/* ── Header ── */}
           <thead>
             <tr className="bg-[#f1f1f5]">
@@ -153,8 +187,8 @@ export function TPClinicalTable<T>({
                     col.align === "center" && "text-center",
                     col.align === "right" && "text-right",
                     col.sortable && "cursor-pointer select-none hover:text-[#454551]",
-                    col.sticky &&
-                      "sticky right-0 bg-tp-slate-50 shadow-[-10px_0_14px_2px_rgba(23,23,37,0.12)]",
+                    col.sticky && "sticky right-0 z-20 overflow-visible border-l border-tp-slate-200/80 bg-tp-slate-50",
+                    col.sticky && isTableOverflowing && showStickyShadow && "relative shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)] before:pointer-events-none before:absolute before:inset-y-0 before:-left-2 before:w-2 before:content-[''] before:bg-gradient-to-l before:from-tp-slate-900/6 before:to-transparent",
                   )}
                   style={{
                     width: col.width,
@@ -253,8 +287,8 @@ export function TPClinicalTable<T>({
                           "px-3 py-3 text-[#454551]",
                           col.align === "center" && "text-center",
                           col.align === "right" && "text-right",
-                          col.sticky &&
-                            "sticky right-0 bg-white shadow-[-10px_0_14px_2px_rgba(23,23,37,0.10)]",
+                          col.sticky && "sticky right-0 z-10 overflow-visible border-l border-tp-slate-200/80 bg-white",
+                          col.sticky && isTableOverflowing && showStickyShadow && "relative shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)] before:pointer-events-none before:absolute before:inset-y-0 before:-left-2 before:w-2 before:content-[''] before:bg-gradient-to-l before:from-tp-slate-900/6 before:to-transparent",
                           col.sticky && isSelected && "bg-tp-blue-50",
                         )}
                         style={{ width: col.width, minWidth: col.minWidth }}

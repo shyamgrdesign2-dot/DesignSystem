@@ -255,14 +255,37 @@ export function DrAgentPage() {
     setTabDateFilters((prev) => ({ ...prev, [activeTab]: id }))
   }
   const tableOverflowRef = useRef<HTMLDivElement | null>(null)
-  const [isTableScrolled, setIsTableScrolled] = useState(false)
+  const [showStickyFade, setShowStickyFade] = useState(false)
+  const [isTableOverflowing, setIsTableOverflowing] = useState(false)
 
   useEffect(() => {
     const el = tableOverflowRef.current
     if (!el) return
-    const handler = () => setIsTableScrolled(el.scrollLeft > 0)
-    el.addEventListener("scroll", handler, { passive: true })
-    return () => el.removeEventListener("scroll", handler)
+    const update = () => {
+      const hasOverflow = el.scrollWidth > el.clientWidth + 1
+      const maxScrollLeft = Math.max(0, el.scrollWidth - el.clientWidth)
+      // Show fade while some content can still be hidden behind sticky action column.
+      setIsTableOverflowing(hasOverflow)
+      setShowStickyFade(hasOverflow && el.scrollLeft < maxScrollLeft - 1)
+    }
+    update()
+    el.addEventListener("scroll", update, { passive: true })
+    window.addEventListener("resize", update)
+
+    let observer: ResizeObserver | null = null
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(update)
+      observer.observe(el)
+      if (el.firstElementChild instanceof HTMLElement) {
+        observer.observe(el.firstElementChild)
+      }
+    }
+
+    return () => {
+      el.removeEventListener("scroll", update)
+      window.removeEventListener("resize", update)
+      observer?.disconnect()
+    }
   }, [])
 
   // ── Column sort + unified filter ─────────────────────────────────────────
@@ -568,8 +591,8 @@ export function DrAgentPage() {
                     ref={tableOverflowRef}
                     className="flex-1 min-h-0 overflow-auto px-3 pb-4 sm:px-4 lg:px-[18px]"
                   >
-                    <div className="min-w-[920px] pt-1">
-                      <table className="w-full border-collapse">
+                    <div className="min-w-[1100px] pt-1">
+                      <table className="min-w-[1100px] w-full table-fixed border-separate border-spacing-0">
                         <thead>
                           <tr className="rounded-[12px] bg-tp-slate-100">
                             <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[40px] max-w-[56px] w-[48px]">
@@ -598,8 +621,8 @@ export function DrAgentPage() {
                               </button>
                             </th>
                             <th className={cn(
-                              "sticky right-0 z-20 w-px rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 xl:static",
-                              isTableScrolled && "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.10)]",
+                              "sticky right-0 z-20 overflow-visible rounded-r-[12px] border-l border-tp-slate-200/80 bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[304px] w-[304px] max-w-[304px]",
+                              isTableOverflowing && showStickyFade && "relative border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)] before:pointer-events-none before:absolute before:inset-y-0 before:-left-2 before:w-2 before:content-[''] before:bg-gradient-to-l before:from-tp-slate-900/6 before:to-transparent",
                             )}>
                               Action
                             </th>
@@ -728,32 +751,31 @@ export function DrAgentPage() {
                                 </td>
 
                                 <td className={cn(
-                                  "sticky right-0 z-10 w-px bg-white px-3 py-3 align-middle xl:static",
-                                  isTableScrolled && "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.10)]",
+                                  "sticky right-0 z-10 overflow-visible border-l border-tp-slate-200/80 bg-white px-3 py-3 align-middle min-w-[304px] w-[304px] max-w-[304px]",
+                                  isTableOverflowing && showStickyFade && "relative border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)] before:pointer-events-none before:absolute before:inset-y-0 before:-left-2 before:w-2 before:content-[''] before:bg-gradient-to-l before:from-tp-slate-900/6 before:to-transparent",
                                 )}>
-                                  <div className="flex items-center gap-3 whitespace-nowrap">
-                                    <div className="transition-all hover:scale-105 duration-200">
-                                      <TPSplitButton
-                                        primaryAction={{
-                                          label: "VoiceRx",
-                                          onClick: () => {},
-                                        }}
-                                        secondaryActions={[
-                                          { id: "tab-rx", label: "TabRx", onClick: () => {} },
-                                          { id: "type-rx", label: "TypeRx", onClick: () => {} },
-                                          { id: "snap-rx", label: "SnapRx", onClick: () => {} },
-                                          { id: "smart-sync", label: "SmartSync", onClick: () => {} },
-                                        ]}
-                                        variant="outline"
-                                        theme="primary"
-                                        size="md"
-                                      />
-                                    </div>
+                                  <div className="flex w-full min-w-0 items-center gap-3 whitespace-nowrap">
+                                    <TPSplitButton
+                                      primaryAction={{
+                                        label: "VoiceRx",
+                                        onClick: () => {},
+                                      }}
+                                      secondaryActions={[
+                                        { id: "tab-rx", label: "TabRx", onClick: () => {} },
+                                        { id: "type-rx", label: "TypeRx", onClick: () => {} },
+                                        { id: "snap-rx", label: "SnapRx", onClick: () => {} },
+                                        { id: "smart-sync", label: "SmartSync", onClick: () => {} },
+                                      ]}
+                                      variant="outline"
+                                      theme="primary"
+                                      size="md"
+                                      className="w-full min-w-[148px] max-w-[188px] flex-1"
+                                    />
 
                                     <button
                                       type="button"
                                       aria-label="AI action"
-                                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105"
+                                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-opacity hover:opacity-85"
                                       style={{
                                         background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)",
                                       }}

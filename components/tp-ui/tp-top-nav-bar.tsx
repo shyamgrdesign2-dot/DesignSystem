@@ -6,7 +6,7 @@ import {
   Settings,
   Search,
   Menu,
-  ArrowLeft,
+  ChevronLeft,
   Eye,
   FileText,
   LogIn,
@@ -177,7 +177,7 @@ export function TPTopNavBar({
             }}
             aria-label="Go back"
           >
-            <ArrowLeft size={24} color="#454551" />
+            <ChevronLeft size={24} color="#454551" strokeWidth={3} />
           </button>
 
           {/* Patient info */}

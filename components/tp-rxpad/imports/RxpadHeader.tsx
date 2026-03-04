@@ -14,7 +14,7 @@ import {
   Setting2,
   User,
 } from "iconsax-reactjs"
-import { ArrowLeft, MoreVertical } from "lucide-react"
+import { ChevronLeft, MoreVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import svgPaths from "./svg-gb0jbe9ifm";
 
@@ -40,7 +40,7 @@ export default function RxpadHeader({ className, onBack }: RxpadHeaderProps) {
             >
               <div aria-hidden="true" className="absolute border-[#f1f1f5] border-b-[0.5px] border-r-[0.5px] border-solid inset-[0_-0.25px_-0.25px_0] pointer-events-none" />
               <div className="relative shrink-0 size-[24px]" data-name="Back Arrow">
-                <ArrowLeft color="#454551" size={24} strokeWidth={1.5} />
+                <ChevronLeft color="#454551" size={24} strokeWidth={3} />
               </div>
             </button>
             <div className="content-stretch flex items-center min-h-px min-w-0 relative" data-name="User Info">

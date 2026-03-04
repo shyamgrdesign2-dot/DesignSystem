@@ -368,7 +368,7 @@ function CopyAffordance({
     <div className="inline-flex items-center">
       <Tooltip>
         <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent side="top" sideOffset={4} className="rounded-lg bg-tp-slate-900 px-2 py-1 text-[11px] text-white">
+        <TooltipContent side="top" sideOffset={4} className="rounded-[10px] bg-tp-slate-900 px-2 py-1 text-[11px] text-white">
           {copied ? copiedLabel : copyHint}
         </TooltipContent>
       </Tooltip>
@@ -422,15 +422,17 @@ function TapCopyTooltip({
       </TooltipTrigger>
       <TooltipContent
         align="start"
-        className="max-w-[180px] rounded-lg border border-tp-slate-200 bg-white px-2 py-1.5 text-[11px] leading-[16px] text-tp-slate-700 shadow-lg"
+        className="max-w-[280px] rounded-[10px] border border-tp-slate-200 bg-white px-3 py-2.5 text-[12px] leading-[18px] text-tp-slate-700 shadow-[0_14px_30px_-12px_rgba(15,23,42,0.24)]"
+        arrowClassName="bg-white fill-white border-l border-t border-tp-slate-200 translate-y-[calc(-50%_-_1px)]"
         collisionPadding={10}
         side="top"
         sideOffset={4}
+        onPointerDown={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-2.5">
           <p className="min-w-0 flex-1">{copied ? copiedLabel : copyHint}</p>
           <button
-            className="inline-flex shrink-0 items-center gap-1 rounded-md border border-tp-blue-200 bg-tp-blue-50 px-1.5 py-1 font-medium text-tp-blue-600"
+            className="inline-flex min-h-[32px] shrink-0 items-center gap-1 rounded-[8px] border border-tp-blue-200 bg-tp-blue-50 px-2.5 py-1 text-[11px] font-semibold text-tp-blue-600"
             onClick={(event) => {
               event.stopPropagation()
               runCopy()

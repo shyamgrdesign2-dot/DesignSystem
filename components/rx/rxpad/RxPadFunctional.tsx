@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { createPortal } from "react-dom"
 import { Calendar2, Notepad2, Trash } from "iconsax-reactjs"
 import {
-  ChevronDown,
   GripVertical,
   Plus,
   Search,
@@ -19,10 +18,10 @@ import {
 import { useRxPadSync } from "@/components/tp-rxpad/rxpad-sync-context"
 import {
   TPMedicalIcon,
+  TPInputDropdownField,
   TPRxPadSearchInput,
   TPRxPadSection,
   TPSnackbar,
-  TPTooltip,
 } from "@/components/tp-ui"
 
 type TableRow = {
@@ -102,6 +101,21 @@ function getScrollParent(node: HTMLElement | null): HTMLElement | null {
     current = current.parentElement
   }
   return null
+}
+
+function getScrollParents(node: HTMLElement | null): HTMLElement[] {
+  const parents: HTMLElement[] = []
+  let current: HTMLElement | null = node?.parentElement ?? null
+  while (current) {
+    const style = window.getComputedStyle(current)
+    const overflowY = /(auto|scroll)/.test(style.overflowY)
+    const overflowX = /(auto|scroll)/.test(style.overflowX)
+    if ((overflowY || overflowX) && (current.scrollHeight > current.clientHeight || current.scrollWidth > current.clientWidth)) {
+      parents.push(current)
+    }
+    current = current.parentElement
+  }
+  return parents
 }
 
 function snapFieldToViewportTop(element: HTMLElement, offset = 96) {
@@ -308,18 +322,45 @@ function useTabletMode() {
     }
 
     update()
-    widthQuery.addEventListener("change", update)
-    touchQuery.addEventListener("change", update)
+    widthQuery.addEventListener?.("change", update)
+    touchQuery.addEventListener?.("change", update)
+    widthQuery.addListener?.(update)
+    touchQuery.addListener?.(update)
     window.addEventListener("resize", update)
 
     return () => {
-      widthQuery.removeEventListener("change", update)
-      touchQuery.removeEventListener("change", update)
+      widthQuery.removeEventListener?.("change", update)
+      touchQuery.removeEventListener?.("change", update)
+      widthQuery.removeListener?.(update)
+      touchQuery.removeListener?.(update)
       window.removeEventListener("resize", update)
     }
   }, [])
 
   return tabletMode
+}
+
+function useTouchLikeInput() {
+  const [touchLike, setTouchLike] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const query = window.matchMedia("(hover: none), (pointer: coarse)")
+    const update = () => {
+      setTouchLike(query.matches || window.navigator.maxTouchPoints > 0)
+    }
+
+    update()
+    query.addEventListener?.("change", update)
+    query.addListener?.(update)
+
+    return () => {
+      query.removeEventListener?.("change", update)
+      query.removeListener?.(update)
+    }
+  }, [])
+
+  return touchLike
 }
 
 function buildDefaultRow(
@@ -356,6 +397,7 @@ function EditableTableModule({
   onClearClick,
 }: TableModuleConfig) {
   const isTablet = useTabletMode()
+  const isTouchLikeInput = useTouchLikeInput()
   const [searchText, setSearchText] = useState("")
   const [activeMenu, setActiveMenu] = useState<ActiveMenu | null>(null)
   const [draggingRowId, setDraggingRowId] = useState<string | null>(null)
@@ -375,6 +417,7 @@ function EditableTableModule({
   const menuListRef = useRef<HTMLDivElement | null>(null)
   const inputRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({})
   const transparentDragImageRef = useRef<HTMLImageElement | null>(null)
+  const touchDraggingRowIdRef = useRef<string | null>(null)
   const rowTopByIdRef = useRef<Record<string, number>>({})
   const dragPreviewTargetRef = useRef<string | null>(null)
   const colIndexByKey = useMemo(
@@ -543,6 +586,52 @@ function EditableTableModule({
     [onChangeRows, rows],
   )
 
+  const startTouchDrag = useCallback((rowId: string) => {
+    touchDraggingRowIdRef.current = rowId
+    setDraggingRowId(rowId)
+    setDragOverRowId(rowId)
+    dragPreviewTargetRef.current = rowId
+  }, [])
+
+  const updateTouchDrag = useCallback(
+    (clientX: number, clientY: number) => {
+      const sourceId = touchDraggingRowIdRef.current
+      if (!sourceId) return
+
+      const wrapper = tableWrapRef.current
+      if (!wrapper) return
+
+      const rect = wrapper.getBoundingClientRect()
+      const withinX = clientX >= rect.left && clientX <= rect.right
+      const withinY = clientY >= rect.top && clientY <= rect.bottom
+
+      if (!withinX || !withinY) {
+        setDragOverRowId(null)
+        return
+      }
+
+      const target = document.elementFromPoint(clientX, clientY) as HTMLElement | null
+      const rowElement = target?.closest("tr[data-row-id]") as HTMLTableRowElement | null
+      const targetId = rowElement?.dataset.rowId
+      if (!targetId) return
+
+      setDragOverRowId(targetId)
+
+      if (targetId !== sourceId && dragPreviewTargetRef.current !== targetId) {
+        dragPreviewTargetRef.current = targetId
+        moveRow(sourceId, targetId)
+      }
+    },
+    [moveRow],
+  )
+
+  const endTouchDrag = useCallback(() => {
+    touchDraggingRowIdRef.current = null
+    setDraggingRowId(null)
+    setDragOverRowId(null)
+    dragPreviewTargetRef.current = null
+  }, [])
+
   const focusCell = useCallback(
     (rowIndex: number, colIndex: number) => {
       const nextRow = rows[rowIndex]
@@ -558,15 +647,24 @@ function EditableTableModule({
     [columns, rows],
   )
 
+  const scheduleFieldSnap = useCallback(
+    (element: HTMLElement | null) => {
+      if (!isTouchLikeInput || !element) return
+      snapFieldToViewportTop(element)
+      window.requestAnimationFrame(() => snapFieldToViewportTop(element))
+      window.setTimeout(() => snapFieldToViewportTop(element), 120)
+      window.setTimeout(() => snapFieldToViewportTop(element), 280)
+    },
+    [isTouchLikeInput],
+  )
+
   const focusOwnSearch = useCallback(() => {
     const node = searchInputRef.current
     if (!node) return
     node.focus()
     node.select()
-    if (isTablet) {
-      snapFieldToViewportTop(node)
-    }
-  }, [isTablet])
+    scheduleFieldSnap(node)
+  }, [scheduleFieldSnap])
 
   const focusNextModuleSearch = useCallback(() => {
     if (typeof document === "undefined") return
@@ -584,10 +682,8 @@ function EditableTableModule({
     const next = allSearches[idx + 1]
     next.focus()
     next.select()
-    if (isTablet) {
-      snapFieldToViewportTop(next)
-    }
-  }, [isTablet])
+    scheduleFieldSnap(next)
+  }, [scheduleFieldSnap])
 
   const focusPreviousModuleSearch = useCallback(() => {
     if (typeof document === "undefined") return
@@ -605,10 +701,8 @@ function EditableTableModule({
     const prev = allSearches[idx - 1]
     prev.focus()
     prev.select()
-    if (isTablet) {
-      snapFieldToViewportTop(prev)
-    }
-  }, [isTablet])
+    scheduleFieldSnap(prev)
+  }, [scheduleFieldSnap])
 
   const focusFirstCellInModule = useCallback(
     (moduleRoot: HTMLElement | null) => {
@@ -621,9 +715,7 @@ function EditableTableModule({
         firstCell.focus()
         const len = firstCell.value.length
         firstCell.setSelectionRange(len, len)
-        if (isTablet) {
-          snapFieldToViewportTop(firstCell)
-        }
+        scheduleFieldSnap(firstCell)
         return true
       }
 
@@ -631,15 +723,13 @@ function EditableTableModule({
       if (moduleSearch) {
         moduleSearch.focus()
         moduleSearch.select()
-        if (isTablet) {
-          snapFieldToViewportTop(moduleSearch)
-        }
+        scheduleFieldSnap(moduleSearch)
         return true
       }
 
       return false
     },
-    [isTablet],
+    [scheduleFieldSnap],
   )
 
   const focusNextModuleFirstCell = useCallback(() => {
@@ -683,13 +773,11 @@ function EditableTableModule({
       lastCell.focus()
       const len = lastCell.value.length
       lastCell.setSelectionRange(len, len)
-      if (isTablet) {
-        snapFieldToViewportTop(lastCell)
-      }
+      scheduleFieldSnap(lastCell)
       return
     }
     focusPreviousModuleSearch()
-  }, [focusOwnSearch, focusPreviousModuleSearch, isTablet])
+  }, [focusOwnSearch, focusPreviousModuleSearch, scheduleFieldSnap])
 
   const focusNextFromCell = useCallback(
     (rowIndex: number, colIndex: number) => {
@@ -808,12 +896,13 @@ function EditableTableModule({
 
   useEffect(() => {
     if (!activeMenu) return
+    const anchor =
+      activeMenu.mode === "search"
+        ? searchInputRef.current
+        : inputRefs.current[`${activeMenu.rowId ?? ""}:${activeMenu.colKey ?? ""}`]
+    if (!anchor) return
+
     const updateAnchor = () => {
-      const anchor =
-        activeMenu.mode === "search"
-          ? searchInputRef.current
-          : inputRefs.current[`${activeMenu.rowId ?? ""}:${activeMenu.colKey ?? ""}`]
-      if (!anchor) return
       setActiveMenu((current) => {
         if (!current) return current
         return {
@@ -822,12 +911,23 @@ function EditableTableModule({
         }
       })
     }
+
     updateAnchor()
+    const scrollParents = getScrollParents(anchor)
+    const passive: AddEventListenerOptions = { passive: true }
+
     window.addEventListener("resize", updateAnchor)
     window.addEventListener("scroll", updateAnchor, true)
+    scrollParents.forEach((node) => node.addEventListener("scroll", updateAnchor, passive))
+    window.visualViewport?.addEventListener("resize", updateAnchor)
+    window.visualViewport?.addEventListener("scroll", updateAnchor)
+
     return () => {
       window.removeEventListener("resize", updateAnchor)
       window.removeEventListener("scroll", updateAnchor, true)
+      scrollParents.forEach((node) => node.removeEventListener("scroll", updateAnchor))
+      window.visualViewport?.removeEventListener("resize", updateAnchor)
+      window.visualViewport?.removeEventListener("scroll", updateAnchor)
     }
   }, [activeMenu])
 
@@ -1033,6 +1133,20 @@ function EditableTableModule({
   const menuPosition = activeMenu
     ? (() => {
       const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 1280
+      const visualViewport = typeof window !== "undefined" ? window.visualViewport : null
+      const viewportHeight = visualViewport?.height ?? (typeof window !== "undefined" ? window.innerHeight : 900)
+      const viewportTop = visualViewport?.offsetTop ?? 0
+      const viewportBottom = viewportTop + viewportHeight
+      const topBarHeight = 62
+      const safeTop = viewportTop + topBarHeight
+
+      const anchorEl =
+        activeMenu.mode === "search"
+          ? searchInputRef.current
+          : inputRefs.current[`${activeMenu.rowId ?? ""}:${activeMenu.colKey ?? ""}`]
+      const anchorRect = anchorEl?.getBoundingClientRect() ?? activeMenu.anchorRect
+      if (!anchorRect) return null
+
       const activeColumn =
         activeMenu.mode === "cell"
           ? columns.find((column) => column.key === activeMenu.colKey)
@@ -1041,24 +1155,33 @@ function EditableTableModule({
 
       const desiredWidth = (() => {
         if (activeMenu.mode === "search") {
-          return Math.max(activeMenu.anchorRect.width, isTablet ? 620 : 760)
+          const extraWidth = isTablet ? 250 : 300
+          const expanded = Math.round(anchorRect.width + extraWidth)
+          return Math.max(360, Math.min(expanded, isTablet ? 660 : 840))
         }
         if (allowWideCellDropdown) {
-          return activeMenu.anchorRect.width + (isTablet ? 32 : 40)
+          return anchorRect.width + (isTablet ? 32 : 40)
         }
-        return activeMenu.anchorRect.width
+        return anchorRect.width
       })()
 
-      const minWidth = activeMenu.mode === "search" ? 220 : 120
+      const minWidth = activeMenu.mode === "search" ? 360 : 120
       const width = Math.min(desiredWidth, Math.max(minWidth, viewportWidth - 16))
-      const rawLeft = Math.max(8, activeMenu.anchorRect.left)
-      const left = Math.min(rawLeft, Math.max(8, viewportWidth - width - 8))
-        return {
-          left,
-          top: activeMenu.anchorRect.bottom + 6,
-          width,
-        }
-      })()
+      const left = Math.min(Math.max(8, anchorRect.left), Math.max(8, viewportWidth - width - 8))
+      const spaceBelow = Math.max(0, viewportBottom - anchorRect.bottom - 8)
+      const spaceAbove = Math.max(0, anchorRect.top - safeTop - 8)
+      const openUp = spaceBelow < 170 && spaceAbove > spaceBelow
+      const panelMaxHeight = Math.max(168, Math.min(openUp ? spaceAbove : spaceBelow, 320))
+      const top = openUp
+        ? Math.max(safeTop + 6, anchorRect.top - panelMaxHeight - 6)
+        : Math.min(anchorRect.bottom + 6, viewportBottom - panelMaxHeight - 6)
+      return {
+        left,
+        top,
+        width,
+        panelMaxHeight,
+      }
+    })()
     : null
 
   const regularOptionEntries = useMemo(
@@ -1075,6 +1198,12 @@ function EditableTableModule({
     return { option: optionsForMenu[index], index }
   }, [optionsForMenu])
   const showMenuFooter = activeMenu?.mode === "search" || Boolean(customOptionEntry)
+  const menuHeaderHeight = activeMenu?.mode === "search" && activeMenu.query.trim().length === 0 ? 37 : 0
+  const menuFooterHeight = showMenuFooter ? 44 : 0
+  const menuListMaxHeight = Math.max(
+    120,
+    (menuPosition?.panelMaxHeight ?? 220) - menuHeaderHeight - menuFooterHeight,
+  )
 
   const sideColumnStyle: React.CSSProperties = {
     width: 50,
@@ -1091,7 +1220,7 @@ function EditableTableModule({
       onClearClick={handleClearClick}
       clearDisabled={!hasAnyData}
     >
-      <div ref={moduleRootRef} data-rx-module-root="true" className="space-y-[18px]">
+      <div ref={moduleRootRef} data-rx-module-root="true" className="relative space-y-[18px] overflow-visible">
         {rows.length > 0 ? (
           <div
             ref={tableWrapRef}
@@ -1180,6 +1309,7 @@ function EditableTableModule({
                           ? "bg-tp-blue-50 text-tp-blue-600"
                           : "text-tp-slate-400 hover:bg-tp-slate-100 hover:text-tp-slate-600",
                       ].join(" ")}
+                      style={{ touchAction: "none" }}
                       aria-label="Drag to reorder row"
                       onDragStart={(event) => {
                         setDraggingRowId(row.id)
@@ -1205,6 +1335,65 @@ function EditableTableModule({
                         setDragOverRowId(null)
                         dragPreviewTargetRef.current = null
                       }}
+                      onPointerDown={(event) => {
+                        if (!isTouchLikeInput || event.pointerType !== "touch") return
+                        event.preventDefault()
+                        event.currentTarget.setPointerCapture(event.pointerId)
+                        startTouchDrag(row.id)
+                        updateTouchDrag(event.clientX, event.clientY)
+                      }}
+                      onPointerMove={(event) => {
+                        if (!isTouchLikeInput || event.pointerType !== "touch") return
+                        if (!touchDraggingRowIdRef.current) return
+                        event.preventDefault()
+                        updateTouchDrag(event.clientX, event.clientY)
+                      }}
+                      onPointerUp={(event) => {
+                        if (!isTouchLikeInput || event.pointerType !== "touch") return
+                        event.preventDefault()
+                        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                          event.currentTarget.releasePointerCapture(event.pointerId)
+                        }
+                        endTouchDrag()
+                      }}
+                      onPointerCancel={(event) => {
+                        if (!isTouchLikeInput || event.pointerType !== "touch") return
+                        event.preventDefault()
+                        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                          event.currentTarget.releasePointerCapture(event.pointerId)
+                        }
+                        endTouchDrag()
+                      }}
+                      onTouchStart={(event) => {
+                        if (!isTouchLikeInput) return
+                        if (typeof window !== "undefined" && "PointerEvent" in window) return
+                        const touch = event.touches[0]
+                        if (!touch) return
+                        event.preventDefault()
+                        startTouchDrag(row.id)
+                        updateTouchDrag(touch.clientX, touch.clientY)
+                      }}
+                      onTouchMove={(event) => {
+                        if (!isTouchLikeInput) return
+                        if (typeof window !== "undefined" && "PointerEvent" in window) return
+                        if (!touchDraggingRowIdRef.current) return
+                        const touch = event.touches[0]
+                        if (!touch) return
+                        event.preventDefault()
+                        updateTouchDrag(touch.clientX, touch.clientY)
+                      }}
+                      onTouchEnd={(event) => {
+                        if (!isTouchLikeInput) return
+                        if (typeof window !== "undefined" && "PointerEvent" in window) return
+                        event.preventDefault()
+                        endTouchDrag()
+                      }}
+                      onTouchCancel={(event) => {
+                        if (!isTouchLikeInput) return
+                        if (typeof window !== "undefined" && "PointerEvent" in window) return
+                        event.preventDefault()
+                        endTouchDrag()
+                      }}
                     >
                       <GripVertical size={18} strokeWidth={1.5} />
                     </button>
@@ -1214,7 +1403,7 @@ function EditableTableModule({
                     const key = `${row.id}:${column.key}`
                     const hasDropdown = Boolean(column.getOptions)
                     const showDropdownToggle = column.showDropdownToggle ?? true
-                    const isMultiline = false
+                    const isMultiline = Boolean(column.multiline)
                     const isMenuOpen = Boolean(
                       activeMenu &&
                       activeMenu.rowId === row.id &&
@@ -1222,373 +1411,195 @@ function EditableTableModule({
                     )
                     const value = row[column.key] ?? ""
                     const displayValue = hasDropdown ? (editingCellValues[key] ?? value) : value
-                    const fieldClass = [
-                      "h-[52px] w-full border-0 bg-transparent px-3 py-0",
-                      "font-['Inter',sans-serif] text-[14px] leading-[20px] text-[#454551]",
-                      "focus:bg-tp-blue-50/30 focus:outline-none focus:ring-0",
-                      "relative z-20",
-                      "rounded-none",
-                      hasDropdown ? "pr-8" : "",
-                      isMultiline ? "overflow-hidden whitespace-normal break-words py-[10px] leading-[18px]" : "overflow-hidden text-ellipsis whitespace-nowrap",
-                    ].join(" ")
+                    const isCellActive = activeCell?.rowId === row.id && activeCell?.colKey === column.key
+
+                    const handleFieldFocus = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                      setActiveCell({ rowId: row.id, colKey: column.key })
+                      if (hasDropdown) {
+                        beginDropdownEditing(key, value)
+                        ensureCellVisibleInTable(event.currentTarget)
+                        const len = event.currentTarget.value.length
+                        event.currentTarget.setSelectionRange(len, len)
+                      }
+                      scheduleFieldSnap(event.currentTarget)
+                      if (hasDropdown) {
+                        openCellMenu(
+                          row,
+                          column,
+                          event.currentTarget.getBoundingClientRect(),
+                          value,
+                          value,
+                          !shouldFilterCellOnOpen(column),
+                        )
+                      }
+                    }
+
+                    const handleFieldClick = (event: React.MouseEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                      if (!hasDropdown) return
+                      beginDropdownEditing(key, value)
+                      ensureCellVisibleInTable(event.currentTarget)
+                      openCellMenu(
+                        row,
+                        column,
+                        event.currentTarget.getBoundingClientRect(),
+                        value,
+                        value,
+                        !shouldFilterCellOnOpen(column),
+                      )
+                    }
+
+                    const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                      const next = event.currentTarget.value
+                      if (hasDropdown) {
+                        beginDropdownEditing(key, next)
+                        openCellMenu(
+                          row,
+                          column,
+                          event.currentTarget.getBoundingClientRect(),
+                          next,
+                          next,
+                        )
+                        return
+                      }
+                      setCellValue(row.id, column.key, next)
+                    }
+
+                    const handleFieldBlur = () => {
+                      window.setTimeout(() => {
+                        if (hasDropdown) {
+                          endDropdownEditing(key)
+                        }
+                        setActiveMenu((current) => {
+                          if (!current) return current
+                          if (current.rowId !== row.id || current.colKey !== column.key) return current
+                          return null
+                        })
+                        setActiveCell((current) => {
+                          if (!current) return current
+                          if (current.rowId !== row.id || current.colKey !== column.key) return current
+                          return null
+                        })
+                      }, 80)
+                    }
+
+                    const handleFieldKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                      const colIndex = colIndexByKey[column.key]
+                      const menuOpened =
+                        activeMenu &&
+                        activeMenu.rowId === row.id &&
+                        activeMenu.colKey === column.key &&
+                        optionsForMenu.length > 0
+
+                      if (menuOpened && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+                        event.preventDefault()
+                        const delta = event.key === "ArrowDown" ? 1 : -1
+                        setActiveMenu((current) => {
+                          if (!current) return current
+                          const next = (current.highlightedIndex + delta + optionsForMenu.length) % optionsForMenu.length
+                          return { ...current, highlightedIndex: next }
+                        })
+                        return
+                      }
+
+                      if (menuOpened && event.key === "Enter") {
+                        event.preventDefault()
+                        const picked = optionsForMenu[activeMenu.highlightedIndex] ?? optionsForMenu[0]
+                        if (picked) {
+                          const pickedValue = getOptionValue(picked)
+                          setCellValue(row.id, column.key, pickedValue)
+                          if (isCustomOption(picked)) {
+                            registerCustomValue(pickedValue)
+                          }
+                          endDropdownEditing(key)
+                        }
+                        closeMenu()
+                        focusNextFromCell(rowIndex, colIndex)
+                        return
+                      }
+
+                      if (event.key === "Escape") {
+                        closeMenu()
+                        return
+                      }
+
+                      if (event.key === "ArrowUp") {
+                        event.preventDefault()
+                        if (rowIndex <= 0) {
+                          focusPreviousModuleLastCell()
+                        } else {
+                          focusCell(rowIndex - 1, colIndex)
+                        }
+                        return
+                      }
+                      if (event.key === "ArrowDown") {
+                        event.preventDefault()
+                        if (rowIndex >= rows.length - 1) {
+                          focusOwnSearch()
+                        } else {
+                          focusCell(rowIndex + 1, colIndex)
+                        }
+                        return
+                      }
+                      if (event.key === "ArrowLeft") {
+                        event.preventDefault()
+                        focusPreviousFromCell(rowIndex, colIndex)
+                        return
+                      }
+                      if (event.key === "ArrowRight") {
+                        event.preventDefault()
+                        focusNextFromCell(rowIndex, colIndex)
+                        return
+                      }
+                      if (event.key === "Enter") {
+                        event.preventDefault()
+                        focusNextFromCell(rowIndex, colIndex)
+                      }
+                    }
 
                     return (
                       <td
                         key={column.key}
                         className={`border-r border-tp-slate-100 p-0 align-middle transition-colors ${
-                          activeCell?.rowId === row.id && activeCell?.colKey === column.key ? "bg-tp-blue-50/20" : ""
+                          isCellActive ? "bg-tp-blue-50/20" : ""
                         }`}
                         style={getResponsiveColumnStyle(column)}
                       >
-                        <div className="relative h-[52px]">
-                          {activeCell?.rowId === row.id && activeCell?.colKey === column.key ? (
-                            <span className="pointer-events-none absolute inset-[2px] z-10 rounded-[6px] border border-tp-blue-500 shadow-[0_0_0_2px_rgba(75,74,213,0.16)]" />
-                          ) : null}
-                          {isMultiline ? (
-                            <textarea
-                              data-rx-cell-input="true"
-                              ref={(node) => {
-                                inputRefs.current[key] = node
-                              }}
-                              value={displayValue}
-                              title={displayValue || undefined}
-                              rows={column.maxLines ?? 2}
-                              placeholder={column.placeholder}
-                              className={fieldClass}
-                              style={{ maxHeight: `${(column.maxLines ?? 2) * 18 + 20}px`, resize: "none" }}
-                              onFocus={(event) => {
-                                setActiveCell({ rowId: row.id, colKey: column.key })
-                                if (hasDropdown) {
-                                  beginDropdownEditing(key, value)
-                                  ensureCellVisibleInTable(event.currentTarget)
-                                  const len = event.currentTarget.value.length
-                                  event.currentTarget.setSelectionRange(len, len)
-                                }
-                                if (isTablet) {
-                                  snapFieldToViewportTop(event.currentTarget)
-                                }
-                                if (hasDropdown) {
-                                  openCellMenu(
-                                    row,
-                                    column,
-                                    event.currentTarget.getBoundingClientRect(),
-                                    value,
-                                    value,
-                                    !shouldFilterCellOnOpen(column),
-                                  )
-                                }
-                              }}
-                              onClick={(event) => {
-                                if (hasDropdown) {
-                                  beginDropdownEditing(key, value)
-                                  ensureCellVisibleInTable(event.currentTarget)
-                                }
-                                if (hasDropdown) {
-                                  openCellMenu(
-                                    row,
-                                    column,
-                                    event.currentTarget.getBoundingClientRect(),
-                                    value,
-                                    value,
-                                    !shouldFilterCellOnOpen(column),
-                                  )
-                                }
-                              }}
-                              onChange={(event) => {
-                                const next = event.currentTarget.value
-                                if (hasDropdown) {
-                                  beginDropdownEditing(key, next)
-                                } else {
-                                  setCellValue(row.id, column.key, next)
-                                }
-                                openCellMenu(
-                                  row,
-                                  column,
-                                  event.currentTarget.getBoundingClientRect(),
-                                  next,
-                                  next,
-                                )
-                              }}
-                              onBlur={() => {
-                                window.setTimeout(() => {
-                                  if (hasDropdown) {
-                                    endDropdownEditing(key)
-                                  }
-                                  setActiveMenu((current) => {
-                                    if (!current) return current
-                                    if (current.rowId !== row.id || current.colKey !== column.key) return current
-                                    return null
-                                  })
-                                  setActiveCell((current) => {
-                                    if (!current) return current
-                                    if (current.rowId !== row.id || current.colKey !== column.key) return current
-                                    return null
-                                  })
-                                }, 80)
-                              }}
-                              onKeyDown={(event) => {
-                                const colIndex = colIndexByKey[column.key]
-                                const menuOpened =
-                                  activeMenu &&
-                                  activeMenu.rowId === row.id &&
-                                  activeMenu.colKey === column.key &&
-                                  optionsForMenu.length > 0
-
-                                if (menuOpened && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
-                                  event.preventDefault()
-                                  const delta = event.key === "ArrowDown" ? 1 : -1
-                                  setActiveMenu((current) => {
-                                    if (!current) return current
-                                    const next = (current.highlightedIndex + delta + optionsForMenu.length) % optionsForMenu.length
-                                    return { ...current, highlightedIndex: next }
-                                  })
-                                  return
-                                }
-
-                                if (menuOpened && event.key === "Enter") {
-                                  event.preventDefault()
-                                  const picked = optionsForMenu[activeMenu.highlightedIndex] ?? optionsForMenu[0]
-                                  if (picked) {
-                                    const pickedValue = getOptionValue(picked)
-                                    setCellValue(row.id, column.key, pickedValue)
-                                    if (isCustomOption(picked)) {
-                                      registerCustomValue(pickedValue)
-                                    }
-                                    endDropdownEditing(key)
-                                  }
-                                  closeMenu()
-                                  focusNextFromCell(rowIndex, colIndex)
-                                  return
-                                }
-
-                                if (event.key === "Escape") {
-                                  closeMenu()
-                                  return
-                                }
-
-                                if (event.key === "ArrowUp") {
-                                  event.preventDefault()
-                                  if (rowIndex <= 0) {
-                                    focusPreviousModuleLastCell()
-                                  } else {
-                                    focusCell(rowIndex - 1, colIndex)
-                                  }
-                                  return
-                                }
-                                if (event.key === "ArrowDown") {
-                                  event.preventDefault()
-                                  if (rowIndex >= rows.length - 1) {
-                                    focusOwnSearch()
-                                  } else {
-                                    focusCell(rowIndex + 1, colIndex)
-                                  }
-                                  return
-                                }
-                                if (event.key === "ArrowLeft") {
-                                  event.preventDefault()
-                                  focusPreviousFromCell(rowIndex, colIndex)
-                                  return
-                                }
-                                if (event.key === "ArrowRight") {
-                                  event.preventDefault()
-                                  focusNextFromCell(rowIndex, colIndex)
-                                  return
-                                }
-                                if (event.key === "Enter") {
-                                  event.preventDefault()
-                                  focusNextFromCell(rowIndex, colIndex)
-                                }
-                              }}
-                            />
-                          ) : (
-                            <input
-                              data-rx-cell-input="true"
-                              ref={(node) => {
-                                inputRefs.current[key] = node
-                              }}
-                              value={displayValue}
-                              title={displayValue || undefined}
-                              placeholder={column.placeholder}
-                              className={fieldClass}
-                              onFocus={(event) => {
-                                setActiveCell({ rowId: row.id, colKey: column.key })
-                                if (hasDropdown) {
-                                  beginDropdownEditing(key, value)
-                                  ensureCellVisibleInTable(event.currentTarget)
-                                  const len = event.currentTarget.value.length
-                                  event.currentTarget.setSelectionRange(len, len)
-                                }
-                                if (isTablet) {
-                                  snapFieldToViewportTop(event.currentTarget)
-                                }
-                                if (hasDropdown) {
-                                  openCellMenu(
-                                    row,
-                                    column,
-                                    event.currentTarget.getBoundingClientRect(),
-                                    value,
-                                    value,
-                                    !shouldFilterCellOnOpen(column),
-                                  )
-                                }
-                              }}
-                              onClick={(event) => {
-                                if (hasDropdown) {
-                                  beginDropdownEditing(key, value)
-                                  ensureCellVisibleInTable(event.currentTarget)
-                                }
-                                if (hasDropdown) {
-                                  openCellMenu(
-                                    row,
-                                    column,
-                                    event.currentTarget.getBoundingClientRect(),
-                                    value,
-                                    value,
-                                    !shouldFilterCellOnOpen(column),
-                                  )
-                                }
-                              }}
-                              onChange={(event) => {
-                                const next = event.currentTarget.value
-                                if (hasDropdown) {
-                                  beginDropdownEditing(key, next)
-                                } else {
-                                  setCellValue(row.id, column.key, next)
-                                }
-                                openCellMenu(
-                                  row,
-                                  column,
-                                  event.currentTarget.getBoundingClientRect(),
-                                  next,
-                                  next,
-                                )
-                              }}
-                              onBlur={() => {
-                                window.setTimeout(() => {
-                                  if (hasDropdown) {
-                                    endDropdownEditing(key)
-                                  }
-                                  setActiveMenu((current) => {
-                                    if (!current) return current
-                                    if (current.rowId !== row.id || current.colKey !== column.key) return current
-                                    return null
-                                  })
-                                  setActiveCell((current) => {
-                                    if (!current) return current
-                                    if (current.rowId !== row.id || current.colKey !== column.key) return current
-                                    return null
-                                  })
-                                }, 80)
-                              }}
-                              onKeyDown={(event) => {
-                                const colIndex = colIndexByKey[column.key]
-                                const menuOpened =
-                                  activeMenu &&
-                                  activeMenu.rowId === row.id &&
-                                  activeMenu.colKey === column.key &&
-                                  optionsForMenu.length > 0
-
-                                if (menuOpened && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
-                                  event.preventDefault()
-                                  const delta = event.key === "ArrowDown" ? 1 : -1
-                                  setActiveMenu((current) => {
-                                    if (!current) return current
-                                    const next = (current.highlightedIndex + delta + optionsForMenu.length) % optionsForMenu.length
-                                    return { ...current, highlightedIndex: next }
-                                  })
-                                  return
-                                }
-
-                                if (menuOpened && event.key === "Enter") {
-                                  event.preventDefault()
-                                  const picked = optionsForMenu[activeMenu.highlightedIndex] ?? optionsForMenu[0]
-                                  if (picked) {
-                                    const pickedValue = getOptionValue(picked)
-                                    setCellValue(row.id, column.key, pickedValue)
-                                    if (isCustomOption(picked)) {
-                                      registerCustomValue(pickedValue)
-                                    }
-                                    endDropdownEditing(key)
-                                  }
-                                  closeMenu()
-                                  focusNextFromCell(rowIndex, colIndex)
-                                  return
-                                }
-
-                                if (event.key === "Escape") {
-                                  closeMenu()
-                                  return
-                                }
-
-                                if (event.key === "ArrowUp") {
-                                  event.preventDefault()
-                                  if (rowIndex <= 0) {
-                                    focusPreviousModuleLastCell()
-                                  } else {
-                                    focusCell(rowIndex - 1, colIndex)
-                                  }
-                                  return
-                                }
-                                if (event.key === "ArrowDown") {
-                                  event.preventDefault()
-                                  if (rowIndex >= rows.length - 1) {
-                                    focusOwnSearch()
-                                  } else {
-                                    focusCell(rowIndex + 1, colIndex)
-                                  }
-                                  return
-                                }
-                                if (event.key === "ArrowLeft") {
-                                  event.preventDefault()
-                                  focusPreviousFromCell(rowIndex, colIndex)
-                                  return
-                                }
-                                if (event.key === "ArrowRight") {
-                                  event.preventDefault()
-                                  focusNextFromCell(rowIndex, colIndex)
-                                  return
-                                }
-                                if (event.key === "Enter") {
-                                  event.preventDefault()
-                                  focusNextFromCell(rowIndex, colIndex)
-                                }
-                              }}
-                            />
-                          )}
-                          {hasDropdown && showDropdownToggle ? (
-                            <TPTooltip title="Use ↑ ↓ to navigate options, press Enter to select" placement="top" arrow>
-                              <button
-                                type="button"
-                                aria-label="Toggle options"
-                                className="absolute right-[6px] top-1/2 z-10 inline-flex h-[20px] w-[20px] -translate-y-1/2 items-center justify-center text-tp-slate-500"
-                                onMouseDown={(event) => event.preventDefault()}
-                                onClick={() => {
-                                  const inputNode = inputRefs.current[key]
-                                  if (!inputNode) return
-                                  if (isMenuOpen) {
-                                    closeMenu()
-                                    return
-                                  }
-                                  inputNode.focus()
-                                  openCellMenu(
-                                    row,
-                                    column,
-                                    inputNode.getBoundingClientRect(),
-                                    value,
-                                    value,
-                                    !shouldFilterCellOnOpen(column),
-                                  )
-                                }}
-                              >
-                                <ChevronDown
-                                  size={14}
-                                  strokeWidth={1.5}
-                                  className={`transition-transform duration-150 ${isMenuOpen ? "rotate-180" : ""}`}
-                                />
-                              </button>
-                            </TPTooltip>
-                          ) : null}
-                        </div>
+                        <TPInputDropdownField
+                          value={displayValue}
+                          title={displayValue || undefined}
+                          placeholder={column.placeholder}
+                          active={isCellActive}
+                          hasDropdown={hasDropdown}
+                          showDropdownToggle={showDropdownToggle}
+                          menuOpen={isMenuOpen}
+                          multiline={isMultiline}
+                          maxLines={column.maxLines ?? 2}
+                          inputRef={(node) => {
+                            inputRefs.current[key] = node
+                          }}
+                          onFocus={handleFieldFocus}
+                          onClick={handleFieldClick}
+                          onChange={handleFieldChange}
+                          onBlur={handleFieldBlur}
+                          onKeyDown={handleFieldKeyDown}
+                          onToggleMenu={() => {
+                            const inputNode = inputRefs.current[key]
+                            if (!inputNode) return
+                            if (isMenuOpen) {
+                              closeMenu()
+                              return
+                            }
+                            inputNode.focus()
+                            openCellMenu(
+                              row,
+                              column,
+                              inputNode.getBoundingClientRect(),
+                              value,
+                              value,
+                              !shouldFilterCellOnOpen(column),
+                            )
+                          }}
+                        />
                       </td>
                     )
                   })}
@@ -1623,9 +1634,11 @@ function EditableTableModule({
           data-rx-module-search="true"
           value={searchText}
           onFocus={() => {
+            scheduleFieldSnap(searchInputRef.current)
             openSearchMenu(searchText)
           }}
           onClick={() => {
+            scheduleFieldSnap(searchInputRef.current)
             openSearchMenu(searchText)
           }}
           onChange={(event) => {
@@ -1718,10 +1731,14 @@ function EditableTableModule({
             }
           }}
           placeholder={searchPlaceholder}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
         />
 
         {isTablet ? (
-          <div className="flex flex-wrap gap-3">
+          <div className="flex max-h-[84px] flex-wrap gap-3 overflow-hidden">
             {cannedChips.map((chip) => (
               <button
                 key={`${id}-${chip}`}
@@ -1738,155 +1755,156 @@ function EditableTableModule({
 
       {activeMenu && menuPosition && optionsForMenu.length > 0 && typeof document !== "undefined"
         ? createPortal(
+        <div
+          className="fixed z-[95] flex flex-col overflow-hidden rounded-[10px] border border-tp-slate-100 bg-white shadow-lg"
+          style={{
+            left: menuPosition.left,
+            top: menuPosition.top,
+            width: menuPosition.width,
+          }}
+        >
+          {activeMenu.mode === "search" && activeMenu.query.trim().length === 0 ? (
+            <div className="flex items-center justify-between border-b border-tp-slate-100 px-2 py-2">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-tp-slate-400">
+                Frequently used
+              </span>
+            </div>
+          ) : null}
+          <div className="relative">
             <div
-              className="fixed z-[130] flex flex-col overflow-hidden rounded-[10px] border border-tp-slate-100 bg-white shadow-lg"
+              ref={menuListRef}
+              className="overflow-y-auto space-y-0.5 bg-tp-slate-50/35 p-1 pr-2 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               style={{
-                left: menuPosition.left,
-                top: menuPosition.top,
-                width: menuPosition.width,
+                msOverflowStyle: "none",
+                maxHeight: menuListMaxHeight,
               }}
             >
-              {activeMenu.mode === "search" && activeMenu.query.trim().length === 0 ? (
-                <div className="flex items-center justify-between border-b border-tp-slate-100 px-2 py-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-tp-slate-400">
-                    Frequently used
+              {regularOptionEntries.length === 0 ? (
+                <div className="flex items-center gap-2 px-[10px] py-[9px] text-[13px] font-medium text-tp-slate-400">
+                  <Search size={14} strokeWidth={1.5} className="text-tp-slate-400/90" />
+                  <span>No results found</span>
+                </div>
+              ) : null}
+              {regularOptionEntries.map(({ option, index }) => (
+                <button
+                  key={`${activeMenu.mode}-${activeMenu.colKey ?? "search"}-${option}`}
+                  type="button"
+                  data-rx-menu-index={index}
+                  className={[
+                    "w-full rounded-[8px] px-[10px] py-[7px] text-left text-[14px] font-medium font-['Inter',sans-serif]",
+                    index === activeMenu.highlightedIndex
+                      ? "bg-tp-slate-100 text-tp-slate-700"
+                      : "text-tp-slate-700 hover:bg-tp-slate-100",
+                  ].join(" ")}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    const value = getOptionValue(option).trim()
+                    if (!value) {
+                      closeMenu()
+                      return
+                    }
+                    if (activeMenu.mode === "search") {
+                      const nextRowIndex = rows.length
+                      addRow(value)
+                      setSearchText("")
+                      closeMenu()
+                      window.requestAnimationFrame(() => {
+                        focusCell(nextRowIndex, 0)
+                      })
+                      return
+                    }
+                    if (activeMenu.rowId && activeMenu.colKey) {
+                      setCellValue(activeMenu.rowId, activeMenu.colKey, value)
+                      endDropdownEditing(`${activeMenu.rowId}:${activeMenu.colKey}`)
+                    }
+                    closeMenu()
+                  }}
+                >
+                  {getOptionLabel(option)}
+                </button>
+              ))}
+            </div>
+            {menuIndicator.hasOverflow ? (
+              <>
+                <div className="pointer-events-none absolute bottom-2 right-1 top-2 w-[3px] rounded-full bg-tp-slate-200/90" />
+                <div
+                  className="pointer-events-none absolute right-1 w-[3px] rounded-full bg-tp-slate-400/80"
+                  style={{
+                    top: `${menuIndicator.thumbTop + 8}px`,
+                    height: `${menuIndicator.thumbHeight}px`,
+                  }}
+                />
+              </>
+            ) : null}
+          </div>
+          {showMenuFooter ? (
+            <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t border-tp-slate-100 bg-white px-2 py-1.5 text-[11px] text-tp-slate-500 max-lg:flex-col max-lg:items-stretch">
+              {customOptionEntry ? (
+                <button
+                  type="button"
+                  className={[
+                    "inline-flex items-center gap-2 rounded-[8px] border border-dashed px-[10px] py-[6px] text-[12px] font-semibold font-['Inter',sans-serif] max-lg:order-1 max-lg:w-full",
+                    customOptionEntry.index === activeMenu.highlightedIndex
+                      ? "border-tp-blue-300 bg-tp-blue-50 text-tp-blue-700"
+                      : "border-tp-blue-200 bg-tp-blue-50/60 text-tp-blue-600 hover:bg-tp-blue-50",
+                  ].join(" ")}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    const value = getOptionValue(customOptionEntry.option).trim()
+                    if (!value) {
+                      closeMenu()
+                      return
+                    }
+                    registerCustomValue(value)
+                    if (activeMenu.mode === "search") {
+                      const nextRowIndex = rows.length
+                      addRow(value)
+                      setSearchText("")
+                      closeMenu()
+                      window.requestAnimationFrame(() => {
+                        focusCell(nextRowIndex, 0)
+                      })
+                      return
+                    }
+                    if (activeMenu.rowId && activeMenu.colKey) {
+                      setCellValue(activeMenu.rowId, activeMenu.colKey, value)
+                      endDropdownEditing(`${activeMenu.rowId}:${activeMenu.colKey}`)
+                    }
+                    closeMenu()
+                  }}
+                >
+                  <Plus size={14} strokeWidth={1.5} />
+                  <span className="max-w-[220px] truncate max-lg:max-w-full">
+                    {`Add custom: "${getOptionValue(customOptionEntry.option)}"`}
+                  </span>
+                </button>
+              ) : <span />}
+              {activeMenu.mode === "search" ? (
+                <div className="flex items-center gap-3 max-lg:order-2 max-lg:flex-wrap">
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">↑</kbd>
+                    Up
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">↓</kbd>
+                    Down
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">↵</kbd>
+                    Enter
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">Esc</kbd>
+                    Close
                   </span>
                 </div>
               ) : null}
-              <div className="relative">
-                <div
-                  ref={menuListRef}
-                  className="max-h-[220px] overflow-y-auto space-y-0.5 bg-tp-slate-50/35 p-1 pr-2 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  style={{
-                    msOverflowStyle: "none",
-                  }}
-                >
-                  {regularOptionEntries.length === 0 ? (
-                    <div className="flex items-center gap-2 px-[10px] py-[9px] text-[13px] font-medium text-tp-slate-400">
-                      <Search size={14} strokeWidth={1.5} className="text-tp-slate-400/90" />
-                      <span>No results found</span>
-                    </div>
-                  ) : null}
-                  {regularOptionEntries.map(({ option, index }) => (
-                    <button
-                      key={`${activeMenu.mode}-${activeMenu.colKey ?? "search"}-${option}`}
-                      type="button"
-                      data-rx-menu-index={index}
-                      className={[
-                        "w-full rounded-[8px] px-[10px] py-[7px] text-left text-[14px] font-medium font-['Inter',sans-serif]",
-                        index === activeMenu.highlightedIndex
-                          ? "bg-tp-slate-100 text-tp-slate-700"
-                          : "text-tp-slate-700 hover:bg-tp-slate-100",
-                      ].join(" ")}
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={() => {
-                        const value = getOptionValue(option).trim()
-                        if (!value) {
-                          closeMenu()
-                          return
-                        }
-                        if (activeMenu.mode === "search") {
-                          const nextRowIndex = rows.length
-                          addRow(value)
-                          setSearchText("")
-                          closeMenu()
-                          window.requestAnimationFrame(() => {
-                            focusCell(nextRowIndex, 0)
-                          })
-                          return
-                        }
-                        if (activeMenu.rowId && activeMenu.colKey) {
-                          setCellValue(activeMenu.rowId, activeMenu.colKey, value)
-                          endDropdownEditing(`${activeMenu.rowId}:${activeMenu.colKey}`)
-                        }
-                        closeMenu()
-                      }}
-                    >
-                      {getOptionLabel(option)}
-                    </button>
-                  ))}
-                </div>
-                {menuIndicator.hasOverflow ? (
-                  <>
-                    <div className="pointer-events-none absolute bottom-2 right-1 top-2 w-[3px] rounded-full bg-tp-slate-200/90" />
-                    <div
-                      className="pointer-events-none absolute right-1 w-[3px] rounded-full bg-tp-slate-400/80"
-                      style={{
-                        top: `${menuIndicator.thumbTop + 8}px`,
-                        height: `${menuIndicator.thumbHeight}px`,
-                      }}
-                    />
-                  </>
-                ) : null}
-              </div>
-              {showMenuFooter ? (
-                <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t border-tp-slate-100 bg-white px-2 py-1.5 text-[11px] text-tp-slate-500 max-lg:flex-col max-lg:items-stretch">
-                  {customOptionEntry ? (
-                    <button
-                      type="button"
-                    className={[
-                      "inline-flex items-center gap-2 rounded-[8px] border border-dashed px-[10px] py-[6px] text-[12px] font-semibold font-['Inter',sans-serif] max-lg:order-1 max-lg:w-full",
-                      customOptionEntry.index === activeMenu.highlightedIndex
-                        ? "border-tp-blue-300 bg-tp-blue-50 text-tp-blue-700"
-                        : "border-tp-blue-200 bg-tp-blue-50/60 text-tp-blue-600 hover:bg-tp-blue-50",
-                    ].join(" ")}
-                      onMouseDown={(event) => event.preventDefault()}
-                      onClick={() => {
-                        const value = getOptionValue(customOptionEntry.option).trim()
-                        if (!value) {
-                          closeMenu()
-                          return
-                        }
-                        registerCustomValue(value)
-                        if (activeMenu.mode === "search") {
-                          const nextRowIndex = rows.length
-                          addRow(value)
-                          setSearchText("")
-                          closeMenu()
-                          window.requestAnimationFrame(() => {
-                            focusCell(nextRowIndex, 0)
-                          })
-                          return
-                        }
-                        if (activeMenu.rowId && activeMenu.colKey) {
-                          setCellValue(activeMenu.rowId, activeMenu.colKey, value)
-                          endDropdownEditing(`${activeMenu.rowId}:${activeMenu.colKey}`)
-                        }
-                        closeMenu()
-                      }}
-                    >
-                      <Plus size={14} strokeWidth={1.5} />
-                      <span className="max-w-[220px] truncate max-lg:max-w-full">
-                        {`Add custom: "${getOptionValue(customOptionEntry.option)}"`}
-                      </span>
-                    </button>
-                  ) : <span />}
-                  {activeMenu.mode === "search" ? (
-                    <div className="flex items-center gap-3 max-lg:order-2 max-lg:flex-wrap">
-                      <span className="inline-flex items-center gap-1">
-                        <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">↑</kbd>
-                        Up
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">↓</kbd>
-                        Down
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">↵</kbd>
-                        Enter
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <kbd className="rounded border border-tp-slate-200 bg-tp-slate-50 px-1 py-0.5 text-[10px] font-semibold text-tp-slate-600">Esc</kbd>
-                        Close
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>,
-            document.body,
-          )
-        : null}
+            </div>
+          ) : null}
+        </div>,
+        document.body,
+      )
+      : null}
 
     </TPRxPadSection>
   )

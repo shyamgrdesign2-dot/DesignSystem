@@ -177,7 +177,7 @@ function RecordCard({
               <ReportIcon />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={4} className="max-w-[220px] rounded-lg bg-tp-slate-900 px-2.5 py-1.5 text-[11px] leading-[16px] text-white">
+          <TooltipContent side="top" sideOffset={4} className="max-w-[220px] rounded-[10px] bg-tp-slate-900 px-2.5 py-1.5 text-[11px] leading-[16px] text-white">
             {note}
           </TooltipContent>
         </Tooltip>
