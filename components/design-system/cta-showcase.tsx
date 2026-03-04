@@ -178,16 +178,17 @@ function getStyles(
 
   if (type === "outline") {
     const hoverBg = isDark
-      ? (isDisabled ? "rgba(255,255,255,0.08)" : state === "hover" || state === "focused" ? "rgba(255,255,255,0.20)" : "transparent")
+      ? (isDisabled ? "rgba(255,255,255,0.08)" : state === "hover" || state === "focused" ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)")
       : (state === "hover" ? (theme === "primary" ? "#EEEEFF" : theme === "error" ? "#FFF1F2" : "#FAFAFB") : "transparent")
     const bg = !isDark && isDisabled ? "transparent" : hoverBg
     const textColor = isDark ? (isDisabled ? "rgba(255,255,255,0.30)" : "#FFFFFF") : (isDisabled ? t.disabledText : theme === "neutral" ? t.text : t.border)
     const borderColor = isDark ? (isDisabled ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.40)") : (isDisabled ? t.disabledBorder : t.border)
     return {
       ...base,
-      backgroundColor: isDark ? (isDisabled ? "rgba(255,255,255,0.08)" : state === "hover" || state === "focused" ? "rgba(255,255,255,0.20)" : "transparent") : (!isDisabled ? hoverBg : "transparent"),
+      backgroundColor: isDark ? (isDisabled ? "rgba(255,255,255,0.08)" : state === "hover" || state === "focused" ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.07)") : (!isDisabled ? hoverBg : "transparent"),
       color: textColor,
       border: `1.5px solid ${borderColor}`,
+      backdropFilter: isDark ? "blur(8px)" : undefined,
       boxShadow: state === "focused" && isDark ? "0 0 0 3px rgba(255,255,255,0.20)" : state === "focused" ? `0 0 0 3px ${t.focusRing}` : undefined,
     }
   }

@@ -565,6 +565,24 @@ export const diagnosisSuggestions = [
   "Migraine", "Allergic Rhinitis", "Iron Deficiency Anemia",
 ]
 
+export const medicationSuggestions = [
+  "Paracetamol 650mg Tablet",
+  "Azithromycin 500mg Tablet",
+  "Pantoprazole 40mg Tablet",
+  "Cetirizine 10mg Tablet",
+  "Ondansetron 4mg Tablet",
+  "Dolo 650 Tablet",
+  "Ibuprofen 400mg Tablet",
+  "Amoxicillin 500mg Capsule",
+  "Levocetirizine 5mg Tablet",
+  "Montelukast 10mg Tablet",
+  "ORS Sachet",
+  "Vitamin D3 60000 IU Capsule",
+  "Calcium + Vitamin D Tablet",
+  "Metformin 500mg Tablet",
+  "Amlodipine 5mg Tablet",
+]
+
 export const labInvestigationSuggestions = [
   "Complete Blood Count", "Liver Function Test", "Renal Function Test",
   "Lipid Profile", "Thyroid Profile", "HbA1c", "Fasting Blood Sugar",

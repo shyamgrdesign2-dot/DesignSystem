@@ -28,14 +28,10 @@ import {
 import { Check, ChevronDown, ListFilter, MoreVertical, Plus, Search, Star, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { SecondaryNavPanel, type NavItem } from "@/components/ui/secondary-nav-panel"
-import {
-  TPButton as Button,
-  TPSplitButton,
-} from "@/components/tp-ui/button-system"
+import { TPButton as Button, TPSplitButton } from "@/components/tp-ui/button-system"
+import { TPSecondaryNavPanel, type TPSecondaryNavItem, TPTag } from "@/components/tp-ui"
 import { AppointmentBanner } from "@/components/appointments/AppointmentBanner"
 import { DateRangePicker, type DatePresetId } from "@/components/ui/date-range-picker"
-import { TPTag } from "@/components/tp-ui/tp-tag"
 
 const REF_LOGO = "/assets/b38df11ad80d11b9c1d530142443a18c2f53d406.png"
 const REF_AVATAR = "/assets/52cb18088c5b8a5db6a7711c9900d7d08a1bac42.png"
@@ -78,7 +74,7 @@ interface AppointmentRow {
   starred?: boolean
 }
 
-const navItems: NavItem[] = [
+const navItems: TPSecondaryNavItem[] = [
   { id: "appointments", label: "Appointments", icon: Calendar2 },
   {
     id: "ask-tatva",
@@ -342,7 +338,7 @@ export function DrAgentPage() {
 
       <div className="flex h-[calc(100vh-62px)]">
         <aside className="hidden h-full shrink-0 md:block">
-          <SecondaryNavPanel
+          <TPSecondaryNavPanel
             items={navItems}
             activeId={activeRailItem}
             onSelect={setActiveRailItem}

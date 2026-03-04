@@ -85,6 +85,12 @@
   --tp-slate-800: #2C2C35;
   --tp-slate-900: #171725;
 
+  /* ── TP Icon Clickable Surface Tokens ── */
+  --tp-icon-clickable-light-bg: rgba(75, 74, 213, 0.10); /* TP.icon.clickable.light.bg */
+  --tp-icon-clickable-light-bg-hover: rgba(75, 74, 213, 0.15); /* TP.icon.clickable.light.bg.hover */
+  --tp-icon-clickable-dark-bg: rgba(255, 255, 255, 0.25); /* TP.icon.clickable.dark.bg */
+  --tp-icon-clickable-dark-bg-hover: rgba(255, 255, 255, 0.28); /* TP.icon.clickable.dark.bg.hover */
+
   /* ── TP Success (Green) full scale ── */
   --tp-success-50: #ECFDF5;
   --tp-success-100: #D1FAE5;
@@ -120,6 +126,7 @@
   --tp-error-700: #9F1239;
   --tp-error-800: #881337;
   --tp-error-900: #4C0519;
+  --core-primary-900: #161558;
 
 }
 

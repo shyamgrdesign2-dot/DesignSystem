@@ -83,6 +83,13 @@ export type { TPTreeNode } from "./tp-tree-view"
 export { TPColorPicker } from "./tp-color-picker"
 export { TPTransferList } from "./tp-transfer-list"
 export type { TPTransferItem } from "./tp-transfer-list"
+export {
+  TPMedicalIcon,
+  tpMedicalIconRegistry,
+  tpMedicalIconNames,
+  resolveTPMedicalIconName,
+} from "./medical-icons"
+export type { TPMedicalIconName, TPMedicalIconVariant } from "./medical-icons"
 
 // ─── Clinical Components ────────────────────────────────────
 export { TPTopNavBar, defaultNavActions } from "./tp-top-nav-bar"
@@ -92,3 +99,17 @@ export { TPSearchFilterBar } from "./tp-search-filter-bar"
 export { TPStatusBadge } from "./tp-status-badge"
 export { TPClinicalTable } from "./tp-clinical-table"
 export { TPPatientInfoHeader } from "./tp-patient-info-header"
+export { TPSecondaryNavPanel } from "./tp-secondary-nav-panel"
+export type { TPSecondaryNavBadge, TPSecondaryNavItem } from "./tp-secondary-nav-panel"
+
+// ─── RxPad Layer Components ──────────────────────────────────
+export { TPRxPadTopNav } from "./tp-rxpad-top-nav"
+export { TPRxPadSecondarySidebar } from "./tp-rxpad-secondary-sidebar"
+export { TPRxPadShell } from "./tp-rxpad-shell"
+export { TPRxPadSearchInput } from "./tp-rxpad-search-input"
+export {
+  TPRxPadSection,
+  TPRxChipSearchInput,
+  TPRxMedicationTable,
+} from "./tp-rxpad-components"
+export type { TPRxMedicationRowData } from "./tp-rxpad-components"

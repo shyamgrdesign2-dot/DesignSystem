@@ -63,25 +63,38 @@ export const TPButton = forwardRef<HTMLButtonElement, TPStandardButtonProps>(
     let finalBg = bg
     let finalBorder = "none"
     let finalText = textColor
+    let finalBackdropFilter: string | undefined
 
     if (variant === "outline") {
-      finalBg =
-        state === "disabled"
-          ? "transparent"
-          : state === "hover"
-            ? theme === "primary"
-              ? "#EEEEFF"
-              : theme === "error"
-                ? "#FFF1F2"
-                : "#FAFAFB"
-            : "transparent"
-      finalBorder = `1.5px solid ${borderColor}`
-      finalText =
-        state === "disabled"
-          ? tokens.disabledText
-          : theme === "neutral"
-            ? tokens.text
-            : tokens.border
+      if (surface === "dark") {
+        finalBg =
+          state === "disabled"
+            ? "rgba(255,255,255,0.08)"
+            : state === "hover"
+              ? "rgba(255,255,255,0.14)"
+              : "rgba(255,255,255,0.07)"
+        finalBorder = `1.5px solid ${state === "disabled" ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.34)"}`
+        finalText = state === "disabled" ? "rgba(255,255,255,0.45)" : "#FFFFFF"
+        finalBackdropFilter = "blur(8px)"
+      } else {
+        finalBg =
+          state === "disabled"
+            ? "transparent"
+            : state === "hover"
+              ? theme === "primary"
+                ? "#EEEEFF"
+                : theme === "error"
+                  ? "#FFF1F2"
+                  : "#FAFAFB"
+              : "transparent"
+        finalBorder = `1.5px solid ${borderColor}`
+        finalText =
+          state === "disabled"
+            ? tokens.disabledText
+            : theme === "neutral"
+              ? tokens.text
+              : tokens.border
+      }
     } else if (variant === "ghost") {
       finalBg =
         state === "disabled"
@@ -143,6 +156,7 @@ export const TPButton = forwardRef<HTMLButtonElement, TPStandardButtonProps>(
       border: finalBorder,
       boxShadow:
         state === "focused" ? `0 0 0 3px ${tokens.focusRing}` : undefined,
+      backdropFilter: finalBackdropFilter,
       textDecoration: variant === "link" ? "underline" : "none",
       textUnderlineOffset: variant === "link" ? 4 : undefined,
     }

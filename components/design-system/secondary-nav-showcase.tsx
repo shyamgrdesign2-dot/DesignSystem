@@ -85,6 +85,11 @@ const navItems: NavItem[] = [
 type SidebarVariant = "rx" | "primary"
 type PrimaryIconTone = "brand" | "slate"
 
+const ICON_CLICKABLE_DARK_BG = "var(--tp-icon-clickable-dark-bg)"
+const ICON_CLICKABLE_DARK_BG_HOVER = "var(--tp-icon-clickable-dark-bg-hover)"
+const ICON_CLICKABLE_LIGHT_BG = "var(--tp-icon-clickable-light-bg)"
+const ICON_CLICKABLE_LIGHT_BG_HOVER = "var(--tp-icon-clickable-light-bg-hover)"
+
 /**
  * Standalone side navigation component.
  * Figma-aligned constraints:
@@ -121,7 +126,7 @@ export function SecondaryNavPanel({
 }) {
   const isRx = variant === "rx"
   const panelBackground = isRx
-    ? `radial-gradient(ellipse at -180% 40%, var(--tp-blue-900) 0%, var(--tp-blue-800) 25%, var(--tp-blue-700) 50%, var(--tp-blue-500) 100%)`
+    ? "radial-gradient(256.21% 808.53% at -194.95% 36.46%, var(--core-primary-900, #161558) 0%, #232277 25%, #313097 50%, #4B4AD5 100%), #FFF"
     : "var(--tp-slate-0)"
 
   const bottomFade = isRx
@@ -134,27 +139,30 @@ export function SecondaryNavPanel({
       style={{
         width: SECONDARY_NAV_TOKENS.panelWidth,
         height: typeof height === "number" ? `${height}px` : height,
-        alignItems: "flex-start",
+        alignItems: "center",
+        alignSelf: "stretch",
         borderRadius: 0,
         background: panelBackground,
       }}
     >
-      <div className="flex-1 overflow-y-auto overflow-x-hidden">
+      <div
+        className="flex flex-1 flex-col items-center gap-1 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
         {items.map((item) => {
         const Icon = item.icon
         const isActive = activeId === item.id
         const isPrimarySlate = !isRx && primaryIconTone === "slate"
         const itemTextColor = isRx ? "var(--tp-slate-0)" : "var(--tp-slate-700)"
         const iconDefaultBg = isRx
-          ? "rgba(255,255,255,0.25)"
+          ? ICON_CLICKABLE_DARK_BG
           : isPrimarySlate
             ? "var(--tp-slate-100)"
-            : "rgba(75,74,213,0.10)"
+            : ICON_CLICKABLE_LIGHT_BG
         const iconHoverBg = isRx
-          ? "rgba(255,255,255,0.28)"
+          ? ICON_CLICKABLE_DARK_BG_HOVER
           : isPrimarySlate
             ? "var(--tp-slate-200)"
-            : "rgba(75,74,213,0.15)"
+            : ICON_CLICKABLE_LIGHT_BG_HOVER
         const iconDefaultColor = isRx
           ? "var(--tp-slate-0)"
           : isPrimarySlate

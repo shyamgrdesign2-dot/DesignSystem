@@ -2,14 +2,11 @@
 
 import { useState, useCallback } from "react"
 import {
-  LayoutGrid,
-  Copy,
-  ExternalLink,
   Search,
   XCircle,
   Plus,
-  Trash2,
 } from "lucide-react"
+import { Eraser, Grid5, Ram, Trash } from "iconsax-reactjs"
 
 /**
  * RxPad Section Wrapper
@@ -31,12 +28,11 @@ interface RxPadSectionProps {
   title: string
   icon: React.ReactNode
   children: React.ReactNode
-  /** Show grid/list toggle */
-  showViewToggle?: boolean
-  /** Show copy section button */
-  showCopy?: boolean
-  /** Show expand/pin button */
-  showExpand?: boolean
+  showHeaderActions?: boolean
+  onTemplateClick?: () => void
+  onSaveClick?: () => void
+  onClearClick?: () => void
+  clearDisabled?: boolean
   /** Autofill badge content */
   autofillLabel?: string
 }
@@ -45,48 +41,69 @@ export function RxPadSection({
   title,
   icon,
   children,
-  showViewToggle = true,
-  showCopy = true,
-  showExpand = true,
+  showHeaderActions = true,
+  onTemplateClick,
+  onSaveClick,
+  onClearClick,
+  clearDisabled = false,
   autofillLabel,
 }: RxPadSectionProps) {
   return (
-    <div className="rounded-xl border border-tp-slate-200 bg-white">
+    <div className="rounded-[16px] border border-tp-slate-100 bg-white">
       {/* Header */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-tp-slate-100">
-        <span className="text-tp-blue-500">{icon}</span>
-        <h3 className="flex-1 text-sm font-semibold text-tp-slate-900" style={{ fontFamily: "var(--font-heading)" }}>
-          {title}
-        </h3>
+      <div className="flex items-center justify-between gap-8 px-[18px] pt-[18px]">
+        <div className="inline-flex items-center gap-[4px]">
+          <span className="inline-flex h-[32px] w-[32px] items-center justify-center text-tp-violet-500">{icon}</span>
+          <h3
+            className="text-[16px] font-semibold leading-[24px] text-tp-slate-700"
+            style={{ fontFamily: "Inter, var(--font-body), sans-serif", letterSpacing: "0.1px" }}
+          >
+            {title}
+          </h3>
+        </div>
 
-        {autofillLabel && (
+        {showHeaderActions ? (
+          <div className="inline-flex items-center gap-[14px]">
+            <button
+              type="button"
+              className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-700 hover:bg-tp-slate-200"
+              title="Template"
+              onClick={onTemplateClick}
+            >
+              <Grid5 color="var(--tp-slate-700)" size={18} strokeWidth={1.5} variant="Linear" />
+            </button>
+            <button
+              type="button"
+              className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-700 hover:bg-tp-slate-200"
+              title="Save"
+              onClick={onSaveClick}
+            >
+              <Ram color="var(--tp-slate-700)" size={18} strokeWidth={1.5} variant="Linear" />
+            </button>
+            <button
+              type="button"
+              className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-700 hover:bg-tp-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
+              title="Clear"
+              onClick={onClearClick}
+              disabled={clearDisabled}
+            >
+              <Eraser color="var(--tp-slate-700)" size={18} strokeWidth={1.5} variant="Linear" />
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {autofillLabel && (
+        <div className="px-[18px] pt-2">
           <button className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-tp-success-500 to-tp-success-400 px-2.5 py-1 text-[10px] font-semibold text-white transition-opacity hover:opacity-90">
             <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
             {autofillLabel}
           </button>
-        )}
-
-        <div className="flex items-center gap-0.5">
-          {showViewToggle && (
-            <button className="rounded-md p-1.5 text-tp-slate-400 hover:bg-tp-slate-100 hover:text-tp-slate-600 transition-colors" title="Grid view">
-              <LayoutGrid size={15} />
-            </button>
-          )}
-          {showCopy && (
-            <button className="rounded-md p-1.5 text-tp-slate-400 hover:bg-tp-slate-100 hover:text-tp-slate-600 transition-colors" title="Copy section">
-              <Copy size={15} />
-            </button>
-          )}
-          {showExpand && (
-            <button className="rounded-md p-1.5 text-tp-slate-400 hover:bg-tp-slate-100 hover:text-tp-slate-600 transition-colors" title="Expand">
-              <ExternalLink size={15} />
-            </button>
-          )}
         </div>
-      </div>
+      )}
 
       {/* Content */}
-      <div className="p-3">
+      <div className="p-[18px]">
         {children}
       </div>
     </div>
@@ -128,7 +145,7 @@ export function ChipSearchInput({
     <div className="space-y-2">
       {/* Search */}
       <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
+        <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
         <input
           type="text"
           value={query}
@@ -184,7 +201,7 @@ export function ChipSearchInput({
                 onClick={() => onRemove(item)}
                 className="rounded-full p-0.5 hover:bg-tp-blue-100 transition-colors"
               >
-                <XCircle size={12} />
+                <XCircle size={12} strokeWidth={1.5} />
               </button>
             </span>
           ))}
@@ -223,7 +240,7 @@ export function MedicationTable({
       <div className="overflow-x-auto rounded-lg border border-tp-slate-200">
         <table className="w-full text-xs">
           <thead>
-            <tr className="bg-tp-slate-50 text-tp-slate-600">
+            <tr className="bg-tp-slate-50 text-tp-slate-500 font-['Inter',sans-serif]">
               <th className="px-2 py-2 text-left font-semibold w-[4%]" />
               <th className="px-2 py-2 text-left font-semibold min-w-[160px]">MEDICINE</th>
               <th className="px-2 py-2 text-left font-semibold min-w-[80px]">UNIT PER DOSE</th>
@@ -261,7 +278,7 @@ export function MedicationTable({
                     onClick={() => onRemove(row.id)}
                     className="rounded p-1 text-tp-slate-400 hover:bg-tp-error-50 hover:text-tp-error-500 transition-colors"
                   >
-                    <Trash2 size={14} />
+                    <Trash color="currentColor" size={18} strokeWidth={1.5} variant="Linear" />
                   </button>
                 </td>
               </tr>
@@ -272,7 +289,7 @@ export function MedicationTable({
 
       {/* Search to add */}
       <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
+        <Search size={16} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-tp-slate-400" />
         <input
           type="text"
           placeholder="Search Medication (Rx)"
