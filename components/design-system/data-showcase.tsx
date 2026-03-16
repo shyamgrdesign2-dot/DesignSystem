@@ -221,7 +221,7 @@ export function DataTableShowcase() {
                     <button
                       type="button"
                       aria-label="AI action"
-                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105"
+                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105 active:scale-[0.97]"
                       style={{ background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)" }}
                     >
                       <AiSparkIcon />
@@ -262,17 +262,17 @@ export function PaginationShowcase() {
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">Numbered Pagination</span>
           <div className="flex items-center gap-1">
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
+            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 active:scale-[0.95] transition-all">
               <ChevronsLeft size={16} />
             </button>
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
+            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 active:scale-[0.95] transition-all">
               <ChevronLeft size={16} />
             </button>
             {[1, 2, 3, "...", 10].map((p, i) => (
               <button
                 key={i}
                 onClick={() => typeof p === "number" && setCurrent(p)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-colors"
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${current !== p && p !== "..." ? "hover:bg-tp-slate-100 active:scale-[0.95]" : ""}`}
                 style={{
                   backgroundColor: current === p ? "#4B4AD5" : "transparent",
                   color: current === p ? "#FFFFFF" : p === "..." ? "#A2A2A8" : "#454551",
@@ -282,10 +282,10 @@ export function PaginationShowcase() {
                 {p}
               </button>
             ))}
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
+            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 active:scale-[0.95] transition-colors">
               <ChevronRight size={16} />
             </button>
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 transition-colors">
+            <button className="w-8 h-8 rounded-lg flex items-center justify-center text-tp-slate-400 hover:bg-tp-slate-100 active:scale-[0.95] transition-colors">
               <ChevronsRight size={16} />
             </button>
           </div>
@@ -295,14 +295,14 @@ export function PaginationShowcase() {
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">Prev / Next with text</span>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 text-sm font-medium text-tp-slate-500 hover:bg-tp-slate-100 rounded-lg transition-colors flex items-center gap-1">
+            <button className="px-3 py-1.5 text-sm font-medium text-tp-slate-500 hover:bg-tp-slate-100 active:scale-[0.97] rounded-lg transition-all flex items-center gap-1">
               <ChevronLeft size={14} />
               Previous
             </button>
             {[1, 2, 3, "...", 10].map((p, i) => (
               <button
                 key={i}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-colors"
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${p !== 1 && p !== "..." ? "hover:bg-tp-slate-100 active:scale-[0.95]" : ""}`}
                 style={{
                   backgroundColor: p === 1 ? "#4B4AD5" : "transparent",
                   color: p === 1 ? "#FFFFFF" : p === "..." ? "#A2A2A8" : "#454551",
@@ -312,7 +312,7 @@ export function PaginationShowcase() {
                 {p}
               </button>
             ))}
-            <button className="px-3 py-1.5 text-sm font-medium text-tp-slate-500 hover:bg-tp-slate-100 rounded-lg transition-colors flex items-center gap-1">
+            <button className="px-3 py-1.5 text-sm font-medium text-tp-slate-500 hover:bg-tp-slate-100 active:scale-[0.97] rounded-lg transition-all flex items-center gap-1">
               Next
               <ChevronRight size={14} />
             </button>
@@ -350,7 +350,7 @@ export function PaginationShowcase() {
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">Compact</span>
           <div className="flex items-center gap-3">
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center border border-tp-slate-200 text-tp-slate-400 hover:bg-tp-slate-50 transition-colors">
+            <button className="w-8 h-8 rounded-lg flex items-center justify-center border border-tp-slate-200 text-tp-slate-400 hover:bg-tp-slate-50 active:scale-[0.95] transition-all">
               <ChevronLeft size={16} />
             </button>
             <span className="text-sm text-tp-slate-600">Page</span>
@@ -360,7 +360,7 @@ export function PaginationShowcase() {
               1
             </div>
             <span className="text-sm text-tp-slate-600">of 10</span>
-            <button className="w-8 h-8 rounded-lg flex items-center justify-center border border-tp-slate-200 text-tp-slate-400 hover:bg-tp-slate-50 transition-colors">
+            <button className="w-8 h-8 rounded-lg flex items-center justify-center border border-tp-slate-200 text-tp-slate-400 hover:bg-tp-slate-50 active:scale-[0.95] transition-all">
               <ChevronRight size={16} />
             </button>
           </div>
@@ -539,13 +539,13 @@ export function ModalShowcase() {
           </div>
           <div className="flex gap-3 justify-end px-6 py-4 border-t border-tp-slate-100 bg-tp-slate-50/50">
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#E2E2EA] active:scale-[0.97]"
               style={{ backgroundColor: "#F1F1F5", color: "#454551" }}
             >
               Cancel
             </button>
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#BE123C] hover:shadow-md active:scale-[0.97]"
               style={{ backgroundColor: "#E11D48", color: "#FFFFFF", boxShadow: "0 1px 3px rgba(225,29,72,0.2)" }}
             >
               Delete Record
@@ -582,7 +582,7 @@ export function ModalShowcase() {
           </div>
           <div className="flex gap-3 justify-end px-6 py-4 border-t border-tp-slate-100 bg-tp-slate-50/50">
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#3F3EC0] hover:shadow-md active:scale-[0.97]"
               style={{ backgroundColor: "#4B4AD5", color: "#FFFFFF", boxShadow: "0 1px 3px rgba(75,74,213,0.25)" }}
             >
               Done
@@ -619,13 +619,13 @@ export function ModalShowcase() {
           </div>
           <div className="flex gap-3 justify-end px-6 py-4 border-t border-tp-slate-100 bg-tp-slate-50/50">
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#E2E2EA] active:scale-[0.97]"
               style={{ backgroundColor: "#F1F1F5", color: "#454551" }}
             >
               Dismiss
             </button>
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#3F3EC0] hover:shadow-md active:scale-[0.97]"
               style={{ backgroundColor: "#4B4AD5", color: "#FFFFFF", boxShadow: "0 1px 3px rgba(75,74,213,0.25)" }}
             >
               Got it

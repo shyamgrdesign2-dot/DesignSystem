@@ -105,7 +105,7 @@ export function AppointmentBannerShowcase() {
                 backdrop-filter: blur(8px), color: white, height: 42px, radius: 10px */}
             <button
               type="button"
-              className="inline-flex items-center justify-center"
+              className="inline-flex items-center justify-center hover:bg-white/[0.18] hover:border-white/60 active:scale-[0.97]"
               style={{
                 height: 42,
                 padding: "8px 14px",
@@ -128,7 +128,7 @@ export function AppointmentBannerShowcase() {
                 bg: #FFFFFF, color: #161558, border: none, height: 42px, radius: 10px */}
             <button
               type="button"
-              className="inline-flex items-center justify-center"
+              className="inline-flex items-center justify-center hover:bg-white/90 hover:shadow-lg active:scale-[0.97]"
               style={{
                 height: 42,
                 padding: "8px 14px",
@@ -434,10 +434,10 @@ export function ClinicalTableShowcase() {
                 </td>
                 <td className={`sticky right-0 z-10 bg-white px-3 py-3 align-middle w-px ${clinicalStickyCell}`}>
                   <div className="flex items-center gap-1">
-                    <button className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f1f1f5] text-[#454551] hover:bg-[#e2e2ea]">
+                    <button className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f1f1f5] text-[#454551] transition-all hover:bg-[#e2e2ea] hover:text-[#171725] active:scale-[0.93]">
                       <Eye size={14} />
                     </button>
-                    <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#E11D48] hover:bg-red-50">
+                    <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#E11D48] transition-all hover:bg-red-50 hover:text-[#BE123C] active:scale-[0.93]">
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -603,7 +603,7 @@ export function DrAgentAppointmentsShowcase() {
                     <button
                       type="button"
                       aria-label="AI action"
-                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-opacity hover:opacity-90"
+                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105 active:scale-[0.97]"
                       style={{ background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)" }}
                     >
                       <AiSparkIcon />
