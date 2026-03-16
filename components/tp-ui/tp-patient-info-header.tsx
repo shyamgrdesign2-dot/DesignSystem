@@ -144,7 +144,7 @@ export function TPPatientInfoHeader({
           }}
           aria-label="Go back"
         >
-          <ChevronLeft size={24} color="#454551" strokeWidth={2.5} />
+          <ChevronLeft size={24} color="#454551" strokeWidth={2} style={{ opacity: 0.7 }} />
         </button>
 
         {/* ── Patient info ── */}

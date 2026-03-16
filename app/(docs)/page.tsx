@@ -51,27 +51,6 @@ export default function DocsOverview() {
           <h1 className="mt-2 text-3xl font-bold tracking-tight font-heading lg:text-4xl">
             Design System
           </h1>
-          <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/80 lg:text-base">
-            MUI-based component library themed for clinical workflows. Locked brand
-            colors, gradient rules, semantic tokens, and production-ready components.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              React 19
-            </span>
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              Next.js 16
-            </span>
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              MUI 7
-            </span>
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              Tailwind 4
-            </span>
-            <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              Lucide
-            </span>
-          </div>
         </div>
         {/* Decorative circles */}
         <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5" />

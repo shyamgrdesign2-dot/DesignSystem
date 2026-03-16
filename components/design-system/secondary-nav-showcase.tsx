@@ -8,8 +8,18 @@ import {
   Ruler,
   Notepad2,
   DocumentText,
+  Calendar2,
+  Messages2,
+  ReceiptText,
+  Profile2User,
+  CalendarAdd,
+  Shop,
+  Hospital,
+  DocumentLike,
+  MessageProgramming,
 } from "iconsax-reactjs"
 import { TPMedicalIcon } from "@/components/tp-ui"
+import { SecondarySidebar } from "@/components/tp-rxpad/secondary-sidebar/SecondarySidebar"
 
 export interface NavBadge {
   text: string
@@ -23,7 +33,7 @@ type NavIconConfig =
 export interface NavItem {
   id: string
   label: string
-  icon: NavIconConfig
+  icon: NavIconConfig | React.ComponentType<any>
   badge?: NavBadge
 }
 
@@ -52,7 +62,37 @@ const SECONDARY_NAV_TOKENS = {
   bottomFadeHeight: 120,
 } as const
 
-const navItems: NavItem[] = [
+// Appointment screen sidebar items (Primary Nav)
+const primaryNavItems: NavItem[] = [
+  { id: "appointments", label: "Appointments", icon: { kind: "iconsax", Icon: Calendar2 } },
+  {
+    id: "ask-tatva",
+    label: "Ask Tatva",
+    icon: { kind: "iconsax", Icon: Messages2 },
+    badge: {
+      text: "New",
+      gradient: "linear-gradient(257.32deg, rgb(22, 163, 74) 0%, rgb(68, 207, 119) 47.222%, rgb(22, 163, 74) 94.444%)",
+    },
+  },
+  {
+    id: "opd-billing",
+    label: "OPD Billing",
+    icon: { kind: "iconsax", Icon: ReceiptText },
+    badge: {
+      text: "Trial",
+      gradient: "linear-gradient(257.32deg, rgb(241, 82, 35) 0%, rgb(255, 152, 122) 47.222%, rgb(241, 82, 35) 94.444%)",
+    },
+  },
+  { id: "all-patients", label: "All Patients", icon: { kind: "iconsax", Icon: Profile2User } },
+  { id: "follow-ups", label: "Follow-ups", icon: { kind: "iconsax", Icon: CalendarAdd } },
+  { id: "pharmacy", label: "Pharmacy", icon: { kind: "iconsax", Icon: Shop } },
+  { id: "ipd", label: "IPD", icon: { kind: "iconsax", Icon: Hospital } },
+  { id: "daycare", label: "Daycare", icon: { kind: "iconsax", Icon: DocumentLike } },
+  { id: "bulk-messages", label: "Bulk Messages", icon: { kind: "iconsax", Icon: MessageProgramming } },
+]
+
+// RxPad sidebar items (RX Nav)
+const rxNavItems: NavItem[] = [
   { id: "past-visits", label: "Past Visits", icon: { kind: "iconsax", Icon: Note1 } },
   {
     id: "vitals",
@@ -222,13 +262,20 @@ export function SecondaryNavPanel({
                       isRx,
                       iconSize: SECONDARY_NAV_TOKENS.iconSize,
                     })
-                  ) : item.icon.kind === "iconsax" ? (
+                  ) : typeof item.icon === "function" ? (
+                    (() => { const Icon = item.icon as React.ComponentType<any>; return (
+                      <Icon
+                        size={SECONDARY_NAV_TOKENS.iconSize}
+                        color={isActive ? iconActiveColor : iconDefaultColor}
+                      />
+                    ) })()
+                  ) : typeof item.icon === "object" && item.icon.kind === "iconsax" ? (
                     <item.icon.Icon
                       size={SECONDARY_NAV_TOKENS.iconSize}
                       color={isActive ? iconActiveColor : iconDefaultColor}
                       variant={isActive ? "Bulk" : "Linear"}
                     />
-                  ) : item.icon.kind === "medical" ? (
+                  ) : typeof item.icon === "object" && item.icon.kind === "medical" ? (
                     <TPMedicalIcon
                       name={item.icon.name}
                       variant={isActive ? "bulk" : "line"}
@@ -358,7 +405,7 @@ export function SecondaryNavPanel({
 }
 
 export function SecondaryNavShowcase() {
-  const [activeId, setActiveId] = useState("past-visits")
+  const [activeId, setActiveId] = useState("appointments")
   const [activeIdAlt, setActiveIdAlt] = useState("vitals")
 
   return (
@@ -375,7 +422,7 @@ export function SecondaryNavShowcase() {
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Primary Nav Panel (white surface)</span>
           <SecondaryNavPanel
-            items={navItems}
+            items={primaryNavItems}
             activeId={activeId}
             onSelect={setActiveId}
             variant="primary"
@@ -384,7 +431,7 @@ export function SecondaryNavShowcase() {
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-2">RX Nav Panel (dark blue surface)</span>
           <SecondaryNavPanel
-            items={navItems}
+            items={rxNavItems}
             activeId={activeIdAlt}
             onSelect={setActiveIdAlt}
             variant="rx"
@@ -488,6 +535,22 @@ export function SecondaryNavShowcase() {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+export function ExpandedRxNavShowcase() {
+  return (
+    <div>
+      <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">
+        RX Nav Panel — Expanded View
+      </h3>
+      <p className="text-xs text-tp-slate-400 mb-5">
+        The RX Nav Panel with its content panel expanded. Click any nav item to see its content — Past Visits, Vitals, History, Ophthal, Gynec, Obstetric, Vaccine, Growth, Records, Lab Results, Personal Notes, and Dr Agent.
+      </p>
+      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]" style={{ height: 600 }}>
+        <SecondarySidebar />
       </div>
     </div>
   )

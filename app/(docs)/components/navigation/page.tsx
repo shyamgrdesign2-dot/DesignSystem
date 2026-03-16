@@ -2,7 +2,7 @@
 
 import { PageHeader } from "@/components/docs/page-header"
 import { ComponentCard } from "@/components/design-system/design-system-section"
-import { SecondaryNavShowcase } from "@/components/design-system/secondary-nav-showcase"
+import { SecondaryNavShowcase, ExpandedRxNavShowcase } from "@/components/design-system/secondary-nav-showcase"
 import {
   TabsShowcase,
   SegmentedControlShowcase,
@@ -30,6 +30,7 @@ export default function NavigationPage() {
         <ComponentCard><AppointmentBannerShowcase /></ComponentCard>
         <ComponentCard><PatientInfoHeaderShowcase /></ComponentCard>
         <ComponentCard><SecondaryNavShowcase /></ComponentCard>
+        <ComponentCard><ExpandedRxNavShowcase /></ComponentCard>
         <ComponentCard><TabsShowcase /></ComponentCard>
         <ComponentCard><SegmentedControlShowcase /></ComponentCard>
         <ComponentCard><DropdownShowcase /></ComponentCard>

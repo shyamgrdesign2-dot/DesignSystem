@@ -420,7 +420,7 @@ function Tooltip({ text, header, dark, closable, size = "md" }: {
           </div>
           {closable && (
             <button className="flex-shrink-0 mt-0.5 hover:opacity-70 transition-opacity inline-flex items-center justify-center" style={{ color: closeColor }}>
-              <span className="inline-flex flex-shrink-0"><X size={12} /></span>
+              <span className="inline-flex flex-shrink-0"><TPCloseIcon size={14} color={closeColor} /></span>
             </button>
           )}
         </div>

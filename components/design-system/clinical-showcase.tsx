@@ -14,12 +14,13 @@ import {
 } from "lucide-react"
 
 import { ChevronDown } from "lucide-react"
+import { Notification, Hospital } from "iconsax-reactjs"
 import { AppointmentBanner } from "@/components/appointments/AppointmentBanner"
 import { TPSplitButton } from "@/components/tp-ui/button-system"
 import { TPClinicalTabs } from "@/components/tp-ui/tp-clinical-tabs"
 import { TPSearchFilterBar } from "@/components/tp-ui/tp-search-filter-bar"
 import { TPStatusBadge } from "@/components/tp-ui/tp-status-badge"
-import { TPPatientInfoHeader } from "@/components/tp-ui/tp-patient-info-header"
+import RxpadHeader from "@/components/tp-rxpad/imports/RxpadHeader"
 
 // ═════════════════════════════════════════════════════════════
 // 1. Top Nav Bar Showcase
@@ -36,42 +37,41 @@ export function TopNavBarShowcase() {
       </p>
 
       <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
-        {/* Exact appointment screen header */}
-        <header className="flex h-[62px] shrink-0 items-center border-b border-tp-slate-100 bg-white px-4 py-2.5">
+        {/* Exact appointment screen header — matches DrAgentPage TopHeader */}
+        <header className="flex h-[62px] shrink-0 items-center border-b border-tp-slate-100 bg-tp-slate-0 px-4 py-2.5">
           {/* Logo */}
           <div className="flex min-w-0 flex-1 items-center">
             <img alt="TatvaPractice" className="h-8 w-auto object-contain" src="/assets/b38df11ad80d11b9c1d530142443a18c2f53d406.png" />
           </div>
           {/* Toolbar */}
           <div className="flex items-center gap-3.5">
-            {/* Tutorial button */}
-            <button type="button" className="flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 transition-colors hover:bg-tp-slate-200" aria-label="Tutorial">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#BA7DE9" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            {/* Tutorial icon — hexagonal play button */}
+            <button type="button" className="flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 transition-colors hover:bg-tp-slate-200" aria-label="Play tutorial">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ color: "#BA7DE9" }}>
                 <path d="M19.5099 5.85L13.5699 2.42C12.5999 1.86 11.3999 1.86 10.4199 2.42L4.48992 5.85C3.51992 6.41 2.91992 7.45 2.91992 8.58V15.42C2.91992 16.54 3.51992 17.58 4.48992 18.15L10.4299 21.58C11.3999 22.14 12.5999 22.14 13.5799 21.58L19.5199 18.15C20.4899 17.59 21.0899 16.55 21.0899 15.42V8.58C21.0799 7.45 20.4799 6.42 19.5099 5.85ZM14.2499 13.4L13.2099 14L12.1699 14.6C10.8399 15.37 9.74992 14.74 9.74992 13.2V12V10.8C9.74992 9.26 10.8399 8.63 12.1699 9.4L13.2099 10L14.2499 10.6C15.5799 11.37 15.5799 12.63 14.2499 13.4Z" />
               </svg>
             </button>
-            {/* Notifications button */}
+            {/* Notifications — iconsax Notification icon */}
             <button type="button" className="relative inline-flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-700 transition-colors hover:bg-tp-slate-200" aria-label="Notifications">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.02 2.91c-3.31 0-6 2.69-6 6v2.89c0 .61-.26 1.54-.57 2.06L4.3 15.77c-.71 1.18-.22 2.49 1.08 2.93 4.31 1.44 8.96 1.44 13.27 0 1.21-.4 1.74-1.83 1.08-2.93l-1.15-1.91c-.3-.52-.56-1.45-.56-2.06V8.91c0-3.3-2.7-6-6-6Z" stroke="#454551" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" />
-                <path d="M13.87 3.2a6.754 6.754 0 0 0-3.7 0c.29-.74 1.01-1.26 1.85-1.26.84 0 1.56.52 1.85 1.26ZM15.33 19.01c0 1.65-1.32 3-2.97 3-.82 0-1.58-.34-2.12-.88-.54-.54-.88-1.3-.88-2.12" stroke="#454551" strokeWidth="1.5" strokeMiterlimit="10" />
-              </svg>
-              <span className="absolute right-2.5 top-2.5 h-[7px] w-[7px] rounded-full bg-red-500" />
+              <Notification size={20} variant="Linear" strokeWidth={1.5} />
+              <span className="absolute -top-0.5 right-1 size-2.5 rounded-full border-2 border-white bg-red-500" />
             </button>
-            {/* Clinic selector */}
-            <button type="button" className="inline-flex h-[42px] items-center gap-2 rounded-[10px] border border-tp-slate-200 bg-tp-slate-50 pl-3 pr-2 text-sm font-medium text-tp-slate-700 transition-colors hover:bg-tp-slate-100">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path opacity=".4" d="M2 22h20" stroke="#454551" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M9.5 22V13h5v9M13.5 2h-9C3.5 2 3 2.5 3 3.5v7c0 1 .5 1.5 1.5 1.5h9c1 0 1.5-.5 1.5-1.5v-7C15 2.5 14.5 2 13.5 2Z" stroke="#454551" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M21 22v-6.5c0-.83-.67-1.5-1.5-1.5H17c-.83 0-1.5.67-1.5 1.5V22M6.5 7h5M9 5v4" stroke="#454551" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="max-w-[120px] truncate text-xs">Rajeshwar Eye Clinic</span>
-              <ChevronDown size={14} className="shrink-0 text-tp-slate-500" />
+            {/* Divider */}
+            <div className="h-[42px] w-px bg-tp-slate-300 opacity-80" />
+            {/* Clinic selector — iconsax Hospital icon */}
+            <button type="button" className="inline-flex items-center gap-1.5 rounded-[10px] bg-tp-slate-100 px-4 py-2 transition-colors hover:bg-tp-slate-200" aria-label="Switch clinic">
+              <Hospital size={20} variant="Linear" strokeWidth={1.5} color="var(--tp-slate-700)" />
+              <span className="max-w-[120px] truncate text-[14.7px] text-tp-slate-700">Rajeshwar Eye Clinic</span>
+              <ChevronDown size={18} strokeWidth={1.5} className="text-tp-slate-500" />
             </button>
-            {/* Profile avatar */}
-            <div className="flex size-[42px] shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: "linear-gradient(135deg, #A461D8 0%, #4B4AD5 100%)" }}>
-              AS
-            </div>
+            {/* Avatar — gradient ring with actual image */}
+            <button type="button" className="relative inline-flex size-[42px] items-center justify-center rounded-full transition-opacity hover:opacity-80" aria-label="Profile">
+              <span className="inline-flex size-full items-center justify-center rounded-full" style={{ background: "linear-gradient(to bottom, #FFDE00, #FD5900) padding-box, linear-gradient(to bottom, #FFDE00, #FD5900) border-box" }}>
+                <span className="inline-flex size-full overflow-hidden rounded-full border border-white">
+                  <img src="/assets/52cb18088c5b8a5db6a7711c9900d7d08a1bac42.png" alt="User" className="size-full object-cover" />
+                </span>
+              </span>
+            </button>
           </div>
         </header>
       </div>
@@ -93,41 +93,25 @@ export function AppointmentBannerShowcase() {
         Dark radial-gradient hero banner (purple: #46286C → #25113E → #372153 → #6C4F90). 149px height, 16px bottom radius. SVG dot texture at 5% opacity. White title text, Poppins Bold 24px.
       </p>
 
-      <div className="space-y-4">
-        <AppointmentBanner
-          title="Your Appointments"
-          actions={
-            <>
-              <button
-                className="rounded-[10px] px-4 py-2 text-sm font-semibold text-white/80 transition-colors hover:text-white"
-                style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
-              >
-                View All
-              </button>
-              <button
-                className="rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors"
-                style={{ backgroundColor: "#FFFFFF", color: "#4B4AD5" }}
-              >
-                + New Appointment
-              </button>
-            </>
-          }
-        />
-
-        <AppointmentBanner title="Weekly Schedule" />
-
-        <AppointmentBanner
-          title="Clinic Analytics"
-          actions={
+      <AppointmentBanner
+        title="Your Appointments"
+        actions={
+          <>
+            <button
+              className="rounded-[10px] px-4 py-2 text-sm font-semibold text-white/80 transition-colors hover:text-white"
+              style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+            >
+              View All
+            </button>
             <button
               className="rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors"
               style={{ backgroundColor: "#FFFFFF", color: "#4B4AD5" }}
             >
-              View Report
+              + New Appointment
             </button>
-          }
-        />
-      </div>
+          </>
+        }
+      />
     </div>
   )
 }
@@ -410,25 +394,11 @@ export function PatientInfoHeaderShowcase() {
         Patient Info Header (RxPad)
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        62px height, white bg. Back button: 80px. Patient: Poppins SemiBold 14px. Demographics: Roboto Regular 12px. Toolbar: 42px buttons, rounded-[10.5px].
+        Exact RxPad header — 62px height, white bg. Back button: 80px with ChevronLeft. Patient avatar + name + demographics. Toolbar: 42px action buttons (Preview, Draft, End Visit, etc.), rounded-[10.5px].
       </p>
 
-      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
-        <TPPatientInfoHeader
-          patient={{
-            name: "Shyam GR",
-            age: 25,
-            gender: "Male",
-            bloodGroup: "B+",
-            uhid: "TP-2024-00142",
-            phone: "+91 98765 43210",
-          }}
-          visitInfo={{
-            type: "OPD",
-            date: "27 Jan 2026",
-            tokenNumber: 3,
-          }}
-        />
+      <div className="overflow-hidden overflow-x-auto rounded-xl border border-[#e2e2ea]">
+        <RxpadHeader />
       </div>
     </div>
   )
