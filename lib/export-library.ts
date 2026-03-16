@@ -101,6 +101,7 @@ function generatePackageJson(): string {
         cmdk: "^1.1.0",
         "date-fns": "^4.1.0",
         "input-otp": "^1.4.0",
+        "iconsax-reactjs": "^0.0.8",
         "lucide-react": "^0.564.0",
         "react-day-picker": "^9.13.0",
         "tailwind-merge": "^3.3.0",
@@ -210,8 +211,30 @@ export default function MyPage() {
 | Styling | Tailwind CSS v4 + CSS Custom Properties |
 | MUI Components | MUI v7 (wrapped with TP tokens) |
 | Radix Components | Radix UI primitives (drawer, dropdown, popover, command) |
-| Icons | Lucide React |
+| Icons | iconsax-reactjs (primary), TP Medical (clinical), Lucide (utility only) |
 | Tokens | Two-level architecture (Base Palette → Semantic Tokens) |
+
+## Icon Families
+
+TatvaPractice uses **three** icon families, each with a specific role:
+
+### 1. iconsax (Primary — all UI icons)
+\`\`\`bash
+npm install iconsax-reactjs
+\`\`\`
+Used for all UI icons: navigation, actions, toolbars, tabs, sidebar items, buttons.
+Supports \`Linear\` (outline/inactive) and \`Bulk\` (filled/active) dual-tone variants.
+
+### 2. TP Medical (Clinical domain icons)
+Internal component for medical/clinical icons: vitals, history, gynec, obstetrics, vaccines, lab.
+Supports \`line\` (outline/inactive) and \`bulk\` (filled/active) variants.
+
+### 3. Lucide (Utility only — restricted use)
+\`\`\`bash
+npm install lucide-react
+\`\`\`
+**Only** for: accordion chevrons (ChevronDown/Up), arrows (ChevronLeft/Right), Plus, Minus.
+No other Lucide icons should be used.
 
 ## Component List
 

@@ -87,10 +87,10 @@ export function AppointmentBannerShowcase() {
   return (
     <div>
       <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#a2a2a8]">
-        Appointment Banner
+        Banner
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Dark radial-gradient hero banner (purple: #46286C → #25113E → #372153 → #6C4F90). 149px height, 16px bottom radius. SVG dot texture at 5% opacity. White title text, Poppins Bold 24px.
+        Dark radial-gradient hero banner (purple: #46286C → #25113E → #372153 → #6C4F90). 149px height, 16px bottom radius. Geometric pattern right-aligned, scales with height. White title, Poppins Bold 24px. Primary + secondary CTAs using TPButton.
       </p>
 
       <AppointmentBanner
@@ -98,14 +98,13 @@ export function AppointmentBannerShowcase() {
         actions={
           <>
             <button
-              className="rounded-[10px] px-4 py-2 text-sm font-semibold text-white/80 transition-colors hover:text-white"
+              className="inline-flex h-[42px] items-center justify-center rounded-[10px] px-5 text-sm font-semibold text-white/80 transition-colors hover:text-white"
               style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
             >
               View All
             </button>
             <button
-              className="rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors"
-              style={{ backgroundColor: "#FFFFFF", color: "#4B4AD5" }}
+              className="inline-flex h-[42px] items-center justify-center rounded-[10px] bg-white px-5 text-sm font-semibold text-[#4B4AD5] transition-colors hover:bg-white/90"
             >
               + New Appointment
             </button>
@@ -397,7 +396,7 @@ export function PatientInfoHeaderShowcase() {
         Exact RxPad header — 62px height, white bg. Back button: 80px with ChevronLeft. Patient avatar + name + demographics. Toolbar: 42px action buttons (Preview, Draft, End Visit, etc.), rounded-[10.5px].
       </p>
 
-      <div className="overflow-hidden overflow-x-auto rounded-xl border border-[#e2e2ea]">
+      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
         <RxpadHeader />
       </div>
     </div>

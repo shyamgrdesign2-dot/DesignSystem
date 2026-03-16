@@ -9,7 +9,7 @@ export default function IconsPage() {
     <div>
       <PageHeader
         title="Icons"
-        description="Iconsax icon library (Linear variant, 18px default). 993 icons across 24 categories for consistent iconography."
+        description="Three icon families: iconsax (all UI icons, Linear/Bulk variants), TP Medical (clinical icons, line/bulk variants), and Lucide (accordions, arrows, plus/minus only)."
         badge="Foundations"
       />
 

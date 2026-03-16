@@ -16,7 +16,11 @@ import {
   AlertCircle,
   CheckCircle2,
   Info,
+  MoreVertical,
+  Star,
 } from "lucide-react"
+import { Video } from "iconsax-reactjs"
+import { TPSplitButton } from "@/components/tp-ui/button-system"
 
 function TPCloseIcon({ size = 18, color = "#717179" }: { size?: number; color?: string }) {
   return (
@@ -26,232 +30,180 @@ function TPCloseIcon({ size = 18, color = "#717179" }: { size?: number; color?: 
   )
 }
 
-// ─── DATA TABLE ───
+// ─── AI Spark Icon (appointment table) ───
 
-const tableData = [
-  { name: "Andrew Chapman", email: "andrewc@mail.com", role: "Doctor", status: "Active", date: "Feb 14, 2026" },
-  { name: "Sarah Mitchell", email: "sarahm@mail.com", role: "Nurse", status: "Active", date: "Feb 12, 2026" },
-  { name: "James Wilson", email: "jamesw@mail.com", role: "Admin", status: "Pending", date: "Feb 10, 2026" },
-  { name: "Emily Chen", email: "emilyc@mail.com", role: "Doctor", status: "Active", date: "Feb 08, 2026" },
-  { name: "Michael Brown", email: "michaelb@mail.com", role: "Receptionist", status: "Inactive", date: "Jan 28, 2026" },
-  { name: "Lisa Taylor", email: "lisat@mail.com", role: "Nurse", status: "Active", date: "Jan 25, 2026" },
-]
-
-const statusColors: Record<string, { bg: string; text: string; dot: string }> = {
-  Active: { bg: "#ECFDF5", text: "#047857", dot: "#10B981" },
-  Pending: { bg: "#FFFBEB", text: "#B45309", dot: "#F59E0B" },
-  Inactive: { bg: "#F1F1F5", text: "#545460", dot: "#A2A2A8" },
+function AiSparkIcon() {
+  return (
+    <span className="inline-flex size-[28px] items-center justify-center">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <linearGradient id="ds-table-ai-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D565EA" />
+            <stop offset="45%" stopColor="#673AAC" />
+            <stop offset="100%" stopColor="#1A1994" />
+          </linearGradient>
+        </defs>
+        <path d="M18.0841 11.612C18.4509 11.6649 18.4509 12.3351 18.0841 12.388C14.1035 12.9624 12.9624 14.1035 12.388 18.0841C12.3351 18.4509 11.6649 18.4509 11.612 18.0841C11.0376 14.1035 9.89647 12.9624 5.91594 12.388C5.5491 12.3351 5.5491 11.6649 5.91594 11.612C9.89647 11.0376 11.0376 9.89647 11.612 5.91594C11.6649 5.5491 12.3351 5.5491 12.388 5.91594C12.9624 9.89647 14.1035 11.0376 18.0841 11.612Z" fill="url(#ds-table-ai-grad)" />
+      </svg>
+    </span>
+  )
 }
+
+function ColSortArrows() {
+  return (
+    <span className="inline-flex flex-col items-center gap-[2px]">
+      <span className="h-0 w-0 border-b-[5px] border-l-[4px] border-r-[4px] border-b-tp-slate-700 border-l-transparent border-r-transparent" />
+      <span className="h-0 w-0 border-l-[4px] border-r-[4px] border-t-[5px] border-l-transparent border-r-transparent border-t-tp-slate-500" />
+    </span>
+  )
+}
+
+// ─── DATA TABLE (matches appointment queue) ───
+
+interface QueueRow {
+  id: string
+  serial: number
+  name: string
+  gender: "M" | "F"
+  age: number
+  contact: string
+  contactBadge?: string
+  visitType: string
+  visitBadge?: { text: string; tone: "warning" | "success" }
+  slotTime: string
+  slotDate: string
+  hasVideo: boolean
+  starred?: boolean
+}
+
+const queueData: QueueRow[] = [
+  { id: "1", serial: 1, name: "Shyam GR", gender: "M", age: 35, contact: "+91-9812734567", visitType: "Follow-up", slotTime: "10:30 am", slotDate: "9th Oct 2024", hasVideo: true, starred: true },
+  { id: "2", serial: 2, name: "Sita Menon", gender: "F", age: 30, contact: "+91-9988776655", contactBadge: "IPD", visitType: "New", slotTime: "10:35 am", slotDate: "8th Oct 2024", hasVideo: true },
+  { id: "3", serial: 3, name: "Vikram Singh", gender: "M", age: 42, contact: "+91-9001234567", visitType: "New", visitBadge: { text: "Unfulfilled", tone: "warning" }, slotTime: "10:40 am", slotDate: "12th Sep 2024", hasVideo: false },
+  { id: "4", serial: 4, name: "Nisha Rao", gender: "F", age: 28, contact: "+91-9876543210", visitType: "Follow-up", slotTime: "10:55 am", slotDate: "12th Sep 2024", hasVideo: false },
+  { id: "5", serial: 5, name: "Rahul Verma", gender: "M", age: 55, contact: "+91-9123456789", visitType: "Routine", slotTime: "11:00 am", slotDate: "12th Sep 2024", hasVideo: true },
+  { id: "6", serial: 6, name: "Anjali Patel", gender: "F", age: 38, contact: "+91-9567933357", visitType: "New", slotTime: "11:15 am", slotDate: "12th Sep 2024", hasVideo: false },
+]
 
 type SortDir = "asc" | "desc" | null
 
 export function DataTableShowcase() {
-  const [selected, setSelected] = useState<number[]>([0, 3])
-  const [sortCol, setSortCol] = useState<number | null>(null)
-  const [sortDir, setSortDir] = useState<SortDir>(null)
-
-  const toggleRow = (i: number) => {
-    setSelected((prev) =>
-      prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
-    )
-  }
-
-  const toggleAll = () => {
-    setSelected((prev) =>
-      prev.length === tableData.length ? [] : tableData.map((_, i) => i)
-    )
-  }
-
-  const handleSort = (col: number) => {
-    if (sortCol === col) {
-      setSortDir(sortDir === "asc" ? "desc" : sortDir === "desc" ? null : "asc")
-      if (sortDir === "desc") setSortCol(null)
-    } else {
-      setSortCol(col)
-      setSortDir("asc")
-    }
-  }
-
-  const headers = ["Member", "Role", "Status", "Date", "Action"]
-
   return (
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Data Table</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Sortable table with row selection, status labels (pill radius), and neutral CTA-style action buttons. Constraint: No toolbar row -- actions live in a sticky right column with a floating outer shadow for scroll separation. Sort icons use filled triangles (TP Blue when active, TP Slate 300 when inactive). Row selection highlights entire row in TP Blue 50. Action buttons use 8px radius with TP Slate 100 background and darken on hover.
+        Appointment queue table — exact pattern from the live appointment screen. Sticky action column with left shadow for scroll separation. Action cell: TPSplitButton (outline/primary) + AI gradient icon button + MoreVertical. Header: 12px uppercase, #F1F1F5 bg, sortable columns. Name: TP Blue 500 semibold with hover underline. Contact/Visit badges use TPTag. Video icon (iconsax Bulk) for teleconsult slots.
       </p>
 
-      <div
-        className="border border-tp-slate-200 overflow-hidden bg-card"
-        style={{ borderRadius: "12px", boxShadow: "0 1px 3px rgba(23,23,37,0.06)" }}
-      >
-        {/* Table with sticky action column */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ minWidth: "700px" }}>
-            <thead>
-              <tr className="bg-tp-slate-50 border-b border-tp-slate-200">
-                <th className="px-4 py-3 w-12">
-                  <button
-                    onClick={toggleAll}
-                    className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-all"
-                    style={{
-                      backgroundColor: selected.length === tableData.length ? "#4B4AD5" : "#FFFFFF",
-                      border: selected.length === tableData.length ? "none" : "1.5px solid #D0D5DD",
-                      borderRadius: "6px",
-                      boxShadow: selected.length === tableData.length ? "0 1px 2px rgba(75,74,213,0.2)" : "0 1px 2px rgba(23,23,37,0.05)",
-                    }}
-                  >
-                    {selected.length === tableData.length && (
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    )}
-                    {selected.length > 0 && selected.length < tableData.length && (
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6H9" stroke="#4B4AD5" strokeWidth="2" strokeLinecap="round" /></svg>
-                    )}
-                  </button>
-                </th>
-                {headers.map((h, i) => (
-                  <th
-                    key={i}
-                    className={`px-4 py-3 text-left font-semibold text-tp-slate-700 whitespace-nowrap ${i === 4 ? "sticky right-0 bg-tp-slate-50" : ""}`}
-                    style={i === 4 ? { boxShadow: "-10px 0 14px 2px rgba(23,23,37,0.12)" } : undefined}
-                  >
-                    {i < 4 ? (
-                      <button
-                        className="inline-flex items-center gap-1.5 hover:text-tp-slate-900 transition-colors"
-                        onClick={() => handleSort(i)}
-                      >
-                        {h}
-                        {sortCol === i && sortDir === "asc" ? (
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 3L11 8H3L7 3Z" fill="#4B4AD5" /></svg>
-                        ) : sortCol === i && sortDir === "desc" ? (
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 11L3 6H11L7 11Z" fill="#4B4AD5" /></svg>
-                        ) : (
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                            <path d="M7 3L10 6.5H4L7 3Z" fill="#D0D5DD" />
-                            <path d="M7 11L4 7.5H10L7 11Z" fill="#D0D5DD" />
-                          </svg>
-                        )}
-                      </button>
-                    ) : (
-                      <span>{h}</span>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((row, i) => {
-                const sc = statusColors[row.status] || statusColors.Active
-                const isSelected = selected.includes(i)
-                return (
-                  <tr
-                    key={i}
-                    className="border-b border-tp-slate-100 last:border-b-0 transition-colors hover:bg-tp-slate-50/60"
-                    style={{
-                      backgroundColor: isSelected ? "#EEEEFF" : undefined,
-                    }}
-                  >
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => toggleRow(i)}
-                        className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-all"
-                        style={{
-                          backgroundColor: isSelected ? "#4B4AD5" : "#FFFFFF",
-                          border: isSelected ? "none" : "1.5px solid #D0D5DD",
-                          borderRadius: "6px",
-                          boxShadow: isSelected ? "0 1px 2px rgba(75,74,213,0.2)" : "0 1px 2px rgba(23,23,37,0.05)",
-                        }}
-                      >
-                        {isSelected && (
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        )}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: "#EEEEFF" }}
-                        >
-                          <span className="inline-flex flex-shrink-0"><User size={16} className="text-tp-blue-500" /></span>
+      <div className="overflow-x-auto rounded-[12px] border border-tp-slate-200">
+        <table className="w-full min-w-[920px] border-collapse">
+          <thead>
+            <tr className="bg-tp-slate-100">
+              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[40px] max-w-[56px] w-[48px]">#</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[220px]">Name</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[200px]">Contact</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[180px]">
+                <span className="inline-flex items-center gap-1.5">Visit Type <ColSortArrows /></span>
+              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[160px]">
+                <span className="inline-flex items-center gap-1.5">Slot <ColSortArrows /></span>
+              </th>
+              <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[280px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {queueData.map((row) => (
+              <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
+                <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
+                <td className="px-3 py-3 align-middle">
+                  <div className="max-w-[200px] overflow-hidden">
+                    <p className="cursor-pointer truncate text-sm font-semibold text-tp-blue-500 hover:underline">{row.name}</p>
+                    <p className="mt-1 truncate text-sm text-tp-slate-700">
+                      {row.gender}, {row.age}y
+                      {row.starred && (
+                        <span className="ml-1 inline-flex">
+                          <Star size={14} fill="var(--tp-success-500)" stroke="var(--tp-success-500)" />
                         </span>
-                        <div>
-                          <span className="font-medium text-tp-slate-900 block leading-tight">{row.name}</span>
-                          <span className="text-xs text-tp-slate-400">{row.email}</span>
-                        </div>
+                      )}
+                    </p>
+                  </div>
+                </td>
+                <td className="px-3 py-3 align-middle">
+                  <div className="max-w-[180px] overflow-hidden">
+                    <span className="block truncate text-sm text-tp-slate-700">{row.contact}</span>
+                    {row.contactBadge && (
+                      <div className="mt-1">
+                        <span className="inline-flex items-center rounded-full bg-tp-violet-50 px-2 py-0.5 text-[11px] font-semibold text-tp-violet-600">{row.contactBadge}</span>
                       </div>
-                    </td>
-                    <td className="px-4 py-3 text-tp-slate-600 font-medium">{row.role}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1"
-                        style={{
-                          borderRadius: "100px",
-                          backgroundColor: sc.bg,
-                          color: sc.text,
-                        }}
-                      >
+                    )}
+                  </div>
+                </td>
+                <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">
+                  <div className="max-w-[160px] overflow-hidden">
+                    <span className="truncate block">{row.visitType}</span>
+                    {row.visitBadge && (
+                      <div className="mt-1">
                         <span
-                          className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: sc.dot }}
-                        />
-                        {row.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-tp-slate-500 text-xs font-mono">{row.date}</td>
-                    {/* Sticky action column with shadow */}
-                    <td
-                      className="px-4 py-3 sticky right-0"
-                      style={{
-                        backgroundColor: isSelected ? "#EEEEFF" : "#FFFFFF",
-                        boxShadow: "-10px 0 14px 2px rgba(23,23,37,0.10)",
-                      }}
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          className="w-8 h-8 flex items-center justify-center transition-colors"
+                          className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold"
                           style={{
-                            backgroundColor: "#F1F1F5",
-                            color: "#545460",
-                            borderRadius: "8px",
+                            backgroundColor: row.visitBadge.tone === "warning" ? "#FFF7ED" : "#F0FDF4",
+                            color: row.visitBadge.tone === "warning" ? "#C2410C" : "#15803D",
                           }}
-                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#E2E2EA" }}
-                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#F1F1F5" }}
                         >
-                          <span className="inline-flex flex-shrink-0"><Eye size={16} /></span>
-                        </button>
-                        <button
-                          className="w-8 h-8 flex items-center justify-center transition-colors"
-                          style={{
-                            backgroundColor: "#F1F1F5",
-                            color: "#545460",
-                            borderRadius: "8px",
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#E2E2EA" }}
-                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#F1F1F5" }}
-                        >
-                          <span className="inline-flex flex-shrink-0"><Pencil size={16} /></span>
-                        </button>
-                        <button
-                          className="w-8 h-8 flex items-center justify-center transition-colors"
-                          style={{
-                            backgroundColor: "#F1F1F5",
-                            color: "#545460",
-                            borderRadius: "8px",
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#FFE4E6"; e.currentTarget.style.color = "#E11D48" }}
-                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#F1F1F5"; e.currentTarget.style.color = "#545460" }}
-                        >
-                          <span className="inline-flex flex-shrink-0"><Trash2 size={16} /></span>
-                        </button>
+                          {row.visitBadge.text}
+                        </span>
                       </div>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+                    )}
+                  </div>
+                </td>
+                <td className="px-3 py-3 align-middle">
+                  <div className="max-w-[150px] overflow-hidden">
+                    <div className="text-sm text-tp-slate-700">
+                      <span className="inline-flex items-center gap-1">
+                        {row.slotTime}
+                        {row.hasVideo && <Video size={13} variant="Bulk" color="var(--tp-violet-500)" />}
+                      </span>
+                    </div>
+                    <p className="mt-1 truncate text-xs text-tp-slate-600">{row.slotDate}</p>
+                  </div>
+                </td>
+                <td className="sticky right-0 z-10 bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                  <div className="flex items-center gap-3 whitespace-nowrap">
+                    <TPSplitButton
+                      primaryAction={{ label: "VoiceRx", onClick: () => {} }}
+                      secondaryActions={[
+                        { id: "tab-rx", label: "TabRx", onClick: () => {} },
+                        { id: "type-rx", label: "TypeRx", onClick: () => {} },
+                        { id: "snap-rx", label: "SnapRx", onClick: () => {} },
+                        { id: "smart-sync", label: "SmartSync", onClick: () => {} },
+                      ]}
+                      variant="outline"
+                      theme="primary"
+                      size="md"
+                    />
+                    <button
+                      type="button"
+                      aria-label="AI action"
+                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105"
+                      style={{ background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)" }}
+                    >
+                      <AiSparkIcon />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="More options"
+                      className="flex shrink-0 items-center justify-center rounded-lg p-1 text-tp-slate-600 transition-colors hover:bg-tp-slate-100 hover:text-tp-slate-900"
+                    >
+                      <MoreVertical size={20} strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

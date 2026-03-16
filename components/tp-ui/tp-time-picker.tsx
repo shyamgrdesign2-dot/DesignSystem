@@ -158,26 +158,37 @@ export function TPTimePicker({
             <ScrollColumn items={minutes} selected={m} onSelect={handleMinuteChange} />
           </div>
           {!use24h && (
-            <div className="ml-1">
+            <div className="ml-1 flex flex-col items-center">
               <p className="mb-1 text-center text-[10px] font-semibold uppercase tracking-wider text-tp-slate-400">
                 &nbsp;
               </p>
-              <div className="flex flex-col gap-1">
-                {(["AM", "PM"] as const).map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => handlePeriodChange(p)}
+              <div className="flex h-48 flex-col items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => handlePeriodChange(period === "AM" ? "PM" : "AM")}
+                  className="relative flex h-[68px] w-12 flex-col items-stretch overflow-hidden rounded-lg border border-tp-slate-200 bg-tp-slate-50 transition-colors hover:border-tp-blue-300"
+                >
+                  <span
                     className={cn(
-                      "flex h-9 w-12 items-center justify-center rounded-lg text-sm font-semibold transition-colors",
-                      period === p
+                      "flex h-[34px] items-center justify-center text-xs font-bold transition-all",
+                      period === "AM"
                         ? "bg-tp-blue-500 text-white"
-                        : "text-tp-slate-500 hover:bg-tp-blue-50",
+                        : "text-tp-slate-400",
                     )}
                   >
-                    {p}
-                  </button>
-                ))}
+                    AM
+                  </span>
+                  <span
+                    className={cn(
+                      "flex h-[34px] items-center justify-center text-xs font-bold transition-all",
+                      period === "PM"
+                        ? "bg-tp-blue-500 text-white"
+                        : "text-tp-slate-400",
+                    )}
+                  >
+                    PM
+                  </span>
+                </button>
               </div>
             </div>
           )}

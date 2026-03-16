@@ -560,13 +560,17 @@ function ApptTabIcon({
   id,
   active,
   size = 18,
+  neutralWhenActive = false,
 }: {
   id: string
   active: boolean
   size?: number
+  neutralWhenActive?: boolean
 }) {
   const variant = active ? "Bulk" : "Linear"
-  const color = active ? "#4B4AD5" : "#717179"
+  const color = active
+    ? (neutralWhenActive ? "#171725" : "#4B4AD5")
+    : "#717179"
   const props = { size, color, variant } as const
   if (id === "queue") return <Clock {...props} />
   if (id === "finished") return <ClipboardTick {...props} />
@@ -692,7 +696,7 @@ function QueueSegmentedControl() {
           className="relative z-10 px-5 py-2 text-sm font-semibold transition-colors inline-flex items-center gap-1.5"
           style={{ borderRadius: "8px", color: active === i ? "#171725" : "#717179" }}
         >
-          <ApptTabIcon id={item.id} active={active === i} size={16} />
+          <ApptTabIcon id={item.id} active={active === i} size={16} neutralWhenActive />
           {item.label}
         </button>
       ))}

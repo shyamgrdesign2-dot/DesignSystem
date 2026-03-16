@@ -74,9 +74,9 @@ export const gradients: Record<string, GradientDef> = {
     ],
     variants: {
       hero: "radial-gradient(101.06% 60.94% at 50% 55.44%, #4B4AD5 0%, #161558 39.08%, #2E2D96 78.16%, #4B4AD5 100%)",
-      card: "radial-gradient(101.06% 60.94% at 50% 55.44%, rgba(75,74,213,0.92) 0%, rgba(22,21,88,0.88) 39.08%, rgba(46,45,150,0.90) 78.16%, rgba(75,74,213,0.92) 100%)",
+      card: "radial-gradient(101.06% 60.94% at 50% 55.44%, #6C6BDE 0%, #212077 39.08%, #3C3BB5 78.16%, #6C6BDE 100%)",
       subtle:
-        "radial-gradient(101.06% 60.94% at 50% 55.44%, rgba(75,74,213,0.55) 0%, rgba(22,21,88,0.45) 39.08%, rgba(46,45,150,0.50) 78.16%, rgba(75,74,213,0.55) 100%)",
+        "radial-gradient(101.06% 60.94% at 50% 55.44%, #B5B4F2 0%, #6C6BDE 39.08%, #8E8DE8 78.16%, #B5B4F2 100%)",
     },
   },
   secondary: {
@@ -92,9 +92,9 @@ export const gradients: Record<string, GradientDef> = {
     ],
     variants: {
       hero: "radial-gradient(99.09% 59.99% at 50% 55.44%, #8A4DBB 0%, #3E1C64 39.08%, #572A81 78.16%, #A461D8 100%)",
-      card: "radial-gradient(99.09% 59.99% at 50% 55.44%, rgba(138,77,187,0.92) 0%, rgba(62,28,100,0.88) 39.08%, rgba(87,42,129,0.90) 78.16%, rgba(164,97,216,0.92) 100%)",
+      card: "radial-gradient(99.09% 59.99% at 50% 55.44%, #BA7DE9 0%, #572A81 39.08%, #703A9E 78.16%, #BA7DE9 100%)",
       subtle:
-        "radial-gradient(99.09% 59.99% at 50% 55.44%, rgba(138,77,187,0.55) 0%, rgba(62,28,100,0.45) 39.08%, rgba(87,42,129,0.50) 78.16%, rgba(164,97,216,0.55) 100%)",
+        "radial-gradient(99.09% 59.99% at 50% 55.44%, #DBBFEF 0%, #8A4DBB 39.08%, #C89FE7 78.16%, #DBBFEF 100%)",
     },
   },
   ai: {
@@ -109,9 +109,9 @@ export const gradients: Record<string, GradientDef> = {
     ],
     variants: {
       hero: "linear-gradient(91deg, #D565EA 3.04%, #673AAC 66.74%, #1A1994 130.45%)",
-      card: "linear-gradient(91deg, rgba(213,101,234,0.92) 3.04%, rgba(103,58,172,0.90) 66.74%, rgba(26,25,148,0.88) 130.45%)",
+      card: "linear-gradient(91deg, #E08BF0 3.04%, #8A5DC2 66.74%, #3C3BB5 130.45%)",
       subtle:
-        "linear-gradient(91deg, rgba(213,101,234,0.55) 3.04%, rgba(103,58,172,0.50) 66.74%, rgba(26,25,148,0.45) 130.45%)",
+        "linear-gradient(91deg, #EBB0F5 3.04%, #B89FDB 66.74%, #6C6BDE 130.45%)",
     },
   },
 }

@@ -547,7 +547,7 @@ export function ExpandedRxNavShowcase() {
         RX Nav Panel — Expanded View
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        The RX Nav Panel with its content panel expanded. Click any nav item to see its content — Past Visits, Vitals, History, Ophthal, Gynec, Obstetric, Vaccine, Growth, Records, Lab Results, Personal Notes, and Dr Agent.
+        The RX Nav Panel with its content panel expanded. Click any nav item to see its content — Past Visits, Vitals, History, Ophthal, Gynec, Obstetric, Vaccine, Growth, Records, Lab Results, and Personal Notes.
       </p>
       <div className="overflow-hidden rounded-xl border border-[#e2e2ea]" style={{ height: 600 }}>
         <SecondarySidebar />

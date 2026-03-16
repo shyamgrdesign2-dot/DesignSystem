@@ -503,20 +503,22 @@ export function TimePickerModal({
               </div>
             )}
             {!format24 && (
-              <div className="mb-4 flex justify-center gap-2">
+              <div className="mb-4 flex justify-center">
                 <button
                   type="button"
-                  onClick={() => setAmPm("AM")}
-                  className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${amPm === "AM" ? "bg-tp-blue-500 text-white" : "bg-tp-slate-100 text-tp-slate-600 hover:bg-tp-slate-200"}`}
+                  onClick={() => setAmPm(amPm === "AM" ? "PM" : "AM")}
+                  className="relative flex h-[42px] w-24 items-stretch overflow-hidden rounded-lg border border-tp-slate-200 bg-tp-slate-50 transition-colors hover:border-tp-blue-300"
                 >
-                  AM
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAmPm("PM")}
-                  className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${amPm === "PM" ? "bg-tp-blue-500 text-white" : "bg-tp-slate-100 text-tp-slate-600 hover:bg-tp-slate-200"}`}
-                >
-                  PM
+                  <span
+                    className={`flex flex-1 items-center justify-center text-xs font-bold transition-all ${amPm === "AM" ? "bg-tp-blue-500 text-white" : "text-tp-slate-400"}`}
+                  >
+                    AM
+                  </span>
+                  <span
+                    className={`flex flex-1 items-center justify-center text-xs font-bold transition-all ${amPm === "PM" ? "bg-tp-blue-500 text-white" : "text-tp-slate-400"}`}
+                  >
+                    PM
+                  </span>
                 </button>
               </div>
             )}
