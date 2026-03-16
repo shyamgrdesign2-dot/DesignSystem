@@ -23,6 +23,13 @@ import {
   BarChart,
   Star,
 } from "lucide-react"
+import {
+  Clock,
+  ClipboardTick,
+  ClipboardClose,
+  Timer,
+  DocumentSketch,
+} from "iconsax-reactjs"
 
 // ─── DROPDOWN MENU (with sections, keyboard shortcuts, dividers) ───
 
@@ -511,22 +518,184 @@ export function SegmentedControlShowcase() {
         Segmented Control
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Pill-style toggle groups with animated sliding background indicator. Constraint: Active segment uses white card with shadow to "pop" off the gray track. Icons are optional and follow the same neutral icon color rules (active = TP Slate 900, inactive = TP Slate 500).
+        Pill-style toggle groups with animated sliding background indicator. Active segment uses white card with shadow to "pop" off the gray track. Queue icons use iconsax Bulk/Linear dual-tone variants for active/inactive states.
       </p>
       <div className="flex flex-col gap-6">
         <div>
-          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Text Only</span>
+          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Queue / Filter Toggle (with iconsax icons)</span>
+          <QueueSegmentedControl />
+        </div>
+        <div>
+          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">View Mode Toggle</span>
           <SegmentedControl items={["Daily", "Weekly", "Monthly"]} activeIndex={1} />
         </div>
         <div>
-          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">With Icons</span>
-          <SegmentedControl items={["Own Letterhead", "Upload Letterhead", "Custom"]} activeIndex={0} showIcons />
-        </div>
-        <div>
-          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Compact With Icons</span>
-          <SegmentedControl items={["Grid", "List", "Board"]} activeIndex={0} showIcons />
+          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Text Only</span>
+          <SegmentedControl items={["Queue", "Finished", "Draft"]} activeIndex={0} />
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── APPOINTMENT-STYLE TABS (iconsax Bulk/Linear) ───
+
+const APPT_TABS = [
+  { id: "queue", label: "Queue" },
+  { id: "finished", label: "Finished" },
+  { id: "cancelled", label: "Cancelled" },
+  { id: "draft", label: "Draft" },
+  { id: "pending", label: "Pending Digitisation" },
+]
+
+const APPT_TAB_BADGES: Record<string, number> = {
+  queue: 24,
+  finished: 12,
+  cancelled: 5,
+  draft: 3,
+  pending: 8,
+}
+
+function ApptTabIcon({
+  id,
+  active,
+  size = 18,
+}: {
+  id: string
+  active: boolean
+  size?: number
+}) {
+  const variant = active ? "Bulk" : "Linear"
+  const color = active ? "#4B4AD5" : "#717179"
+  const props = { size, color, variant } as const
+  if (id === "queue") return <Clock {...props} />
+  if (id === "finished") return <ClipboardTick {...props} />
+  if (id === "cancelled") return <ClipboardClose {...props} />
+  if (id === "draft") return <Timer {...props} />
+  return <DocumentSketch {...props} />
+}
+
+function AppointmentTabs({ showBadges = false }: { showBadges?: boolean }) {
+  const [active, setActive] = useState("queue")
+  const tabsRef = useRef<HTMLDivElement>(null)
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 })
+
+  useEffect(() => {
+    const container = tabsRef.current
+    if (!container) return
+    const idx = APPT_TABS.findIndex((t) => t.id === active)
+    const buttons = container.querySelectorAll("button")
+    const btn = buttons[idx]
+    if (btn) setIndicator({ left: (btn as HTMLButtonElement).offsetLeft, width: (btn as HTMLButtonElement).offsetWidth })
+  }, [active])
+
+  return (
+    <div ref={tabsRef} className="relative flex border-b border-tp-slate-200 overflow-x-auto">
+      <div
+        className="absolute bottom-0 h-[3px] bg-tp-blue-500 transition-all duration-200 ease-out"
+        style={{ left: `${indicator.left}px`, width: `${indicator.width}px`, borderRadius: "3px 3px 0 0" }}
+      />
+      {APPT_TABS.map((tab) => {
+        const isActive = active === tab.id
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className="relative flex items-center gap-1.5 whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors"
+            style={{ color: isActive ? "#4B4AD5" : "#717179", marginBottom: "-1px" }}
+          >
+            <ApptTabIcon id={tab.id} active={isActive} />
+            {tab.label}
+            {showBadges && (
+              <span
+                className="ml-0.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full"
+                style={{
+                  backgroundColor: isActive ? "#EEEEFF" : "#F1F1F5",
+                  color: isActive ? "#4B4AD5" : "#A2A2A8",
+                }}
+              >
+                {APPT_TAB_BADGES[tab.id]}
+              </span>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function AppointmentPillTabs() {
+  const [active, setActive] = useState("queue")
+  return (
+    <div className="inline-flex gap-1 flex-wrap">
+      {APPT_TABS.map((tab) => {
+        const isActive = active === tab.id
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className="px-4 py-2 text-sm font-semibold transition-colors inline-flex items-center gap-1.5 whitespace-nowrap"
+            style={{
+              borderRadius: "8px",
+              backgroundColor: isActive ? "#EEEEFF" : "transparent",
+              color: isActive ? "#4B4AD5" : "#717179",
+            }}
+          >
+            <ApptTabIcon id={tab.id} active={isActive} size={16} />
+            {tab.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function QueueSegmentedControl() {
+  const items = [
+    { id: "queue", label: "Queue" },
+    { id: "finished", label: "Finished" },
+    { id: "draft", label: "Draft" },
+  ]
+  const [active, setActive] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 })
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+    const buttons = container.querySelectorAll("button")
+    const btn = buttons[active]
+    if (btn) setIndicator({ left: (btn as HTMLButtonElement).offsetLeft, width: (btn as HTMLButtonElement).offsetWidth })
+  }, [active])
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative inline-flex p-1"
+      style={{ borderRadius: "10px", backgroundColor: "#F1F1F5" }}
+    >
+      <div
+        className="absolute top-1 transition-all duration-200 ease-out"
+        style={{
+          left: `${indicator.left}px`,
+          width: `${indicator.width}px`,
+          height: "calc(100% - 8px)",
+          borderRadius: "8px",
+          backgroundColor: "#FFFFFF",
+          boxShadow: "0 1px 3px rgba(23,23,37,0.08), 0 1px 2px -1px rgba(23,23,37,0.06)",
+        }}
+      />
+      {items.map((item, i) => (
+        <button
+          key={item.id}
+          onClick={() => setActive(i)}
+          className="relative z-10 px-5 py-2 text-sm font-semibold transition-colors inline-flex items-center gap-1.5"
+          style={{ borderRadius: "8px", color: active === i ? "#171725" : "#717179" }}
+        >
+          <ApptTabIcon id={item.id} active={active === i} size={16} />
+          {item.label}
+        </button>
+      ))}
     </div>
   )
 }
@@ -536,45 +705,26 @@ export function TabsShowcase() {
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Tabs</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Underline and pill tab variants with icons, animated active indicator and optional badge counts. Constraint: Selected tab icons use dual-tone (filled) style for emphasis, while unselected tabs use linear (outline) style. This visual weight difference reinforces which tab is active.
+        Underline and pill tab variants with iconsax icons and animated active indicator. Selected tab icons use dual-tone (Bulk) variant for emphasis; unselected tabs use linear (outline) variant. This visual weight difference reinforces the active state.
       </p>
       <div className="flex flex-col gap-8">
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">
             Underline Tabs with Icons
           </span>
-          <UnderlineTabs
-            items={[
-              { label: "Prescription" },
-              { label: "Header & Footer" },
-              { label: "Page Format" },
-            ]}
-            activeIndex={0}
-          />
+          <AppointmentTabs />
         </div>
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">
             Underline Tabs with Icons + Badges
           </span>
-          <UnderlineTabs
-            items={[
-              { label: "Menu one", badge: 3 },
-              { label: "Menu two", badge: 12 },
-              { label: "Menu three", badge: 5 },
-              { label: "Menu four" },
-              { label: "Others" },
-            ]}
-            activeIndex={0}
-          />
+          <AppointmentTabs showBadges />
         </div>
         <div>
           <span className="text-xs font-semibold text-tp-slate-600 block mb-3">
             Pill Tabs with Icons
           </span>
-          <PillTabs
-            items={["Menu one", "Menu two", "Menu three", "Menu four", "Others"]}
-            activeIndex={0}
-          />
+          <AppointmentPillTabs />
         </div>
       </div>
     </div>

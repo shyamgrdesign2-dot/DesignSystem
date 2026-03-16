@@ -7,28 +7,32 @@ import {
   TabsShowcase,
   SegmentedControlShowcase,
   DropdownShowcase,
-  SearchDropdownShowcase,
 } from "@/components/design-system/navigation-showcase"
-import { SearchCommandShowcase } from "@/components/design-system/search-command-showcase"
 import { TokenPanel } from "@/components/design-system/token-badge"
 import { navigationTokens } from "@/lib/component-tokens"
+import {
+  TopNavBarShowcase,
+  PatientInfoHeaderShowcase,
+  AppointmentBannerShowcase,
+} from "@/components/design-system/clinical-showcase"
 
 export default function NavigationPage() {
   return (
     <div>
       <PageHeader
         title="Navigation"
-        description="Secondary nav, tabs, segmented controls, dropdowns, and command palette. Wayfinding and menu patterns for app navigation."
+        description="Top nav bars, secondary nav, tabs, segmented controls, dropdowns, and command palette. Wayfinding and menu patterns for app navigation."
         badge="Components"
       />
 
       <div className="flex flex-col gap-8">
+        <ComponentCard><TopNavBarShowcase /></ComponentCard>
+        <ComponentCard><AppointmentBannerShowcase /></ComponentCard>
+        <ComponentCard><PatientInfoHeaderShowcase /></ComponentCard>
         <ComponentCard><SecondaryNavShowcase /></ComponentCard>
         <ComponentCard><TabsShowcase /></ComponentCard>
         <ComponentCard><SegmentedControlShowcase /></ComponentCard>
         <ComponentCard><DropdownShowcase /></ComponentCard>
-        <ComponentCard><SearchDropdownShowcase /></ComponentCard>
-        <ComponentCard><SearchCommandShowcase /></ComponentCard>
       </div>
 
       <TokenPanel title="Navigation Design Tokens" tokens={navigationTokens.tokens} defaultOpen={false} />

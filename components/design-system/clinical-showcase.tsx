@@ -4,25 +4,21 @@ import { useState } from "react"
 import {
   Users,
   CheckCircle,
-  XCircle,
   Pencil,
   Clock,
   Eye,
   Bell,
-  Settings,
-  Calendar,
   Trash2,
   MoreVertical,
   Video,
 } from "lucide-react"
 
-import { TPTopNavBar, defaultNavActions } from "@/components/tp-ui/tp-top-nav-bar"
-import { TPAppointmentBanner } from "@/components/tp-ui/tp-appointment-banner"
+import { ChevronDown } from "lucide-react"
+import { AppointmentBanner } from "@/components/appointments/AppointmentBanner"
 import { TPSplitButton } from "@/components/tp-ui/button-system"
 import { TPClinicalTabs } from "@/components/tp-ui/tp-clinical-tabs"
 import { TPSearchFilterBar } from "@/components/tp-ui/tp-search-filter-bar"
 import { TPStatusBadge } from "@/components/tp-ui/tp-status-badge"
-import { TPClinicalTable } from "@/components/tp-ui/tp-clinical-table"
 import { TPPatientInfoHeader } from "@/components/tp-ui/tp-patient-info-header"
 
 // ═════════════════════════════════════════════════════════════
@@ -36,29 +32,48 @@ export function TopNavBarShowcase() {
         Top Navigation Bar
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        62px height, white bg, 0.5px #F1F1F5 bottom border. Toolbar icons: 42px containers, bg-[#f1f1f5], rounded-[10.5px]. Profile avatar: 42px with gradient border.
+        62px height, white bg, 0.5px border-tp-slate-100. Logo image left-aligned. Toolbar right: 42px icon buttons (bg-tp-slate-100, rounded-[10px]), clinic selector with chevron, profile avatar with gradient ring.
       </p>
 
-      <div className="space-y-4">
-        {/* Default variant (HomeHeader) */}
-        <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
-          <TPTopNavBar
-            title="TatvaPractice"
-            profile={{ name: "Dr. Ananya Sharma", initials: "AS" }}
-          />
-        </div>
-
-        {/* Clinical variant with patient info (RxpadHeader) */}
-        <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
-          <TPTopNavBar
-            variant="clinical"
-            patient={{
-              name: "Rajesh Kumar",
-              age: 34,
-              gender: "M",
-            }}
-          />
-        </div>
+      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
+        {/* Exact appointment screen header */}
+        <header className="flex h-[62px] shrink-0 items-center border-b border-tp-slate-100 bg-white px-4 py-2.5">
+          {/* Logo */}
+          <div className="flex min-w-0 flex-1 items-center">
+            <img alt="TatvaPractice" className="h-8 w-auto object-contain" src="/assets/b38df11ad80d11b9c1d530142443a18c2f53d406.png" />
+          </div>
+          {/* Toolbar */}
+          <div className="flex items-center gap-3.5">
+            {/* Tutorial button */}
+            <button type="button" className="flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 transition-colors hover:bg-tp-slate-200" aria-label="Tutorial">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#BA7DE9" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M19.5099 5.85L13.5699 2.42C12.5999 1.86 11.3999 1.86 10.4199 2.42L4.48992 5.85C3.51992 6.41 2.91992 7.45 2.91992 8.58V15.42C2.91992 16.54 3.51992 17.58 4.48992 18.15L10.4299 21.58C11.3999 22.14 12.5999 22.14 13.5799 21.58L19.5199 18.15C20.4899 17.59 21.0899 16.55 21.0899 15.42V8.58C21.0799 7.45 20.4799 6.42 19.5099 5.85ZM14.2499 13.4L13.2099 14L12.1699 14.6C10.8399 15.37 9.74992 14.74 9.74992 13.2V12V10.8C9.74992 9.26 10.8399 8.63 12.1699 9.4L13.2099 10L14.2499 10.6C15.5799 11.37 15.5799 12.63 14.2499 13.4Z" />
+              </svg>
+            </button>
+            {/* Notifications button */}
+            <button type="button" className="relative inline-flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 text-tp-slate-700 transition-colors hover:bg-tp-slate-200" aria-label="Notifications">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.02 2.91c-3.31 0-6 2.69-6 6v2.89c0 .61-.26 1.54-.57 2.06L4.3 15.77c-.71 1.18-.22 2.49 1.08 2.93 4.31 1.44 8.96 1.44 13.27 0 1.21-.4 1.74-1.83 1.08-2.93l-1.15-1.91c-.3-.52-.56-1.45-.56-2.06V8.91c0-3.3-2.7-6-6-6Z" stroke="#454551" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" />
+                <path d="M13.87 3.2a6.754 6.754 0 0 0-3.7 0c.29-.74 1.01-1.26 1.85-1.26.84 0 1.56.52 1.85 1.26ZM15.33 19.01c0 1.65-1.32 3-2.97 3-.82 0-1.58-.34-2.12-.88-.54-.54-.88-1.3-.88-2.12" stroke="#454551" strokeWidth="1.5" strokeMiterlimit="10" />
+              </svg>
+              <span className="absolute right-2.5 top-2.5 h-[7px] w-[7px] rounded-full bg-red-500" />
+            </button>
+            {/* Clinic selector */}
+            <button type="button" className="inline-flex h-[42px] items-center gap-2 rounded-[10px] border border-tp-slate-200 bg-tp-slate-50 pl-3 pr-2 text-sm font-medium text-tp-slate-700 transition-colors hover:bg-tp-slate-100">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path opacity=".4" d="M2 22h20" stroke="#454551" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M9.5 22V13h5v9M13.5 2h-9C3.5 2 3 2.5 3 3.5v7c0 1 .5 1.5 1.5 1.5h9c1 0 1.5-.5 1.5-1.5v-7C15 2.5 14.5 2 13.5 2Z" stroke="#454551" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M21 22v-6.5c0-.83-.67-1.5-1.5-1.5H17c-.83 0-1.5.67-1.5 1.5V22M6.5 7h5M9 5v4" stroke="#454551" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="max-w-[120px] truncate text-xs">Rajeshwar Eye Clinic</span>
+              <ChevronDown size={14} className="shrink-0 text-tp-slate-500" />
+            </button>
+            {/* Profile avatar */}
+            <div className="flex size-[42px] shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: "linear-gradient(135deg, #A461D8 0%, #4B4AD5 100%)" }}>
+              AS
+            </div>
+          </div>
+        </header>
       </div>
     </div>
   )
@@ -75,37 +90,42 @@ export function AppointmentBannerShowcase() {
         Appointment Banner
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Gradient hero banner (Blue 600→Violet 500), 16px radius, SVG dot texture at 6% opacity. CTA: white bg, Blue 600 text, 10px radius.
+        Dark radial-gradient hero banner (purple: #46286C → #25113E → #372153 → #6C4F90). 149px height, 16px bottom radius. SVG dot texture at 5% opacity. White title text, Poppins Bold 24px.
       </p>
 
       <div className="space-y-4">
-        <TPAppointmentBanner
+        <AppointmentBanner
           title="Your Appointments"
-          subtitle="Manage today's schedule, track patient queue, and stay on top."
-          ctaLabel="New Appointment"
-          stats={[
-            { label: "In Queue", value: 5 },
-            { label: "Finished", value: 3 },
-            { label: "Total", value: 16 },
-          ]}
+          actions={
+            <>
+              <button
+                className="rounded-[10px] px-4 py-2 text-sm font-semibold text-white/80 transition-colors hover:text-white"
+                style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+              >
+                View All
+              </button>
+              <button
+                className="rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors"
+                style={{ backgroundColor: "#FFFFFF", color: "#4B4AD5" }}
+              >
+                + New Appointment
+              </button>
+            </>
+          }
         />
 
-        <TPAppointmentBanner
-          title="Weekly Schedule"
-          subtitle="Plan ahead with your full weekly view."
-          ctaLabel="View Calendar"
-          variant="schedule"
-        />
+        <AppointmentBanner title="Weekly Schedule" />
 
-        <TPAppointmentBanner
+        <AppointmentBanner
           title="Clinic Analytics"
-          subtitle="Track performance metrics and patient trends."
-          ctaLabel="View Report"
-          variant="analytics"
-          stats={[
-            { label: "This Week", value: 87 },
-            { label: "Avg Wait", value: "12min" },
-          ]}
+          actions={
+            <button
+              className="rounded-[10px] px-4 py-2 text-sm font-semibold transition-colors"
+              style={{ backgroundColor: "#FFFFFF", color: "#4B4AD5" }}
+            >
+              View Report
+            </button>
+          }
         />
       </div>
     </div>
@@ -124,37 +144,32 @@ export function ClinicalTabsShowcase() {
     {
       id: "queue",
       label: "Queue",
-      count: 5,
       iconActive: <Users size={18} color="#4b4ad5" />,
       iconInactive: <Users size={18} color="#454551" className="opacity-60" />,
     },
     {
       id: "finished",
       label: "Finished",
-      count: 3,
       iconActive: <CheckCircle size={18} color="#4b4ad5" />,
       iconInactive: <CheckCircle size={18} color="#454551" className="opacity-60" />,
     },
     {
       id: "cancelled",
       label: "Cancelled",
-      count: 2,
-      iconActive: <XCircle size={18} color="#4b4ad5" />,
-      iconInactive: <XCircle size={18} color="#454551" className="opacity-60" />,
+      iconActive: <Clock size={18} color="#4b4ad5" />,
+      iconInactive: <Clock size={18} color="#454551" className="opacity-60" />,
     },
     {
       id: "draft",
       label: "Draft",
-      count: 2,
       iconActive: <Pencil size={18} color="#4b4ad5" />,
       iconInactive: <Pencil size={18} color="#454551" className="opacity-60" />,
     },
     {
       id: "pending",
-      label: "Pending",
-      count: 3,
-      iconActive: <Clock size={18} color="#4b4ad5" />,
-      iconInactive: <Clock size={18} color="#454551" className="opacity-60" />,
+      label: "Pending Digitisation",
+      iconActive: <Bell size={18} color="#4b4ad5" />,
+      iconInactive: <Bell size={18} color="#454551" className="opacity-60" />,
     },
   ]
 
@@ -296,99 +311,90 @@ export function StatusBadgeShowcase() {
 // 6. Clinical Table Showcase
 // ═════════════════════════════════════════════════════════════
 
+type AppointmentRow = {
+  id: string
+  serial: number
+  name: string
+  gender: string
+  age: number
+  contact: string
+  visitType: string
+  slotTime: string
+  slotDate: string
+  hasVideo: boolean
+}
+
+const TABLE_ROWS: AppointmentRow[] = [
+  { id: "1", serial: 1, name: "Shyam GR", gender: "M", age: 35, contact: "+91-9812734567", visitType: "Follow-up", slotTime: "10:30 am", slotDate: "9th Oct 2024", hasVideo: true },
+  { id: "2", serial: 2, name: "Priya Patel", gender: "F", age: 28, contact: "+91-9988776655", visitType: "New", slotTime: "10:35 am", slotDate: "8th Oct 2024", hasVideo: true },
+  { id: "3", serial: 3, name: "Mohammed Ali", gender: "M", age: 52, contact: "+91-9001234567", visitType: "New", slotTime: "10:40 am", slotDate: "12th Sep 2024", hasVideo: false },
+  { id: "4", serial: 4, name: "Lakshmi Devi", gender: "F", age: 45, contact: "+91-9876543210", visitType: "Follow-up", slotTime: "11:00 am", slotDate: "12th Sep 2024", hasVideo: false },
+]
+
 export function ClinicalTableShowcase() {
-  const [selected, setSelected] = useState<string[]>([])
-
-  type SampleRow = {
-    id: string
-    patient: string
-    age: number
-    time: string
-    status: "queue" | "finished" | "cancelled" | "pending"
-    doctor: string
-  }
-
-  const data: SampleRow[] = [
-    { id: "1", patient: "Rajesh Kumar", age: 34, time: "09:00 AM", status: "queue", doctor: "Dr. Sharma" },
-    { id: "2", patient: "Priya Patel", age: 28, time: "09:15 AM", status: "queue", doctor: "Dr. Sharma" },
-    { id: "3", patient: "Mohammed Ali", age: 52, time: "09:30 AM", status: "finished", doctor: "Dr. Sharma" },
-    { id: "4", patient: "Lakshmi Devi", age: 45, time: "10:00 AM", status: "pending", doctor: "Dr. Mehta" },
-    { id: "5", patient: "Arjun Singh", age: 19, time: "10:15 AM", status: "cancelled", doctor: "Dr. Desai" },
-  ]
-
-  const columns = [
-    {
-      id: "patient",
-      header: "Patient",
-      sortable: true,
-      sortValue: (row: SampleRow) => row.patient,
-      accessor: (row: SampleRow) => (
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eef] text-[#4b4ad5] text-[10px] font-semibold">
-            {row.patient.split(" ").map(n => n[0]).join("")}
-          </div>
-          <div>
-            <p className="text-sm font-medium text-[#454551]">{row.patient}</p>
-            <p className="text-[11px] text-[#a2a2a8]">{row.age}y</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "time",
-      header: "Time",
-      width: 100,
-      sortable: true,
-      sortValue: (row: SampleRow) => row.time,
-      accessor: (row: SampleRow) => <span className="text-sm">{row.time}</span>,
-    },
-    {
-      id: "doctor",
-      header: "Doctor",
-      accessor: (row: SampleRow) => <span className="text-sm">{row.doctor}</span>,
-    },
-    {
-      id: "status",
-      header: "Status",
-      width: 130,
-      accessor: (row: SampleRow) => <TPStatusBadge status={row.status} size="sm" />,
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      width: 80,
-      align: "center" as const,
-      sticky: true,
-      accessor: (row: SampleRow) => (
-        <div className="flex justify-center gap-1">
-          <button className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f1f1f5] text-[#454551] hover:bg-[#e2e2ea]">
-            <Eye size={14} />
-          </button>
-          <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#E11D48] hover:bg-red-50">
-            <Trash2 size={14} />
-          </button>
-        </div>
-      ),
-    },
-  ]
-
   return (
     <div>
       <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#a2a2a8]">
         Clinical Data Table
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Header: #F1F1F5 bg, Inter Semi Bold 12px uppercase. Rows: white, hover #F1F1F5, 1px #E2E2EA border. Selected: #EEF. Checkbox: 20px, 6px radius, #4b4ad5.
+        Sticky action column with shadow separator. Header: #F1F1F5 bg, 12px uppercase, sort indicators. Name: TP Blue 500 semibold. Rows: white, hover #F1F1F5/50, 1px #E2E2EA border. 12px radius container.
       </p>
 
-      <TPClinicalTable
-        columns={columns}
-        data={data}
-        rowKey={(row) => row.id}
-        selectedRows={selected}
-        onRowSelect={setSelected}
-        selectable
-      />
+      <div className="overflow-x-auto rounded-[12px] border border-tp-slate-200">
+        <table className="w-full min-w-[700px] border-collapse">
+          <thead>
+            <tr className="bg-tp-slate-100">
+              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">
+                <span className="inline-flex items-center gap-1.5">Name <ColSortArrows /></span>
+              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[130px]">Contact</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                <span className="inline-flex items-center gap-1.5">Visit Type <ColSortArrows /></span>
+              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
+                <span className="inline-flex items-center gap-1.5">Slot <ColSortArrows /></span>
+              </th>
+              <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[80px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {TABLE_ROWS.map((row) => (
+              <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
+                <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
+                <td className="px-3 py-3 align-middle">
+                  <p className="text-sm font-semibold text-tp-blue-500">{row.name}</p>
+                  <p className="mt-1 text-sm text-tp-slate-700">{row.gender}, {row.age}y</p>
+                </td>
+                <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">{row.contact}</td>
+                <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">{row.visitType}</td>
+                <td className="px-3 py-3 align-middle">
+                  <div className="text-sm text-tp-slate-700">
+                    <span className="inline-flex items-center gap-1">
+                      {row.slotTime}
+                      {row.hasVideo && <Video size={13} strokeWidth={1.5} color="var(--tp-blue-500, #3BAFDA)" />}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-tp-slate-600">{row.slotDate}</p>
+                </td>
+                <td className="sticky right-0 z-10 bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                  <div className="flex items-center gap-1">
+                    <button className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f1f1f5] text-[#454551] hover:bg-[#e2e2ea]">
+                      <Eye size={14} />
+                    </button>
+                    <button className="flex h-7 w-7 items-center justify-center rounded-lg text-[#E11D48] hover:bg-red-50">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
@@ -407,40 +413,22 @@ export function PatientInfoHeaderShowcase() {
         62px height, white bg. Back button: 80px. Patient: Poppins SemiBold 14px. Demographics: Roboto Regular 12px. Toolbar: 42px buttons, rounded-[10.5px].
       </p>
 
-      <div className="space-y-3">
-        <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
-          <TPPatientInfoHeader
-            patient={{
-              name: "Rajesh Kumar",
-              age: 34,
-              gender: "Male",
-              bloodGroup: "B+",
-              uhid: "TP-2024-00142",
-              phone: "+91 98765 43210",
-            }}
-            visitInfo={{
-              type: "OPD",
-              date: "24 Jun 2025",
-              tokenNumber: 3,
-            }}
-          />
-        </div>
-
-        <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
-          <TPPatientInfoHeader
-            patient={{
-              name: "Priya Patel",
-              age: 28,
-              gender: "Female",
-              bloodGroup: "O+",
-              uhid: "TP-2024-00298",
-            }}
-            visitInfo={{
-              type: "Teleconsult",
-              date: "24 Jun 2025",
-            }}
-          />
-        </div>
+      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
+        <TPPatientInfoHeader
+          patient={{
+            name: "Shyam GR",
+            age: 25,
+            gender: "Male",
+            bloodGroup: "B+",
+            uhid: "TP-2024-00142",
+            phone: "+91 98765 43210",
+          }}
+          visitInfo={{
+            type: "OPD",
+            date: "27 Jan 2026",
+            tokenNumber: 3,
+          }}
+        />
       </div>
     </div>
   )
@@ -467,7 +455,7 @@ function AiSparkIcon() {
   )
 }
 
-function SortIndicators() {
+function ColSortArrows() {
   return (
     <span className="inline-flex flex-col items-center gap-[2px]">
       <span className="h-0 w-0 border-b-[5px] border-l-[4px] border-r-[4px] border-b-tp-slate-700 border-l-transparent border-r-transparent" />
@@ -500,10 +488,10 @@ export function DrAgentAppointmentsShowcase() {
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Name</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Contact</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
-                <span className="inline-flex items-center gap-1.5">Visit Type <SortIndicators /></span>
+                <span className="inline-flex items-center gap-1.5">Visit Type <ColSortArrows /></span>
               </th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
-                <span className="inline-flex items-center gap-1.5">Slot <SortIndicators /></span>
+                <span className="inline-flex items-center gap-1.5">Slot <ColSortArrows /></span>
               </th>
               <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[280px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
                 Action

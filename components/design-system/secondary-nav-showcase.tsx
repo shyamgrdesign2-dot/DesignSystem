@@ -3,28 +3,27 @@
 import { useState } from "react"
 import type React from "react"
 import {
-  Activity,
-  BookOpen,
-  FlaskConical,
-  Eye,
-  FolderOpen,
-  HeartPulse,
-  Heart,
-  Users,
-  Receipt,
+  Note1,
+  Glass,
   Ruler,
-  type LucideIcon,
-} from "lucide-react"
+  Notepad2,
+  DocumentText,
+} from "iconsax-reactjs"
+import { TPMedicalIcon } from "@/components/tp-ui"
 
 export interface NavBadge {
   text: string
   gradient: string
 }
 
+type NavIconConfig =
+  | { kind: "iconsax"; Icon: React.ComponentType<any> }
+  | { kind: "medical"; name: string }
+
 export interface NavItem {
   id: string
   label: string
-  icon: LucideIcon | React.ComponentType<any>
+  icon: NavIconConfig
   badge?: NavBadge
 }
 
@@ -54,11 +53,11 @@ const SECONDARY_NAV_TOKENS = {
 } as const
 
 const navItems: NavItem[] = [
-  { id: "past-visits", label: "Past Visits", icon: Receipt },
+  { id: "past-visits", label: "Past Visits", icon: { kind: "iconsax", Icon: Note1 } },
   {
     id: "vitals",
     label: "Vitals",
-    icon: Activity,
+    icon: { kind: "medical", name: "Heart Rate" },
     badge: {
       text: "New",
       gradient: "linear-gradient(257.32deg, rgb(22, 163, 74) 0%, rgb(68, 207, 119) 47.222%, rgb(22, 163, 74) 94.444%)",
@@ -67,19 +66,20 @@ const navItems: NavItem[] = [
   {
     id: "history",
     label: "History",
-    icon: BookOpen,
+    icon: { kind: "medical", name: "clipboard-activity" },
     badge: {
       text: "Trial",
       gradient: "linear-gradient(257.32deg, rgb(241, 82, 35) 0%, rgb(255, 152, 122) 47.222%, rgb(241, 82, 35) 94.444%)",
     },
   },
-  { id: "ophthal", label: "Ophthal", icon: Eye },
-  { id: "gynec", label: "Gynec", icon: Heart },
-  { id: "obstetric", label: "Obstetric", icon: Users },
-  { id: "vaccine", label: "Vaccine", icon: HeartPulse },
-  { id: "growth", label: "Growth", icon: Ruler },
-  { id: "records", label: "Records", icon: FolderOpen },
-  { id: "lab-results", label: "Lab Results", icon: FlaskConical },
+  { id: "ophthal", label: "Ophthal", icon: { kind: "iconsax", Icon: Glass } },
+  { id: "gynec", label: "Gynec", icon: { kind: "medical", name: "Gynec" } },
+  { id: "obstetric", label: "Obstetric", icon: { kind: "medical", name: "Obstetric" } },
+  { id: "vaccine", label: "Vaccine", icon: { kind: "medical", name: "injection" } },
+  { id: "growth", label: "Growth", icon: { kind: "iconsax", Icon: Ruler } },
+  { id: "records", label: "Records", icon: { kind: "iconsax", Icon: Notepad2 } },
+  { id: "lab-results", label: "Lab Results", icon: { kind: "medical", name: "Lab" } },
+  { id: "personal-notes", label: "Personal Notes", icon: { kind: "iconsax", Icon: DocumentText } },
 ]
 
 type SidebarVariant = "rx" | "primary"
@@ -222,12 +222,20 @@ export function SecondaryNavPanel({
                       isRx,
                       iconSize: SECONDARY_NAV_TOKENS.iconSize,
                     })
-                  ) : (
-                    <Icon
+                  ) : item.icon.kind === "iconsax" ? (
+                    <item.icon.Icon
+                      size={SECONDARY_NAV_TOKENS.iconSize}
+                      color={isActive ? iconActiveColor : iconDefaultColor}
+                      variant={isActive ? "Bulk" : "Linear"}
+                    />
+                  ) : item.icon.kind === "medical" ? (
+                    <TPMedicalIcon
+                      name={item.icon.name}
+                      variant={isActive ? "bulk" : "line"}
                       size={SECONDARY_NAV_TOKENS.iconSize}
                       color={isActive ? iconActiveColor : iconDefaultColor}
                     />
-                  )}
+                  ) : null}
                 </span>
               </span>
 
@@ -356,16 +364,16 @@ export function SecondaryNavShowcase() {
   return (
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">
-        Secondary Nav Panel
+        Nav Panels
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Primary (white) for homepage/top-level; Rx (dark blue) for in-Rx flows. Both 80px rail, Lucide icons.
-        Primary: unselected TP Slate 100 icon container + TP Slate 700 icon; selected blue 500 bg + white icon; no arrow.
-        Rx: unselected <code className="text-tp-blue-500">TP.icon.clickable.dark.bg</code> (25% white) + white icon; selected white bg + blue 500 icon; 3px left bar + right arrow.
+        80px vertical rail navigation used in appointment and RxPad screens. Icons use TP Medical + iconsax Bulk/Linear variants for active/inactive states.
+        Primary Nav: white surface, TP Slate icon containers, no arrow.
+        RX Nav: dark blue gradient surface, white icons, 3px left highlight bar + right arrow for active item.
       </p>
       <div className="flex flex-wrap gap-8 items-start">
         <div>
-          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Primary (white surface) — no arrow</span>
+          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Primary Nav Panel (white surface)</span>
           <SecondaryNavPanel
             items={navItems}
             activeId={activeId}
@@ -374,7 +382,7 @@ export function SecondaryNavShowcase() {
           />
         </div>
         <div>
-          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">Rx (dark blue surface) — with arrow</span>
+          <span className="text-xs font-semibold text-tp-slate-600 block mb-2">RX Nav Panel (dark blue surface)</span>
           <SecondaryNavPanel
             items={navItems}
             activeId={activeIdAlt}
