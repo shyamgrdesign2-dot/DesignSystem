@@ -105,22 +105,8 @@ export function AppointmentBannerShowcase() {
                 backdrop-filter: blur(8px), color: white, height: 42px, radius: 10px */}
             <button
               type="button"
-              className="inline-flex items-center justify-center hover:bg-white/[0.18] hover:border-white/60 active:scale-[0.97]"
-              style={{
-                height: 42,
-                padding: "8px 14px",
-                borderRadius: 10,
-                fontSize: 14,
-                fontWeight: 600,
-                fontFamily: "Inter, sans-serif",
-                backgroundColor: "rgba(255,255,255,0.07)",
-                color: "#FFFFFF",
-                border: "1.5px solid rgba(255,255,255,0.40)",
-                backdropFilter: "blur(8px)",
-                gap: 6,
-                cursor: "pointer",
-                transition: "all 150ms ease",
-              }}
+              className="inline-flex h-[42px] items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-white/40 bg-white/[0.07] px-3.5 py-2 text-sm font-semibold text-white backdrop-blur-[8px] transition-all duration-150 hover:bg-white/[0.18] hover:border-white/60 active:scale-[0.97]"
+              style={{ fontFamily: "Inter, sans-serif" }}
             >
               View All
             </button>
@@ -128,21 +114,8 @@ export function AppointmentBannerShowcase() {
                 bg: #FFFFFF, color: #161558, border: none, height: 42px, radius: 10px */}
             <button
               type="button"
-              className="inline-flex items-center justify-center hover:bg-white/90 hover:shadow-lg active:scale-[0.97]"
-              style={{
-                height: 42,
-                padding: "8px 14px",
-                borderRadius: 10,
-                fontSize: 14,
-                fontWeight: 600,
-                fontFamily: "Inter, sans-serif",
-                backgroundColor: "#FFFFFF",
-                color: "#161558",
-                border: "none",
-                gap: 6,
-                cursor: "pointer",
-                transition: "all 150ms ease",
-              }}
+              className="inline-flex h-[42px] items-center justify-center gap-1.5 rounded-[10px] border-0 bg-white px-3.5 py-2 text-sm font-semibold text-[#161558] transition-all duration-150 hover:bg-white/90 hover:shadow-lg active:scale-[0.97]"
+              style={{ fontFamily: "Inter, sans-serif" }}
             >
               + New Appointment
             </button>

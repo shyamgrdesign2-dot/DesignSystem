@@ -272,12 +272,13 @@ export function PaginationShowcase() {
               <button
                 key={i}
                 onClick={() => typeof p === "number" && setCurrent(p)}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${current !== p && p !== "..." ? "hover:bg-tp-slate-100 active:scale-[0.95]" : ""}`}
-                style={{
-                  backgroundColor: current === p ? "#4B4AD5" : "transparent",
-                  color: current === p ? "#FFFFFF" : p === "..." ? "#A2A2A8" : "#454551",
-                  boxShadow: current === p ? "0 1px 3px rgba(75,74,213,0.25)" : "none",
-                }}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${
+                  current === p
+                    ? "bg-[#4B4AD5] text-white shadow-[0_1px_3px_rgba(75,74,213,0.25)]"
+                    : p === "..."
+                      ? "text-[#A2A2A8]"
+                      : "text-[#454551] hover:bg-tp-slate-100 active:scale-[0.95]"
+                }`}
               >
                 {p}
               </button>
@@ -302,12 +303,13 @@ export function PaginationShowcase() {
             {[1, 2, 3, "...", 10].map((p, i) => (
               <button
                 key={i}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${p !== 1 && p !== "..." ? "hover:bg-tp-slate-100 active:scale-[0.95]" : ""}`}
-                style={{
-                  backgroundColor: p === 1 ? "#4B4AD5" : "transparent",
-                  color: p === 1 ? "#FFFFFF" : p === "..." ? "#A2A2A8" : "#454551",
-                  boxShadow: p === 1 ? "0 1px 3px rgba(75,74,213,0.25)" : "none",
-                }}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold transition-all ${
+                  p === 1
+                    ? "bg-[#4B4AD5] text-white shadow-[0_1px_3px_rgba(75,74,213,0.25)]"
+                    : p === "..."
+                      ? "text-[#A2A2A8]"
+                      : "text-[#454551] hover:bg-tp-slate-100 active:scale-[0.95]"
+                }`}
               >
                 {p}
               </button>
@@ -539,14 +541,12 @@ export function ModalShowcase() {
           </div>
           <div className="flex gap-3 justify-end px-6 py-4 border-t border-tp-slate-100 bg-tp-slate-50/50">
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#E2E2EA] active:scale-[0.97]"
-              style={{ backgroundColor: "#F1F1F5", color: "#454551" }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#F1F1F5] text-[#454551] transition-all hover:bg-[#E2E2EA] active:scale-[0.97]"
             >
               Cancel
             </button>
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#BE123C] hover:shadow-md active:scale-[0.97]"
-              style={{ backgroundColor: "#E11D48", color: "#FFFFFF", boxShadow: "0 1px 3px rgba(225,29,72,0.2)" }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#E11D48] text-white shadow-[0_1px_3px_rgba(225,29,72,0.2)] transition-all hover:bg-[#BE123C] hover:shadow-md active:scale-[0.97]"
             >
               Delete Record
             </button>
@@ -582,8 +582,7 @@ export function ModalShowcase() {
           </div>
           <div className="flex gap-3 justify-end px-6 py-4 border-t border-tp-slate-100 bg-tp-slate-50/50">
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#3F3EC0] hover:shadow-md active:scale-[0.97]"
-              style={{ backgroundColor: "#4B4AD5", color: "#FFFFFF", boxShadow: "0 1px 3px rgba(75,74,213,0.25)" }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#4B4AD5] text-white shadow-[0_1px_3px_rgba(75,74,213,0.25)] transition-all hover:bg-[#3F3EC0] hover:shadow-md active:scale-[0.97]"
             >
               Done
             </button>
@@ -619,14 +618,12 @@ export function ModalShowcase() {
           </div>
           <div className="flex gap-3 justify-end px-6 py-4 border-t border-tp-slate-100 bg-tp-slate-50/50">
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#E2E2EA] active:scale-[0.97]"
-              style={{ backgroundColor: "#F1F1F5", color: "#454551" }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#F1F1F5] text-[#454551] transition-all hover:bg-[#E2E2EA] active:scale-[0.97]"
             >
               Dismiss
             </button>
             <button
-              className="px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:bg-[#3F3EC0] hover:shadow-md active:scale-[0.97]"
-              style={{ backgroundColor: "#4B4AD5", color: "#FFFFFF", boxShadow: "0 1px 3px rgba(75,74,213,0.25)" }}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#4B4AD5] text-white shadow-[0_1px_3px_rgba(75,74,213,0.25)] transition-all hover:bg-[#3F3EC0] hover:shadow-md active:scale-[0.97]"
             >
               Got it
             </button>
