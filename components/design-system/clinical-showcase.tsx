@@ -45,10 +45,13 @@ export function TopNavBarShowcase() {
           </div>
           {/* Toolbar */}
           <div className="flex items-center gap-3.5">
-            {/* Tutorial icon — hexagonal play button */}
-            <button type="button" className="flex size-[42px] items-center justify-center rounded-[10px] bg-tp-slate-100 transition-colors hover:bg-tp-slate-200" aria-label="Play tutorial">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ color: "#BA7DE9" }}>
-                <path d="M19.5099 5.85L13.5699 2.42C12.5999 1.86 11.3999 1.86 10.4199 2.42L4.48992 5.85C3.51992 6.41 2.91992 7.45 2.91992 8.58V15.42C2.91992 16.54 3.51992 17.58 4.48992 18.15L10.4299 21.58C11.3999 22.14 12.5999 22.14 13.5799 21.58L19.5199 18.15C20.4899 17.59 21.0899 16.55 21.0899 15.42V8.58C21.0799 7.45 20.4799 6.42 19.5099 5.85ZM14.2499 13.4L13.2099 14L12.1699 14.6C10.8399 15.37 9.74992 14.74 9.74992 13.2V12V10.8C9.74992 9.26 10.8399 8.63 12.1699 9.4L13.2099 10L14.2499 10.6C15.5799 11.37 15.5799 12.63 14.2499 13.4Z" />
+            {/* Tutorial icon — circle with play button (matches RxpadHeader) */}
+            <button type="button" className="relative inline-flex size-[42px] shrink-0 items-center justify-center rounded-[10.5px] transition-colors hover:bg-tp-slate-50" aria-label="Play tutorial">
+              <svg className="block h-[42px] w-[42px]" fill="none" preserveAspectRatio="none" viewBox="0 0 42 42" aria-hidden="true">
+                <g opacity="0.8">
+                  <path clipRule="evenodd" d="M21.0002 8.71582C27.7849 8.7159 33.2854 14.2163 33.2854 21.001C33.2851 27.7856 27.7848 33.2851 21.0002 33.2852C14.2156 33.2851 8.71524 27.7855 8.71499 21.001C8.71499 14.2163 14.2155 8.71596 21.0002 8.71582ZM18.8356 16.6175C18.3239 16.3321 17.6842 16.6895 17.6841 17.2614V24.9867C17.6843 25.5585 18.3239 25.916 18.8356 25.6307L25.7467 21.768C26.2583 21.4819 26.2583 20.7663 25.7467 20.4801L18.8356 16.6175Z" fill="#8A4DBB" fillRule="evenodd" />
+                  <path clipRule="evenodd" d="M21.0002 2.1C31.4384 2.1 39.9002 10.5618 39.9002 21C39.9002 31.4382 31.4384 39.9 21.0002 39.9C10.5621 39.8999 2.1002 31.4381 2.1002 21C2.1002 10.5619 10.5621 2.10014 21.0002 2.1ZM21.0002 4.43481C11.8516 4.43495 4.43501 11.8513 4.43501 21C4.43501 30.1487 11.8516 37.565 21.0002 37.5652C30.149 37.5652 37.5654 30.1488 37.5654 21C37.5654 11.8512 30.149 4.43481 21.0002 4.43481Z" fill="#8A4DBB" fillRule="evenodd" />
+                </g>
               </svg>
             </button>
             {/* Notifications — iconsax Notification icon */}
