@@ -232,14 +232,16 @@ function SegmentedControl({
       />
       {items.map((item, i) => {
         const Icon = showIcons ? segIconMap[item] : undefined
+        const isActive = active === i
         return (
           <button
             key={i}
             onClick={() => setActive(i)}
-            className="relative z-10 px-5 py-2 text-sm font-semibold transition-colors inline-flex items-center gap-1.5"
+            className={`relative z-10 px-5 py-2 text-sm font-semibold transition-all inline-flex items-center gap-1.5 rounded-[8px] ${
+              isActive ? "" : "hover:bg-white/60 hover:text-[#454551]"
+            }`}
             style={{
-              borderRadius: "8px",
-              color: active === i ? "#171725" : "#717179",
+              color: isActive ? "#171725" : "#717179",
             }}
           >
             {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} /></span>}
@@ -310,13 +312,14 @@ function UnderlineTabs({
           <button
             key={i}
             onClick={() => setActive(i)}
-            className="relative px-4 py-3 text-sm font-medium transition-colors inline-flex items-center gap-1.5"
-            style={{
-              color: isActive ? "#4B4AD5" : "#717179",
-              marginBottom: "-1px",
-            }}
+            className={`relative px-4 py-3 text-sm font-medium transition-all inline-flex items-center gap-1.5 ${
+              isActive
+                ? "text-[#4B4AD5]"
+                : "text-[#717179] hover:text-[#454551] hover:bg-tp-slate-100/70"
+            }`}
+            style={{ marginBottom: "-1px" }}
           >
-            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} style={{ color: isActive ? "#4B4AD5" : "#717179" }} /></span>}
+            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} style={{ color: isActive ? "#4B4AD5" : undefined }} className={isActive ? "" : "transition-colors"} /></span>}
             {item.label}
             {item.badge !== undefined && (
               <span
@@ -356,14 +359,13 @@ function PillTabs({
           <button
             key={i}
             onClick={() => setActive(i)}
-            className="px-4 py-2 text-sm font-semibold transition-colors inline-flex items-center gap-1.5"
-            style={{
-              borderRadius: "8px",
-              backgroundColor: isActive ? "#EEEEFF" : "transparent",
-              color: isActive ? "#4B4AD5" : "#717179",
-            }}
+            className={`px-4 py-2 text-sm font-semibold transition-all inline-flex items-center gap-1.5 rounded-[8px] ${
+              isActive
+                ? "bg-[#EEEEFF] text-[#4B4AD5]"
+                : "bg-transparent text-[#717179] hover:bg-[#F1F1F5] hover:text-[#454551]"
+            }`}
           >
-            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} style={{ color: isActive ? "#4B4AD5" : "#717179" }} /></span>}
+            {Icon && <span className="inline-flex flex-shrink-0"><Icon size={18} style={{ color: isActive ? "#4B4AD5" : undefined }} className={isActive ? "" : "transition-colors"} /></span>}
             {item}
           </button>
         )
@@ -605,8 +607,12 @@ function AppointmentTabs({ showBadges = false }: { showBadges?: boolean }) {
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}
-            className="relative flex items-center gap-1.5 whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors"
-            style={{ color: isActive ? "#4B4AD5" : "#717179", marginBottom: "-1px" }}
+            className={`relative flex items-center gap-1.5 whitespace-nowrap px-4 py-3 text-sm font-medium transition-all ${
+              isActive
+                ? "text-[#4B4AD5]"
+                : "text-[#717179] hover:text-[#454551] hover:bg-tp-slate-100/70"
+            }`}
+            style={{ marginBottom: "-1px" }}
           >
             <ApptTabIcon id={tab.id} active={isActive} />
             {tab.label}
@@ -638,12 +644,11 @@ function AppointmentPillTabs() {
           <button
             key={tab.id}
             onClick={() => setActive(tab.id)}
-            className="px-4 py-2 text-sm font-semibold transition-colors inline-flex items-center gap-1.5 whitespace-nowrap"
-            style={{
-              borderRadius: "8px",
-              backgroundColor: isActive ? "#EEEEFF" : "transparent",
-              color: isActive ? "#4B4AD5" : "#717179",
-            }}
+            className={`px-4 py-2 text-sm font-semibold transition-all inline-flex items-center gap-1.5 whitespace-nowrap rounded-[8px] ${
+              isActive
+                ? "bg-[#EEEEFF] text-[#4B4AD5]"
+                : "bg-transparent text-[#717179] hover:bg-[#F1F1F5] hover:text-[#454551]"
+            }`}
           >
             <ApptTabIcon id={tab.id} active={isActive} size={16} />
             {tab.label}
@@ -689,17 +694,23 @@ function QueueSegmentedControl() {
           boxShadow: "0 1px 3px rgba(23,23,37,0.08), 0 1px 2px -1px rgba(23,23,37,0.06)",
         }}
       />
-      {items.map((item, i) => (
-        <button
-          key={item.id}
-          onClick={() => setActive(i)}
-          className="relative z-10 px-5 py-2 text-sm font-semibold transition-colors inline-flex items-center gap-1.5"
-          style={{ borderRadius: "8px", color: active === i ? "#171725" : "#717179" }}
-        >
-          <ApptTabIcon id={item.id} active={active === i} size={16} neutralWhenActive />
-          {item.label}
-        </button>
-      ))}
+      {items.map((item, i) => {
+        const isActive = active === i
+        return (
+          <button
+            key={item.id}
+            onClick={() => setActive(i)}
+            className={`relative z-10 px-5 py-2 text-sm font-semibold transition-all inline-flex items-center gap-1.5 rounded-[8px] ${
+              isActive
+                ? "text-[#171725]"
+                : "text-[#717179] hover:bg-white/60 hover:text-[#454551]"
+            }`}
+          >
+            <ApptTabIcon id={item.id} active={isActive} size={16} neutralWhenActive />
+            {item.label}
+          </button>
+        )
+      })}
     </div>
   )
 }
