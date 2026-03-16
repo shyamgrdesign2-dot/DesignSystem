@@ -166,7 +166,7 @@ export const ctaTokens: ComponentTokenGroup = {
   tokens: [
     // Anatomy
     { token: "TP.cta.height.sm", value: "32px", property: "height", description: "Small CTA height" },
-    { token: "TP.cta.height.md", value: "38px", property: "height", description: "Medium CTA height (default)" },
+    { token: "TP.cta.height.md", value: "42px", property: "height", description: "Medium CTA height (default) - matches TP.input.height.md" },
     { token: "TP.cta.height.lg", value: "44px", property: "height", description: "Large CTA height" },
     { token: "TP.cta.radius", value: "10px", cssVar: "--tp-cta-radius", property: "border-radius", description: "CTA corner radius (locked)" },
     { token: "TP.cta.padding.x", value: "14px", property: "padding-inline", description: "Horizontal CTA padding" },

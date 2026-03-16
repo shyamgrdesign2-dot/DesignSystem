@@ -280,9 +280,13 @@ export const tpTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
+          height: 42, // Medium input height from TP.input.height.md
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: tpSlate[200],
           },
+        },
+        sizeSmall: {
+          height: 36, // Small input height
         },
       },
     },
