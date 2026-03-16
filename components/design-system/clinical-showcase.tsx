@@ -33,10 +33,10 @@ export function TopNavBarShowcase() {
         Top Navigation Bar
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        62px height, white bg, 0.5px border-tp-slate-100. Logo image left-aligned. Toolbar right: 42px icon buttons (bg-tp-slate-100, rounded-[10px]), clinic selector with chevron, profile avatar with gradient ring.
+        62px fixed height, white bg, 0.5px bottom border #F1F1F5. Left section: logo image (min-w 280px flex area). Toolbar right: 42px icon buttons (bg #F1F1F5, rounded-[10.5px], 8.4px inner padding), gradient divider (1.05px × 42px), clinic selector dropdown with ChevronDown, profile avatar (42px) with gradient ring (gold→orange, 0.93px white inner border). Desktop: full toolbar. Tablet (≤1024px): hides clinic text, compact icons. Mobile (≤768px): hamburger menu replaces toolbar.
       </p>
 
-      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
+      <div className="overflow-hidden rounded-xl">
         {/* Exact appointment screen header — matches DrAgentPage TopHeader */}
         <header className="flex h-[62px] shrink-0 items-center border-b border-tp-slate-100 bg-tp-slate-0 px-4 py-2.5">
           {/* Logo */}
@@ -90,7 +90,7 @@ export function AppointmentBannerShowcase() {
         Banner
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Dark radial-gradient hero banner (purple: #46286C → #25113E → #372153 → #6C4F90). 149px height, 16px bottom radius. Geometric pattern right-aligned, scales with height. White title, Poppins Bold 24px. Primary + secondary CTAs using TPButton.
+        Dark radial-gradient hero banner (purple: #46286C → #25113E → #372153 → #6C4F90). 149px height, 16px bottom radius. Geometric SVG pattern right-aligned (opacity 75%, mix-blend-mode: screen, scales with height). Noise grain overlay at 6% opacity. White title: Poppins Bold 24px. Primary CTA (solid white, text #4B4AD5) + secondary CTA (ghost, bg white/12%). Desktop: side-by-side title + CTAs (px-[18px]). Tablet: stacks CTAs below title (px-6). Mobile: single CTA visible (px-3). The card below uses -mt-[60px] to overlap the banner bottom.
       </p>
 
       <AppointmentBanner
@@ -321,14 +321,17 @@ export function ClinicalTableShowcase() {
         Clinical Data Table
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Sticky action column with shadow separator. Header: #F1F1F5 bg, 12px uppercase, sort indicators. Name: TP Blue 500 semibold. Rows: white, hover #F1F1F5/50, 1px #E2E2EA border. 12px radius container.
+        Sticky action column with left shadow separator (-4px_0_8px_-2px rgba(0,0,0,0.08)). Header: #F1F1F5 bg, 12px uppercase semibold, sortable columns with up/down caret arrows. Name: TP Blue 500 semibold with hover underline. Rows: white bg, hover #F1F1F5/50, 1px #E2E2EA bottom border. Row height: 64px. Checkbox column (optional): 20px checkbox, rounded-[4px], checked state uses TP Blue 500 fill. Desktop: full table visible (min-w 700px). Tablet (≤1024px): horizontal scroll activates, action column becomes sticky right with shadow. iPad: touch-friendly 42px action buttons.
       </p>
 
-      <div className="overflow-x-auto rounded-[12px] border border-tp-slate-200">
+      <div className="overflow-x-auto rounded-[12px]">
         <table className="w-full min-w-[700px] border-collapse">
           <thead>
             <tr className="bg-tp-slate-100">
-              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
+              <th className="rounded-l-[12px] w-[40px] px-3 py-3 text-center">
+                <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
+              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">
                 <span className="inline-flex items-center gap-1.5">Name <ColSortArrows /></span>
               </th>
@@ -347,9 +350,12 @@ export function ClinicalTableShowcase() {
           <tbody>
             {TABLE_ROWS.map((row) => (
               <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
+                <td className="w-[40px] px-3 py-3 text-center">
+                  <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
+                </td>
                 <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
                 <td className="px-3 py-3 align-middle">
-                  <p className="text-sm font-semibold text-tp-blue-500">{row.name}</p>
+                  <p className="cursor-pointer text-sm font-semibold text-tp-blue-500 hover:underline">{row.name}</p>
                   <p className="mt-1 text-sm text-tp-slate-700">{row.gender}, {row.age}y</p>
                 </td>
                 <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">{row.contact}</td>
@@ -393,10 +399,10 @@ export function PatientInfoHeaderShowcase() {
         Patient Info Header (RxPad)
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Exact RxPad header — 62px height, white bg. Back button: 80px with ChevronLeft. Patient avatar + name + demographics. Toolbar: 42px action buttons (Preview, Draft, End Visit, etc.), rounded-[10.5px].
+        62px fixed height, white bg. Back button: 80px panel with ArrowLeft, right + bottom border 0.5px #F1F1F5. Patient avatar (40px circle, bg #F1F1F5) + name (Poppins SemiBold 14px, max-w 150px) + demographics (Roboto 12px, pipe separator #E2E2EA). Toolbar: 42px action buttons — Template, Save, Customisation (bg #F1F1F5, rounded-[10.5px]), Custom Canvas with badge dot, Preview (text+icon bg), Draft (outline #4B4AD5 1.05px), End Visit (solid #4B4AD5), MoreVertical. Desktop: all buttons visible. Tablet (≤1024px): icon-only mode for Template/Save/Customisation. Mobile: collapses into overflow menu.
       </p>
 
-      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]">
+      <div className="overflow-hidden rounded-xl">
         <RxpadHeader />
       </div>
     </div>
@@ -446,14 +452,17 @@ export function DrAgentAppointmentsShowcase() {
         Appointments Table (Dr. Agent)
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Inline table with sticky action column. Action cell: TPSplitButton (outline/primary) + AI gradient icon button + MoreVertical icon. Header: 12px uppercase #F1F1F5 bg. Rows: white, hover #F1F1F5. Sticky right column has left shadow.
+        Appointment queue table with sticky action column. Action cell: TPSplitButton (outline/primary, TypeRx primary + dropdown secondaries) + AI gradient icon button (42px, rounded-[10px]) + MoreVertical. Header: 12px uppercase semibold, #F1F1F5 bg, 12px top radius. Sticky action column: shadow-[-4px_0_8px] appears only when content overflows (scroll-aware). Desktop (≥1280px): all columns visible, no scroll. Tablet (1024px): horizontal scroll activates, action column sticks right. iPad portrait: action column shadow visible. Checkbox: optional first column for bulk actions (20px, accent #4B4AD5).
       </p>
 
-      <div className="overflow-x-auto rounded-[12px] border border-tp-slate-200">
+      <div className="overflow-x-auto rounded-[12px]">
         <table className="w-full min-w-[800px] border-collapse">
           <thead>
             <tr className="bg-tp-slate-100">
-              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
+              <th className="rounded-l-[12px] w-[40px] px-3 py-3 text-center">
+                <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
+              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Name</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Contact</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
@@ -470,9 +479,12 @@ export function DrAgentAppointmentsShowcase() {
           <tbody>
             {SAMPLE_ROWS.map((row) => (
               <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
+                <td className="w-[40px] px-3 py-3 text-center">
+                  <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
+                </td>
                 <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
                 <td className="px-3 py-3 align-middle">
-                  <p className="text-sm font-semibold text-tp-blue-500">{row.name}</p>
+                  <p className="cursor-pointer text-sm font-semibold text-tp-blue-500 hover:underline">{row.name}</p>
                   <p className="mt-1 text-sm text-tp-slate-700">{row.gender}, {row.age}y</p>
                 </td>
                 <td className="px-3 py-3 align-middle text-sm text-tp-slate-700">{row.contact}</td>

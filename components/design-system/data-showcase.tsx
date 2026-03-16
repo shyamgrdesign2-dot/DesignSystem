@@ -92,14 +92,17 @@ export function DataTableShowcase() {
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Data Table</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Appointment queue table — exact pattern from the live appointment screen. Sticky action column with left shadow for scroll separation. Action cell: TPSplitButton (outline/primary) + AI gradient icon button + MoreVertical. Header: 12px uppercase, #F1F1F5 bg, sortable columns. Name: TP Blue 500 semibold with hover underline. Contact/Visit badges use TPTag. Video icon (iconsax Bulk) for teleconsult slots.
+        Appointment queue table — exact pattern from the live appointment screen. Sticky action column with scroll-aware left shadow (-8px_7px_14px_-12px rgba(15,23,42,0.18)) + left border #E2E2EA/80. Action cell: TPSplitButton (outline/primary, VoiceRx primary + dropdown) + AI gradient icon (42px, rounded-[10px]) + MoreVertical. Header: 12px uppercase semibold, #F1F1F5 bg, sortable columns with caret arrows. Name: TP Blue 500 semibold with hover underline, clickable to patient details. Contact/Visit badges use TPTag (violet/warning/info tones). Video icon (iconsax Bulk, TP Violet 500) for teleconsult slots. Checkbox: optional first column (18px, accent #4B4AD5). Desktop (≥1280px): full table visible. Tablet (≤1024px): scroll activates, action column sticky right with shadow. Min table width: 920px.
       </p>
 
-      <div className="overflow-x-auto rounded-[12px] border border-tp-slate-200">
+      <div className="overflow-x-auto rounded-[12px]">
         <table className="w-full min-w-[920px] border-collapse">
           <thead>
             <tr className="bg-tp-slate-100">
-              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[40px] max-w-[56px] w-[48px]">#</th>
+              <th className="rounded-l-[12px] w-[40px] px-3 py-3 text-center">
+                <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
+              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[40px] max-w-[56px] w-[48px]">#</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[220px]">Name</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[200px]">Contact</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[180px]">
@@ -116,6 +119,9 @@ export function DataTableShowcase() {
           <tbody>
             {queueData.map((row) => (
               <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
+                <td className="w-[40px] px-3 py-3 text-center">
+                  <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
+                </td>
                 <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
                 <td className="px-3 py-3 align-middle">
                   <div className="max-w-[200px] overflow-hidden">
@@ -219,7 +225,7 @@ export function PaginationShowcase() {
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Pagination</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Multiple pagination styles: numbered, prev/next, compact, and per-page selector. Constraint: Active page uses TP Blue 500 fill with white text + subtle blue shadow. Page buttons are 32x32px with 8px radius. The per-page selector variant includes a native select dropdown. Compact variant shows a bordered page number input for direct entry.
+        Multiple pagination styles: numbered, prev/next, compact, and per-page selector. Active page: TP Blue 500 fill, white text, shadow 0_1px_3px rgba(75,74,213,0.25). Page buttons: 32×32px, 8px radius. Per-page selector: native select in 32px bordered container. Compact: bordered page number input for direct entry. Desktop: full numbered pagination with ChevronsLeft/Right for first/last. Tablet: compact variant preferred to save horizontal space. Mobile: prev/next text buttons with page indicator only.
       </p>
 
       <div className="flex flex-col gap-8">
@@ -347,7 +353,7 @@ function Tooltip({ text, header, dark, closable, size = "md" }: {
   const bg = dark ? "#171725" : "#FFFFFF"
   const textColor = dark ? "#D0D5DD" : "#545460"
   const headerColor = dark ? "#FFFFFF" : "#171725"
-  const closeColor = dark ? "#A2A2A8" : "#A2A2A8"
+  const closeColor = dark ? "#D0D5DD" : "#545460"
   const maxW = size === "sm" ? "180px" : size === "lg" ? "320px" : "240px"
 
   return (
@@ -396,7 +402,7 @@ export function TooltipShowcase() {
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Tooltips</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Light and dark theme tooltips with simple, header+body, and closable variants. Three sizes (S, M, L). 8px radius. Constraint: Light tooltips use shadow only (no border/stroke) to appear floating. Dark tooltips use deeper shadow for contrast on light backgrounds.
+        Light and dark theme tooltips with simple, header+body, and closable variants. Three sizes: S (max-w 180px), M (240px), L (320px). 8px radius. Light tooltips: shadow only (no border), bg white, text #545460, header #171725. Dark tooltips: bg #171725, text #D0D5DD, header white, deeper shadow. Close icon: iconsax CloseSquare (Bulk variant), appears always on iPad/tablet for touch dismissal. On desktop, the closable tooltip shows on hover — close icon visible immediately. Arrow: 10px rotated square matching tooltip bg.
       </p>
 
       <div className="flex flex-col gap-8">

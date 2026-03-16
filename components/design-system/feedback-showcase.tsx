@@ -88,8 +88,7 @@ export function ToastShowcase() {
         Toast / Snackbar
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Full-width notification bars in 4 feedback states (Dark, Error, Warning, Success). Two
-        action variants: close (X icon) and dismiss (text button). 12px radius.
+        Full-width notification bars in 4 feedback states: Dark (#171725), Error (#E11D48), Warning (#E8A230), Success (#3CC08E). Two action variants: close (iconsax CloseSquare Bulk icon, white) and dismiss (text button, white Bold). 12px radius, px-4 py-3. Icon: Info (lucide) at 80% opacity, 20px. Text: Inter Medium 14px, white. Desktop: max-width constrained by parent container. Tablet/Mobile: full-width, stacks naturally. Auto-dismiss after 5s recommended for non-critical states.
       </p>
 
       <div className="flex flex-col gap-6">
@@ -304,8 +303,7 @@ export function DatePickerShowcase() {
         Date Range Picker
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Dual-month calendar with preset sidebar (Week, 2 Weeks, Month, etc.), range selection with
-        highlighted range, date input fields, and Cancel/Set actions.
+        Dual-month calendar with preset sidebar (Week, 2 Weeks, Month, etc.), range selection with highlighted range, date input fields, and Cancel/Set actions. Container: 16px radius, layered shadow (0_20px_40px + 0_8px_16px). Preset sidebar: min-w 130px, border-r TP Slate 100, active preset bg #EEEEFF text TP Blue 500. Calendar: 7-col grid, day cells h-9, selected day bg #3BAFDA white text, range bg #E8F4FD. Footer: date inputs (130px min-w, border TP Slate 200, 8px radius), Cancel (bg #F1F1F5) + Set (#3BAFDA) buttons. Desktop: side-by-side dual month. Tablet: single month view with nav arrows. Mobile: full-screen modal overlay.
       </p>
 
       <div

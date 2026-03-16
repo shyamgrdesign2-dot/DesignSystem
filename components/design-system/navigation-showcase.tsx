@@ -381,7 +381,7 @@ export function DropdownShowcase() {
         Dropdown / Context Menu
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Menu overlays with icons, keyboard shortcuts, sections, dividers, and danger items. Constraint: 12px radius for the container, 6px radius for individual items. Menu items have 1.5px inner padding on left/right (mx-1.5). Separators use TP Slate 100. Keyboard shortcuts use mono font at 11px. Danger items use TP Error 500 for both icon and label.
+        Menu overlays with icons, keyboard shortcuts, sections, dividers, and danger items. Container: 12px radius, min-w 220px, shadow 0_12px_24px_-4px rgba(23,23,37,0.08). Items: 6px inner radius, mx-1.5, py-2, hover bg TP Slate 50. Separators: 1px TP Slate 100. Keyboard shortcuts: mono 11px. Danger items: TP Error 500 icon + label. Desktop: keyboard shortcuts visible. Tablet/iPad: shortcuts hidden, items get larger touch targets (min-h 44px).
       </p>
       <div className="flex flex-wrap gap-8 items-start">
         <div>
@@ -518,7 +518,7 @@ export function SegmentedControlShowcase() {
         Segmented Control
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Pill-style toggle groups with animated sliding background indicator. Active segment uses white card with shadow to "pop" off the gray track. Queue icons use iconsax Bulk/Linear dual-tone variants for active/inactive states.
+        Pill-style toggle groups with animated sliding background indicator. Track: bg TP Slate 100, rounded-[10px], 4px padding. Active segment: white card with shadow-sm, rounded-[8px], slides via CSS transform. Inactive segments: transparent bg, text TP Slate 600. Icons (when enabled): iconsax Bulk (active, neutral #171725) / Linear (inactive, #717179) — active icons stay neutral color, not brand blue. Desktop: full labels + icons. Tablet: icon-only mode if ≥4 segments. Min segment width: 64px.
       </p>
       <div className="flex flex-col gap-6">
         <div>
@@ -709,7 +709,7 @@ export function TabsShowcase() {
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Tabs</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Underline and pill tab variants with iconsax icons and animated active indicator. Selected tab icons use dual-tone (Bulk) variant for emphasis; unselected tabs use linear (outline) variant. This visual weight difference reinforces the active state.
+        Underline and pill tab variants with iconsax icons and animated active indicator. Underline: 3px bottom bar TP Blue 500, text TP Blue 500 SemiBold, inactive text TP Slate 700. Pill: bg TP Blue 50 when active, rounded-lg. Icons: iconsax Bulk (active, TP Blue 500 color) / Linear (inactive, TP Slate 600, strokeWidth 1.5). Count badge: 16px pill, TP Blue 100/400 active, TP Slate 100/400 inactive. Desktop: horizontal scroll with all tabs visible. Tablet: overflow-x-auto, min-w-max for horizontal scrolling. Tab min-width: auto, padding 12px horizontal.
       </p>
       <div className="flex flex-col gap-8">
         <div>

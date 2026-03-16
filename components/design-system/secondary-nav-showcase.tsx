@@ -414,9 +414,7 @@ export function SecondaryNavShowcase() {
         Nav Panels
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        80px vertical rail navigation used in appointment and RxPad screens. Icons use TP Medical + iconsax Bulk/Linear variants for active/inactive states.
-        Primary Nav: white surface, TP Slate icon containers, no arrow.
-        RX Nav: dark blue gradient surface, white icons, 3px left highlight bar + right arrow for active item.
+        80px fixed-width vertical rail navigation used in appointment and RxPad screens. Icons use TP Medical (clinical) + iconsax (utility) with Bulk/Linear variants for active/inactive states. Primary Nav: white surface, TP Slate icon containers (32px, r:10px), no selection arrow. RX Nav: dark blue radial gradient surface (#161558→#232277→#313097→#4B4AD5), white icons, 3px left highlight bar (border-radius 12px right), right arrow (8×16px white triangle) for active item. Desktop (≥1024px): fixed sidebar, full height. Tablet (768–1024px): nav panel visible, 80px width maintained. Mobile (≤768px): hidden sidebar, replaced by horizontal chip strip. Content panel: 250px min, scales to clamp(250px, 26vw, 350px) on xl screens.
       </p>
       <div className="flex flex-wrap gap-8 items-start">
         <div>
@@ -547,9 +545,9 @@ export function ExpandedRxNavShowcase() {
         RX Nav Panel — Expanded View
       </h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        The RX Nav Panel with its content panel expanded. Click any nav item to see its content — Past Visits, Vitals, History, Ophthal, Gynec, Obstetric, Vaccine, Growth, Records, Lab Results, and Personal Notes.
+        Nav Panel (80px dark rail) + Content Panel (250px white, scrollable) orchestrated by SecondarySidebar. Click any nav item to expand its content — starts from Past Visits, then Vitals, History, Ophthal, Gynec, Obstetric, Vaccine, Growth, Records, Lab Results, and Personal Notes. Content panel: min-w 250px, max-w 350px (xl: clamp(250px, 26vw, 350px)). Section header: 40px, gradient bg (#3736A6→#262688), title Inter SemiBold 14px white. Collapse icon: SidebarLeft (iconsax). Desktop: rail + expanded panel side by side. Tablet: rail only, content panel opens as overlay. The combined sidebar width is 80+250=330px (min) to 80+350=430px (max on xl).
       </p>
-      <div className="overflow-hidden rounded-xl border border-[#e2e2ea]" style={{ height: 600 }}>
+      <div className="overflow-hidden rounded-xl" style={{ height: 600 }}>
         <SecondarySidebar />
       </div>
     </div>

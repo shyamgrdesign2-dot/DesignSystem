@@ -6,7 +6,6 @@ import {
   DataTableShowcase,
   PaginationShowcase,
   TooltipShowcase,
-  ModalShowcase,
 } from "@/components/design-system/data-showcase"
 import { TokenPanel } from "@/components/design-system/token-badge"
 import { dataDisplayTokens } from "@/lib/component-tokens"
@@ -16,7 +15,7 @@ export default function DataDisplayPage() {
     <div>
       <PageHeader
         title="Data Display"
-        description="Tables, pagination, tooltips, and modals. Data presentation and overlay patterns for clinical data workflows."
+        description="Tables, pagination, and tooltips. Data presentation patterns for clinical data workflows."
         badge="Components"
       />
 
@@ -24,7 +23,6 @@ export default function DataDisplayPage() {
         <ComponentCard><DataTableShowcase /></ComponentCard>
         <ComponentCard><PaginationShowcase /></ComponentCard>
         <ComponentCard><TooltipShowcase /></ComponentCard>
-        <ComponentCard><ModalShowcase /></ComponentCard>
       </div>
 
       <TokenPanel title="Data Display Design Tokens" tokens={dataDisplayTokens.tokens} defaultOpen={false} />
