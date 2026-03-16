@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Calendar, Pencil, Clock, Keyboard } from "lucide-react"
+import { Calendar, Pencil, Clock, Keyboard, ChevronUp, ChevronDown } from "lucide-react"
 import { ComponentBlock } from "@/components/design-system/design-system-section"
 
 // ─── Design Tokens (TatvaPractice) ───
@@ -504,22 +504,33 @@ export function TimePickerModal({
             )}
             {!format24 && (
               <div className="mb-4 flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => setAmPm(amPm === "AM" ? "PM" : "AM")}
-                  className="relative flex h-[42px] w-24 items-stretch overflow-hidden rounded-lg border border-tp-slate-200 bg-tp-slate-50 transition-colors hover:border-tp-blue-300"
-                >
-                  <span
-                    className={`flex flex-1 items-center justify-center text-xs font-bold transition-all ${amPm === "AM" ? "bg-tp-blue-500 text-white" : "text-tp-slate-400"}`}
+                <div className="flex h-[42px] items-center gap-1 rounded-lg border border-tp-slate-200 bg-tp-slate-50 px-1">
+                  <button
+                    type="button"
+                    onClick={() => setAmPm(amPm === "AM" ? "PM" : "AM")}
+                    className="rounded p-0.5 text-tp-slate-400 transition-colors hover:bg-tp-slate-200 hover:text-tp-slate-700"
+                    aria-label="Switch to AM"
                   >
-                    AM
-                  </span>
+                    <ChevronUp size={16} strokeWidth={2} />
+                  </button>
                   <span
-                    className={`flex flex-1 items-center justify-center text-xs font-bold transition-all ${amPm === "PM" ? "bg-tp-blue-500 text-white" : "text-tp-slate-400"}`}
+                    className="flex h-[32px] w-10 items-center justify-center rounded-md text-xs font-bold transition-all"
+                    style={{
+                      backgroundColor: TP.blue[500],
+                      color: "#FFFFFF",
+                    }}
                   >
-                    PM
+                    {amPm}
                   </span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setAmPm(amPm === "AM" ? "PM" : "AM")}
+                    className="rounded p-0.5 text-tp-slate-400 transition-colors hover:bg-tp-slate-200 hover:text-tp-slate-700"
+                    aria-label="Switch to PM"
+                  >
+                    <ChevronDown size={16} strokeWidth={2} />
+                  </button>
+                </div>
               </div>
             )}
             {format24 && (
@@ -567,27 +578,41 @@ export function TimePickerModal({
               </div>
             </div>
             {!format24 && (
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAmPm("AM")
-                    setHour(hour >= 12 ? hour - 12 : hour)
-                  }}
-                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${amPm === "AM" ? "bg-tp-blue-500 text-white" : "bg-tp-slate-100 text-tp-slate-600 hover:bg-tp-slate-200"}`}
-                >
-                  AM
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAmPm("PM")
-                    setHour(hour < 12 ? hour + 12 : hour)
-                  }}
-                  className={`flex-1 rounded-lg py-2 text-sm font-semibold transition-colors ${amPm === "PM" ? "bg-tp-blue-500 text-white" : "bg-tp-slate-100 text-tp-slate-600 hover:bg-tp-slate-200"}`}
-                >
-                  PM
-                </button>
+              <div className="flex justify-center">
+                <div className="flex h-[42px] items-center gap-1 rounded-lg border border-tp-slate-200 bg-tp-slate-50 px-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newAmPm = amPm === "AM" ? "PM" : "AM"
+                      setAmPm(newAmPm)
+                      if (newAmPm === "AM") setHour(hour >= 12 ? hour - 12 : hour)
+                      else setHour(hour < 12 ? hour + 12 : hour)
+                    }}
+                    className="rounded p-0.5 text-tp-slate-400 transition-colors hover:bg-tp-slate-200 hover:text-tp-slate-700"
+                    aria-label="Switch to AM"
+                  >
+                    <ChevronUp size={16} strokeWidth={2} />
+                  </button>
+                  <span
+                    className="flex h-[32px] w-10 items-center justify-center rounded-md text-xs font-bold"
+                    style={{ backgroundColor: TP.blue[500], color: "#FFFFFF" }}
+                  >
+                    {amPm}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newAmPm = amPm === "AM" ? "PM" : "AM"
+                      setAmPm(newAmPm)
+                      if (newAmPm === "AM") setHour(hour >= 12 ? hour - 12 : hour)
+                      else setHour(hour < 12 ? hour + 12 : hour)
+                    }}
+                    className="rounded p-0.5 text-tp-slate-400 transition-colors hover:bg-tp-slate-200 hover:text-tp-slate-700"
+                    aria-label="Switch to PM"
+                  >
+                    <ChevronDown size={16} strokeWidth={2} />
+                  </button>
+                </div>
               </div>
             )}
           </div>

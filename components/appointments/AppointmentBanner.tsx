@@ -37,8 +37,8 @@ export function AppointmentBanner({ title, actions, className }: AppointmentBann
         src="/assets/8b46197b8125e32aedb152d3d430b818c39f3157.svg"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-0 h-full w-auto opacity-[0.75]"
-        style={{ mixBlendMode: "screen", objectFit: "contain", objectPosition: "right center" }}
+        className="pointer-events-none absolute right-0 top-0 h-full opacity-[0.75]"
+        style={{ mixBlendMode: "screen", height: "100%", width: "auto", objectFit: "fill" }}
       />
 
       {/* Noise grain texture */}

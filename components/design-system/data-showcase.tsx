@@ -117,10 +117,10 @@ export function DataTableShowcase() {
   }, [])
 
   const stickyActionHeaderClass = isActionSticky
-    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)] before:pointer-events-none before:absolute before:inset-y-0 before:-left-3 before:w-3 before:content-[''] before:bg-gradient-to-l before:from-tp-slate-900/[0.06] before:to-transparent"
     : ""
   const stickyActionCellClass = isActionSticky
-    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)] before:pointer-events-none before:absolute before:inset-y-0 before:-left-3 before:w-3 before:content-[''] before:bg-gradient-to-l before:from-tp-slate-900/[0.06] before:to-transparent"
     : ""
 
   return (

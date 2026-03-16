@@ -207,7 +207,7 @@ export default function RxpadHeader({ className, onBack }: RxpadHeaderProps) {
           </div>
         </div>
       </div>
-      <div aria-hidden="true" className="absolute border-tp-slate-100 border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
+      <div aria-hidden="true" className="absolute bottom-0 left-0 right-0 h-px bg-tp-slate-100 pointer-events-none" />
     </div>
   );
 }
