@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   Users,
   CheckCircle,
@@ -97,14 +97,49 @@ export function AppointmentBannerShowcase() {
         title="Your Appointments"
         actions={
           <>
+            {/* Outline CTA on dark surface — uses CTA system tokens:
+                bg: rgba(255,255,255,0.07), border: 1.5px solid rgba(255,255,255,0.40),
+                backdrop-filter: blur(8px), color: white, height: 42px, radius: 10px */}
             <button
-              className="inline-flex h-[42px] items-center justify-center rounded-[10px] px-5 text-sm font-semibold text-white/80 transition-colors hover:text-white"
-              style={{ backgroundColor: "rgba(255,255,255,0.12)" }}
+              type="button"
+              className="inline-flex items-center justify-center"
+              style={{
+                height: 42,
+                padding: "8px 14px",
+                borderRadius: 10,
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: "Inter, sans-serif",
+                backgroundColor: "rgba(255,255,255,0.07)",
+                color: "#FFFFFF",
+                border: "1.5px solid rgba(255,255,255,0.40)",
+                backdropFilter: "blur(8px)",
+                gap: 6,
+                cursor: "pointer",
+                transition: "all 150ms ease",
+              }}
             >
               View All
             </button>
+            {/* Solid CTA on dark surface — uses CTA system tokens:
+                bg: #FFFFFF, color: #161558, border: none, height: 42px, radius: 10px */}
             <button
-              className="inline-flex h-[42px] items-center justify-center rounded-[10px] bg-white px-5 text-sm font-semibold text-[#4B4AD5] transition-colors hover:bg-white/90"
+              type="button"
+              className="inline-flex items-center justify-center"
+              style={{
+                height: 42,
+                padding: "8px 14px",
+                borderRadius: 10,
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: "Inter, sans-serif",
+                backgroundColor: "#FFFFFF",
+                color: "#161558",
+                border: "none",
+                gap: 6,
+                cursor: "pointer",
+                transition: "all 150ms ease",
+              }}
             >
               + New Appointment
             </button>
@@ -315,34 +350,62 @@ const TABLE_ROWS: AppointmentRow[] = [
 ]
 
 export function ClinicalTableShowcase() {
+  const clinicalTableRef = useRef<HTMLDivElement | null>(null)
+  const [isClinicalActionSticky, setIsClinicalActionSticky] = useState(false)
+
+  useEffect(() => {
+    const wrapper = clinicalTableRef.current
+    if (!wrapper) return
+    const update = () => {
+      const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 1
+      const isScrolledToEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 1
+      setIsClinicalActionSticky(hasOverflow && !isScrolledToEnd)
+    }
+    update()
+    window.addEventListener("resize", update)
+    wrapper.addEventListener("scroll", update, { passive: true })
+    let observer: ResizeObserver | null = null
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(update)
+      observer.observe(wrapper)
+    }
+    return () => {
+      window.removeEventListener("resize", update)
+      wrapper.removeEventListener("scroll", update)
+      observer?.disconnect()
+    }
+  }, [])
+
+  const clinicalStickyHeader = isClinicalActionSticky
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    : ""
+  const clinicalStickyCell = isClinicalActionSticky
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    : ""
+
   return (
     <div>
       <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#a2a2a8]">
         Clinical Data Table
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Sticky action column with left shadow separator (-4px_0_8px_-2px rgba(0,0,0,0.08)). Header: #F1F1F5 bg, 12px uppercase semibold, sortable columns with up/down caret arrows. Name: TP Blue 500 semibold with hover underline. Rows: white bg, hover #F1F1F5/50, 1px #E2E2EA bottom border. Row height: 64px. Checkbox column (optional): 20px checkbox, rounded-[4px], checked state uses TP Blue 500 fill. Desktop: full table visible (min-w 700px). Tablet (≤1024px): horizontal scroll activates, action column becomes sticky right with shadow. iPad: touch-friendly 42px action buttons.
+        Sticky action column with scroll-aware left shadow (-8px_7px_14px_-12px rgba(15,23,42,0.18)) — shadow only appears when content overflows behind the action column. Header: #F1F1F5 bg, 12px uppercase semibold, sortable columns with up/down caret arrows. Name: TP Blue 500 semibold with hover underline. Rows: white bg, hover #F1F1F5/50, 1px #E2E2EA bottom border. Row height: 64px. Desktop: full table visible (min-w 700px). Tablet (≤1024px): horizontal scroll activates, action column becomes sticky right with shadow. iPad: touch-friendly 42px action buttons.
       </p>
 
-      <div className="overflow-x-auto rounded-[12px]">
+      <div ref={clinicalTableRef} className="overflow-x-auto rounded-[12px]">
         <table className="w-full min-w-[700px] border-collapse">
           <thead>
             <tr className="bg-tp-slate-100">
-              <th className="rounded-l-[12px] w-[40px] px-3 py-3 text-center">
-                <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
-              </th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
+              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">
                 <span className="inline-flex items-center gap-1.5">Name <ColSortArrows /></span>
               </th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[130px]">Contact</th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
-                <span className="inline-flex items-center gap-1.5">Visit Type <ColSortArrows /></span>
-              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">Visit Type</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
                 <span className="inline-flex items-center gap-1.5">Slot <ColSortArrows /></span>
               </th>
-              <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[80px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+              <th className={`sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-px whitespace-nowrap ${clinicalStickyHeader}`}>
                 Action
               </th>
             </tr>
@@ -350,9 +413,6 @@ export function ClinicalTableShowcase() {
           <tbody>
             {TABLE_ROWS.map((row) => (
               <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
-                <td className="w-[40px] px-3 py-3 text-center">
-                  <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
-                </td>
                 <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
                 <td className="px-3 py-3 align-middle">
                   <p className="cursor-pointer text-sm font-semibold text-tp-blue-500 hover:underline">{row.name}</p>
@@ -369,7 +429,7 @@ export function ClinicalTableShowcase() {
                   </div>
                   <p className="mt-1 text-xs text-tp-slate-600">{row.slotDate}</p>
                 </td>
-                <td className="sticky right-0 z-10 bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                <td className={`sticky right-0 z-10 bg-white px-3 py-3 align-middle w-px ${clinicalStickyCell}`}>
                   <div className="flex items-center gap-1">
                     <button className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f1f1f5] text-[#454551] hover:bg-[#e2e2ea]">
                       <Eye size={14} />
@@ -446,32 +506,60 @@ const SAMPLE_ROWS = [
 ]
 
 export function DrAgentAppointmentsShowcase() {
+  const drAgentTableRef = useRef<HTMLDivElement | null>(null)
+  const [isDrAgentActionSticky, setIsDrAgentActionSticky] = useState(false)
+
+  useEffect(() => {
+    const wrapper = drAgentTableRef.current
+    if (!wrapper) return
+    const update = () => {
+      const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 1
+      const isScrolledToEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 1
+      setIsDrAgentActionSticky(hasOverflow && !isScrolledToEnd)
+    }
+    update()
+    window.addEventListener("resize", update)
+    wrapper.addEventListener("scroll", update, { passive: true })
+    let observer: ResizeObserver | null = null
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(update)
+      observer.observe(wrapper)
+    }
+    return () => {
+      window.removeEventListener("resize", update)
+      wrapper.removeEventListener("scroll", update)
+      observer?.disconnect()
+    }
+  }, [])
+
+  const drAgentStickyHeader = isDrAgentActionSticky
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    : ""
+  const drAgentStickyCell = isDrAgentActionSticky
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    : ""
+
   return (
     <div>
       <h3 className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#a2a2a8]">
         Appointments Table (Dr. Agent)
       </h3>
       <p className="mb-4 text-xs text-[#a2a2a8]">
-        Appointment queue table with sticky action column. Action cell: TPSplitButton (outline/primary, TypeRx primary + dropdown secondaries) + AI gradient icon button (42px, rounded-[10px]) + MoreVertical. Header: 12px uppercase semibold, #F1F1F5 bg, 12px top radius. Sticky action column: shadow-[-4px_0_8px] appears only when content overflows (scroll-aware). Desktop (≥1280px): all columns visible, no scroll. Tablet (1024px): horizontal scroll activates, action column sticks right. iPad portrait: action column shadow visible. Checkbox: optional first column for bulk actions (20px, accent #4B4AD5).
+        Appointment queue table with sticky action column. Action cell: TPSplitButton (outline/primary, TypeRx primary + dropdown secondaries) + AI gradient icon button (42px, rounded-[10px]) + MoreVertical. Header: 12px uppercase semibold, #F1F1F5 bg, 12px top radius. Sticky action column: scroll-aware shadow (-8px_7px_14px_-12px rgba(15,23,42,0.18)) — only appears when content overflows. Desktop (≥1280px): all columns visible, no scroll. Tablet (1024px): horizontal scroll activates, action column sticks right. iPad portrait: action column shadow visible.
       </p>
 
-      <div className="overflow-x-auto rounded-[12px]">
+      <div ref={drAgentTableRef} className="overflow-x-auto rounded-[12px]">
         <table className="w-full min-w-[800px] border-collapse">
           <thead>
             <tr className="bg-tp-slate-100">
-              <th className="rounded-l-[12px] w-[40px] px-3 py-3 text-center">
-                <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
-              </th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
+              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Name</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Contact</th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
-                <span className="inline-flex items-center gap-1.5">Visit Type <ColSortArrows /></span>
-              </th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">Visit Type</th>
               <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700">
                 <span className="inline-flex items-center gap-1.5">Slot <ColSortArrows /></span>
               </th>
-              <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[280px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+              <th className={`sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-px whitespace-nowrap ${drAgentStickyHeader}`}>
                 Action
               </th>
             </tr>
@@ -479,9 +567,6 @@ export function DrAgentAppointmentsShowcase() {
           <tbody>
             {SAMPLE_ROWS.map((row) => (
               <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
-                <td className="w-[40px] px-3 py-3 text-center">
-                  <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
-                </td>
                 <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
                 <td className="px-3 py-3 align-middle">
                   <p className="cursor-pointer text-sm font-semibold text-tp-blue-500 hover:underline">{row.name}</p>
@@ -498,7 +583,7 @@ export function DrAgentAppointmentsShowcase() {
                   </div>
                   <p className="mt-1 text-xs text-tp-slate-600">{row.slotDate}</p>
                 </td>
-                <td className="sticky right-0 z-10 bg-white px-0 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                <td className={`sticky right-0 z-10 bg-white px-3 py-3 align-middle w-px ${drAgentStickyCell}`}>
                   <div className="flex items-center gap-3 whitespace-nowrap">
                     <TPSplitButton
                       primaryAction={{ label: "VoiceRx", onClick: () => {} }}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   ChevronLeft,
   ChevronRight,
@@ -88,30 +88,62 @@ const queueData: QueueRow[] = [
 type SortDir = "asc" | "desc" | null
 
 export function DataTableShowcase() {
+  const tableOverflowRef = useRef<HTMLDivElement | null>(null)
+  const [isActionSticky, setIsActionSticky] = useState(false)
+
+  useEffect(() => {
+    const wrapper = tableOverflowRef.current
+    if (!wrapper) return
+    const update = () => {
+      const hasOverflow = wrapper.scrollWidth > wrapper.clientWidth + 1
+      const isScrolledToEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 1
+      setIsActionSticky(hasOverflow && !isScrolledToEnd)
+    }
+    update()
+    window.addEventListener("resize", update)
+    wrapper.addEventListener("scroll", update, { passive: true })
+    let observer: ResizeObserver | null = null
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(update)
+      observer.observe(wrapper)
+      const table = wrapper.querySelector("table")
+      if (table) observer.observe(table)
+    }
+    return () => {
+      window.removeEventListener("resize", update)
+      wrapper.removeEventListener("scroll", update)
+      observer?.disconnect()
+    }
+  }, [])
+
+  const stickyActionHeaderClass = isActionSticky
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    : ""
+  const stickyActionCellClass = isActionSticky
+    ? "border-l border-tp-slate-200/80 shadow-[-8px_7px_14px_-12px_rgba(15,23,42,0.18)]"
+    : ""
+
   return (
     <div>
       <h3 className="text-sm font-bold uppercase tracking-wider text-tp-slate-500 mb-1">Data Table</h3>
       <p className="text-xs text-tp-slate-400 mb-5">
-        Appointment queue table — exact pattern from the live appointment screen. Sticky action column with scroll-aware left shadow (-8px_7px_14px_-12px rgba(15,23,42,0.18)) + left border #E2E2EA/80. Action cell: TPSplitButton (outline/primary, VoiceRx primary + dropdown) + AI gradient icon (42px, rounded-[10px]) + MoreVertical. Header: 12px uppercase semibold, #F1F1F5 bg, sortable columns with caret arrows. Name: TP Blue 500 semibold with hover underline, clickable to patient details. Contact/Visit badges use TPTag (violet/warning/info tones). Video icon (iconsax Bulk, TP Violet 500) for teleconsult slots. Checkbox: optional first column (18px, accent #4B4AD5). Desktop (≥1280px): full table visible. Tablet (≤1024px): scroll activates, action column sticky right with shadow. Min table width: 920px.
+        Appointment queue table — exact pattern from the live appointment screen. Sticky action column with scroll-aware left shadow (-8px_7px_14px_-12px rgba(15,23,42,0.18)) + left border #E2E2EA/80 — shadow only appears when content overflows behind the action column. Action cell: TPSplitButton (outline/primary, VoiceRx primary + dropdown) + AI gradient icon (42px, rounded-[10px]) + MoreVertical. Header: 12px uppercase semibold, #F1F1F5 bg, sortable columns with caret arrows. Name: TP Blue 500 semibold with hover underline, clickable to patient details. Contact/Visit badges use TPTag (violet/warning/info tones). Video icon (iconsax Bulk, TP Violet 500) for teleconsult slots. Desktop (≥1280px): full table visible. Tablet (≤1024px): scroll activates, action column sticky right with shadow. Min table width: 920px.
       </p>
 
-      <div className="overflow-x-auto rounded-[12px]">
+      <div ref={tableOverflowRef} className="overflow-x-auto rounded-[12px]">
         <table className="w-full min-w-[920px] border-collapse">
           <thead>
             <tr className="bg-tp-slate-100">
-              <th className="rounded-l-[12px] w-[40px] px-3 py-3 text-center">
-                <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
+              <th className="rounded-l-[12px] px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-[48px]">#</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Name</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px]">Contact</th>
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px]">
+                <span className="inline-flex items-center gap-1.5">Visit Type</span>
               </th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[40px] max-w-[56px] w-[48px]">#</th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[220px]">Name</th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[140px] max-w-[200px]">Contact</th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[180px]">
-                <span className="inline-flex items-center gap-1.5">Visit Type <ColSortArrows /></span>
-              </th>
-              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px] max-w-[160px]">
+              <th className="px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[110px]">
                 <span className="inline-flex items-center gap-1.5">Slot <ColSortArrows /></span>
               </th>
-              <th className="sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 min-w-[280px] shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+              <th className={`sticky right-0 z-20 rounded-r-[12px] bg-tp-slate-100 px-3 py-3 text-left text-[12px] font-semibold uppercase text-tp-slate-700 w-px whitespace-nowrap ${stickyActionHeaderClass}`}>
                 Action
               </th>
             </tr>
@@ -119,9 +151,6 @@ export function DataTableShowcase() {
           <tbody>
             {queueData.map((row) => (
               <tr key={row.id} className="h-16 border-b border-tp-slate-100 last:border-b-0 hover:bg-tp-slate-50/50">
-                <td className="w-[40px] px-3 py-3 text-center">
-                  <input type="checkbox" className="size-[18px] cursor-pointer rounded-[4px] border-tp-slate-300 accent-[#4B4AD5]" readOnly />
-                </td>
                 <td className="px-3 py-3 text-sm text-tp-slate-700">{row.serial}</td>
                 <td className="px-3 py-3 align-middle">
                   <div className="max-w-[200px] overflow-hidden">
@@ -175,7 +204,7 @@ export function DataTableShowcase() {
                     <p className="mt-1 truncate text-xs text-tp-slate-600">{row.slotDate}</p>
                   </div>
                 </td>
-                <td className="sticky right-0 z-10 bg-white px-3 py-3 align-middle shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.08)]">
+                <td className={`sticky right-0 z-10 bg-white px-3 py-3 align-middle w-px ${stickyActionCellClass}`}>
                   <div className="flex items-center gap-3 whitespace-nowrap">
                     <TPSplitButton
                       primaryAction={{ label: "VoiceRx", onClick: () => {} }}

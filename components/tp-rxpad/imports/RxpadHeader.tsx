@@ -33,12 +33,12 @@ export default function RxpadHeader({ className, onBack }: RxpadHeaderProps) {
           <div className="content-stretch flex min-w-0 items-center gap-[16px] relative max-xl:gap-[10px]">
             <button
               aria-label="Go back"
-              className="bg-white content-stretch flex h-[60px] items-center justify-center px-[15px] py-[20px] relative shrink-0 w-[80px] transition-colors hover:bg-tp-slate-50"
+              className="bg-white content-stretch flex h-[62px] items-center justify-center px-[15px] py-[20px] relative shrink-0 w-[80px] transition-colors hover:bg-tp-slate-50"
               data-name="Back Button"
               onClick={onBack}
               type="button"
             >
-              <div aria-hidden="true" className="absolute border-[#f1f1f5] border-b-[0.5px] border-r-[0.5px] border-solid inset-[0_-0.25px_-0.25px_0] pointer-events-none" />
+              <div aria-hidden="true" className="absolute border-[#f1f1f5] border-r-[0.5px] border-solid inset-[0_-0.25px_0_0] pointer-events-none" />
               <div className="relative shrink-0 size-[24px]" data-name="Back Arrow">
                 <ChevronLeft color="#454551" size={24} strokeWidth={2} style={{ opacity: 0.7 }} />
               </div>

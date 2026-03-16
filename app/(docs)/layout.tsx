@@ -19,7 +19,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
         <div className="flex min-w-0 flex-1 flex-col">
           <DocsHeader />
           <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-[960px] px-6 py-10 lg:px-10">
+            <div className="mx-auto max-w-[1200px] px-6 py-10 lg:px-10">
               {children}
             </div>
           </main>

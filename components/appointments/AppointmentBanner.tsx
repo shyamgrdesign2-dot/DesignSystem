@@ -15,6 +15,8 @@ interface AppointmentBannerProps {
  * Appointments page. Rounded bottom corners (16px), 149px tall.
  *
  * Background: radial-gradient purple (#46286C → #25113E → #372153 → #6C4F90)
+ * Geometric SVG pattern right-aligned (opacity 75%, mix-blend-mode: screen)
+ * Noise grain overlay at 6% opacity
  * The card below should use -mt-[60px] so it overlaps this banner.
  */
 export function AppointmentBanner({ title, actions, className }: AppointmentBannerProps) {
@@ -29,38 +31,31 @@ export function AppointmentBanner({ title, actions, className }: AppointmentBann
           "radial-gradient(99.09% 59.99% at 50% 55.44%, #46286C 0%, #25113E 39.08%, #372153 78.16%, #6C4F90 100%)",
       }}
     >
-      {/* Geometric pattern — right-aligned, scales with banner height, aspect-ratio preserved */}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 320 149"
-        preserveAspectRatio="xMaxYMid meet"
+      {/* Geometric line pattern — right-aligned, scaled to banner height */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/assets/8b46197b8125e32aedb152d3d430b818c39f3157.svg"
+        alt=""
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-0 h-full w-auto"
+        className="pointer-events-none absolute right-0 top-0 h-full w-auto opacity-[0.75]"
+        style={{ mixBlendMode: "screen", objectFit: "contain", objectPosition: "right center" }}
+      />
+
+      {/* Noise grain texture */}
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        style={{ mixBlendMode: "overlay", opacity: 0.06 }}
       >
-        {/* Angular fill facets */}
-        <polygon points="320,0 60,149 320,149" fill="white" fillOpacity="0.04" />
-        <polygon points="320,0 140,149 320,149" fill="white" fillOpacity="0.045" />
-        <polygon points="320,0 210,149 320,149" fill="white" fillOpacity="0.05" />
-        <polygon points="320,0 265,149 320,149" fill="white" fillOpacity="0.055" />
-        {/* Radiating stroke lines from top-right corner */}
-        <g stroke="white" strokeWidth="0.8" fill="none">
-          <line x1="320" y1="0" x2="0" y2="149" strokeOpacity="0.14" />
-          <line x1="320" y1="0" x2="60" y2="149" strokeOpacity="0.13" />
-          <line x1="320" y1="0" x2="120" y2="149" strokeOpacity="0.12" />
-          <line x1="320" y1="0" x2="180" y2="149" strokeOpacity="0.11" />
-          <line x1="320" y1="0" x2="240" y2="149" strokeOpacity="0.10" />
-          <line x1="320" y1="0" x2="295" y2="149" strokeOpacity="0.09" />
-        </g>
-        {/* Horizontal edge lines */}
-        <line x1="60" y1="149" x2="320" y2="149" stroke="white" strokeWidth="0.6" strokeOpacity="0.10" />
-        <line x1="0" y1="0" x2="320" y2="0" stroke="white" strokeWidth="0.6" strokeOpacity="0.08" />
-        {/* Cross diagonal for depth */}
-        <line x1="320" y1="149" x2="120" y2="0" stroke="white" strokeWidth="0.6" strokeOpacity="0.07" />
-        <line x1="320" y1="149" x2="200" y2="0" stroke="white" strokeWidth="0.6" strokeOpacity="0.06" />
+        <filter id="banner-noise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.80" numOctaves="4" stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#banner-noise)" />
       </svg>
 
       {/* Content */}
-      <div className="relative h-full px-3 pt-6 sm:px-6 lg:px-[18px]">
+      <div className="relative z-10 h-full px-3 pt-6 sm:px-6 lg:px-[18px]">
         <div className="flex items-center justify-between gap-3">
           <h1 className="min-w-0 flex-1 font-heading text-[24px] font-bold leading-[1.15] text-white">
             {title}

@@ -165,9 +165,11 @@ export function SecondaryNavPanel({
   }) => React.ReactNode
 }) {
   const isRx = variant === "rx"
-  const panelBackground = isRx
-    ? "radial-gradient(256.21% 808.53% at -194.95% 36.46%, var(--core-primary-900, #161558) 0%, #232277 25%, #313097 50%, #4B4AD5 100%), #FFF"
-    : "var(--tp-slate-0)"
+  // Match the exact same radial gradient used in the SecondarySidebar NavPanel
+  // This uses an inline SVG with a radialGradient + gradientTransform for the precise Figma spec
+  const rxNavBgImage =
+    "url('data:image/svg+xml;utf8,<svg viewBox=\"0 0 80 1133\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"none\"><rect x=\"0\" y=\"0\" height=\"100%\" width=\"100%\" fill=\"url(%23grad)\" opacity=\"1\"/><defs><radialGradient id=\"grad\" gradientUnits=\"userSpaceOnUse\" cx=\"0\" cy=\"0\" r=\"10\" gradientTransform=\"matrix(64.518 65.21 -19.503 89.302 -155.96 413.08)\"><stop stop-color=\"rgba(22,21,88,1)\" offset=\"0\"/><stop stop-color=\"rgba(35,34,119,1)\" offset=\"0.25\"/><stop stop-color=\"rgba(49,48,151,1)\" offset=\"0.5\"/><stop stop-color=\"rgba(75,74,213,1)\" offset=\"1\"/></radialGradient></defs></svg>'), linear-gradient(90deg,rgb(255,255,255) 0%,rgb(255,255,255) 100%)"
+  const panelBackground = isRx ? undefined : "var(--tp-slate-0)"
 
   const bottomFade = isRx
     ? "linear-gradient(180deg, rgba(22, 21, 88, 0.00) 0%, #161558 100%)"
@@ -182,7 +184,9 @@ export function SecondaryNavPanel({
         alignItems: "center",
         alignSelf: "stretch",
         borderRadius: 0,
-        background: panelBackground,
+        ...(isRx
+          ? { backgroundImage: rxNavBgImage }
+          : { background: panelBackground }),
       }}
     >
       <div
