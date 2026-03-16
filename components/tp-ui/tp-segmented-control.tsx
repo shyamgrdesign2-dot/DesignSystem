@@ -57,7 +57,7 @@ export function TPSegmentedControl({
               s.item,
               isActive
                 ? "bg-white text-tp-blue-700 shadow-sm"
-                : "text-tp-slate-600 hover:text-tp-slate-900",
+                : "text-tp-slate-600 hover:text-tp-slate-900 hover:bg-white/60",
             )}
           >
             {item.label}

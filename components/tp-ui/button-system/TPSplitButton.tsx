@@ -169,7 +169,7 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
         className={`relative inline-flex ${className}`}
       >
         <div
-          className="inline-flex overflow-hidden rounded-[10px]"
+          className="inline-flex overflow-hidden rounded-[10px] transition-shadow hover:shadow-md"
           style={{
             border:
               variant === "outline"
@@ -190,7 +190,7 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             type="button"
             disabled={isDisabled}
             onClick={primaryAction.onClick}
-            className="inline-flex flex-1 items-center justify-center border-0 pl-4 pr-2 transition-colors hover:opacity-90 disabled:cursor-not-allowed"
+            className="inline-flex flex-1 items-center justify-center border-0 pl-4 pr-2 transition-all hover:brightness-[1.12] hover:saturate-[1.1] active:scale-[0.97] disabled:cursor-not-allowed"
             style={{
               ...baseButtonStyle,
               borderRadius: 0,
@@ -242,7 +242,7 @@ export const TPSplitButton = forwardRef<HTMLDivElement, TPSplitButtonProps>(
             aria-haspopup="menu"
             aria-expanded={open}
             aria-label="More actions"
-            className="inline-flex flex-shrink-0 items-center justify-center px-2 transition-colors hover:opacity-90 disabled:cursor-not-allowed"
+            className="inline-flex flex-shrink-0 items-center justify-center px-2 transition-all hover:brightness-[1.12] hover:saturate-[1.1] active:scale-[0.97] disabled:cursor-not-allowed"
             style={{
               ...baseButtonStyle,
               color: dropdownTriggerColor,

@@ -55,8 +55,8 @@ const componentSpecs: ComponentSpec[] = [
       { name: "size", values: ["sm (36px)", "md (42px)", "lg (48px)"], description: "Height and padding" },
       { name: "surface", values: ["light", "dark"], description: "Background context" },
     ],
-    states: ["default", "hover", "active", "focus", "disabled", "loading"],
-    tokens: ["--tp-blue-500 (primary bg)", "--tp-blue-600 (hover)", "--radius: 12px", "font-weight: 600", "font-size: 14px"],
+    states: ["default", "hover (bg darken + shadow-md)", "active (scale-[0.97])", "focus (ring)", "disabled (opacity-0.7)", "loading (spinner)"],
+    tokens: ["--tp-blue-500 (primary bg)", "--tp-blue-600 (hover)", "--radius: 10px", "font-weight: 600", "font-size: 14px", "hover: shadow-md + brightness shift"],
     anatomy: ["Container", "StartIcon (optional)", "Label", "EndIcon (optional)"],
     figmaNotes: "Use auto-layout with 12px horizontal padding. Radius 12px on all corners.",
   },
@@ -92,9 +92,9 @@ const componentSpecs: ComponentSpec[] = [
     variants: [
       { name: "variant", values: ["primary", "outline"], description: "Visual appearance" },
     ],
-    states: ["default", "hover", "dropdown-open"],
-    tokens: ["--tp-blue-500", "--radius: 12px"],
-    anatomy: ["PrimaryButton", "Divider", "DropdownTrigger (ChevronDown)", "DropdownMenu"],
+    states: ["default", "hover (brightness-[1.12] + shadow-md)", "active (scale-[0.97])", "dropdown-open"],
+    tokens: ["--tp-blue-500", "--radius: 10px", "hover: brightness-[1.12] saturate-[1.1]", "container hover: shadow-md"],
+    anatomy: ["Container (rounded-[10px], hover:shadow-md)", "PrimaryButton (hover:brightness-[1.12])", "Divider", "DropdownTrigger (ChevronDown, hover:brightness-[1.12])", "DropdownMenu (portal)"],
   },
   {
     name: "TPTextField",

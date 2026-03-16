@@ -221,7 +221,7 @@ export function DataTableShowcase() {
                     <button
                       type="button"
                       aria-label="AI action"
-                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105 active:scale-[0.97]"
+                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:scale-110 hover:shadow-[0_2px_12px_rgba(103,58,172,0.25)] active:scale-[0.95]"
                       style={{ background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)" }}
                     >
                       <AiSparkIcon />

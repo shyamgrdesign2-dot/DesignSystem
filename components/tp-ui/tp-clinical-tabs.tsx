@@ -141,7 +141,7 @@ export function TPClinicalTabs({
                 size === "sm" ? "h-9" : "h-[42px]",
                 isActive
                   ? "text-[#4b4ad5]"
-                  : "text-[#454551]/60 hover:text-[#454551] hover:bg-tp-slate-50",
+                  : "text-[#454551]/60 hover:text-[#454551]/90 hover:bg-tp-slate-100/70",
               )}
               style={{
                 fontFamily: "'Inter', sans-serif",

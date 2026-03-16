@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 
 import { ChevronDown } from "lucide-react"
-import { Notification, Hospital } from "iconsax-reactjs"
+import { Notification, Hospital, Flash } from "iconsax-reactjs"
 import { AppointmentBanner } from "@/components/appointments/AppointmentBanner"
 import { TPSplitButton } from "@/components/tp-ui/button-system"
 import { TPClinicalTabs } from "@/components/tp-ui/tp-clinical-tabs"
@@ -59,8 +59,8 @@ export function TopNavBarShowcase() {
               <Notification size={20} variant="Linear" strokeWidth={1.5} />
               <span className="absolute -top-0.5 right-1 size-2.5 rounded-full border-2 border-white bg-red-500" />
             </button>
-            {/* Divider */}
-            <div className="h-[42px] w-px bg-tp-slate-300 opacity-80" />
+            {/* Gradient divider — matches RxpadHeader divider pattern */}
+            <div className="bg-gradient-to-b from-[rgba(208,213,221,0.2)] via-[#d0d5dd] via-50% to-[rgba(208,213,221,0.2)] h-[42px] w-[1.05px] shrink-0 opacity-80" data-name="Divider" />
             {/* Clinic selector — iconsax Hospital icon */}
             <button type="button" className="inline-flex items-center gap-1.5 rounded-[10px] bg-tp-slate-100 px-4 py-2 transition-colors hover:bg-tp-slate-200" aria-label="Switch clinic">
               <Hospital size={20} variant="Linear" strokeWidth={1.5} color="var(--tp-slate-700)" />
@@ -105,19 +105,19 @@ export function AppointmentBannerShowcase() {
                 backdrop-filter: blur(8px), color: white, height: 42px, radius: 10px */}
             <button
               type="button"
-              className="inline-flex h-[42px] items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-white/40 bg-white/[0.07] px-3.5 py-2 text-sm font-semibold text-white backdrop-blur-[8px] transition-all duration-150 hover:bg-white/[0.18] hover:border-white/60 active:scale-[0.97]"
+              className="group/cta inline-flex h-[42px] items-center justify-center gap-1.5 rounded-[10px] border-[1.5px] border-white/40 bg-white/[0.07] px-3.5 py-2 text-sm font-semibold text-white backdrop-blur-[8px] transition-all duration-150 hover:bg-white/[0.22] hover:border-white/70 hover:shadow-[0_0_16px_rgba(255,255,255,0.12)] active:scale-[0.96]"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
-              View All
+              <span className="text-[15px] leading-none">+</span> New Appointment
             </button>
             {/* Solid CTA on dark surface — uses CTA system tokens:
                 bg: #FFFFFF, color: #161558, border: none, height: 42px, radius: 10px */}
             <button
               type="button"
-              className="inline-flex h-[42px] items-center justify-center gap-1.5 rounded-[10px] border-0 bg-white px-3.5 py-2 text-sm font-semibold text-[#161558] transition-all duration-150 hover:bg-white/90 hover:shadow-lg active:scale-[0.97]"
+              className="inline-flex h-[42px] items-center justify-center gap-1.5 rounded-[10px] border-0 bg-white px-3.5 py-2 text-sm font-semibold text-[#161558] shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition-all duration-150 hover:bg-[#F0F0FF] hover:shadow-[0_4px_14px_rgba(75,74,213,0.18)] active:scale-[0.96]"
               style={{ fontFamily: "Inter, sans-serif" }}
             >
-              + New Appointment
+              <Flash size={16} variant="Linear" color="#4B4AD5" /> Start Walk-in
             </button>
           </>
         }
@@ -576,7 +576,7 @@ export function DrAgentAppointmentsShowcase() {
                     <button
                       type="button"
                       aria-label="AI action"
-                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:opacity-80 hover:scale-105 active:scale-[0.97]"
+                      className="shrink-0 inline-flex size-[42px] items-center justify-center rounded-[10px] transition-all hover:scale-110 hover:shadow-[0_2px_12px_rgba(103,58,172,0.25)] active:scale-[0.95]"
                       style={{ background: "linear-gradient(135deg, rgba(213,101,234,0.25) 0%, rgba(103,58,172,0.25) 45%, rgba(26,25,148,0.25) 100%)" }}
                     >
                       <AiSparkIcon />
